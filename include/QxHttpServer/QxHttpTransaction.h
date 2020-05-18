@@ -74,6 +74,7 @@ private:
 
    struct QxHttpTransactionImpl;
    std::unique_ptr<QxHttpTransactionImpl> m_pImpl; //!< Private implementation idiom
+   bool http;
 
 public:
 

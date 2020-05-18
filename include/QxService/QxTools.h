@@ -61,6 +61,7 @@ class QX_DLL_EXPORT QxTools
 public:
 
    static qx_bool readSocket(QTcpSocket & socket, QxTransaction & transaction, quint32 & size);
+   static qx_bool readSocketData(QByteArray  dataSerialized,QDataStream & in,QxTransaction & transaction, quint32 & size);
    static qx_bool writeSocket(QTcpSocket & socket, QxTransaction & transaction, quint32 & size);
 
 };

@@ -73,6 +73,22 @@ qx_bool QxTools::readSocket(QTcpSocket & socket, QxTransaction & transaction, qu
    QByteArray dataSerialized = socket.read((qint64)(uiSerializedSize));
    qAssert(dataSerialized.size() == (int)(uiSerializedSize));
    size = (quint32)(QX_SERVICE_TOOLS_HEADER_SIZE + uiSerializedSize);
+   QDataStream in2(& dataHeader, QIODevice::ReadOnly);
+   return QxTools::readSocketData(dataSerialized, in2, transaction, size);
+}
+
+qx_bool QxTools::readSocketData(QByteArray dataSerialized,QDataStream &in, QxTransaction & transaction, quint32 & size)
+{
+   quint32 uiSerializedSize = 0;
+   quint16 uiSerializationType(0), uiCompressData(0), uiEncryptData(0);
+   in.setVersion(QDataStream::Qt_4_5);
+   in >> uiSerializedSize;
+   in >> uiSerializationType;
+   in >> uiCompressData;
+   in >> uiEncryptData;
+
+   qAssert(dataSerialized.size() == (int)(uiSerializedSize));
+   size = (quint32)(QX_SERVICE_TOOLS_HEADER_SIZE + uiSerializedSize);
 
    if (uiEncryptData != 0)
    {
