@@ -176,7 +176,6 @@ QxHttpTransaction::~QxHttpTransaction() {
 
 void QxHttpTransaction::clear() {
 	qx::service::QxTransaction::clear();
-	if(http)
 	m_pImpl.reset(new QxHttpTransactionImpl(this));
 }
 
