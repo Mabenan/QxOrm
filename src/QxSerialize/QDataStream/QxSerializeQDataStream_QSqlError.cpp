@@ -35,34 +35,31 @@
 
 #include <QxMemLeak/mem_leak.h>
 
-QDataStream & operator<< (QDataStream & stream, const QSqlError & t)
-{
-   QString sDatabaseText = t.databaseText();
-   QString sDriverText = t.driverText();
-   qint32 iNumber = static_cast<qint32>(t.number());
-   qint32 iType = static_cast<qint32>(t.type());
+QDataStream &operator<<(QDataStream &stream, const QSqlError &t) {
+  QString sDatabaseText = t.databaseText();
+  QString sDriverText = t.driverText();
+  qint32 iNumber = static_cast<qint32>(t.nativeErrorCode().toInt());
+  qint32 iType = static_cast<qint32>(t.type());
 
-   stream << sDatabaseText;
-   stream << sDriverText;
-   stream << iNumber;
-   stream << iType;
+  stream << sDatabaseText;
+  stream << sDriverText;
+  stream << iNumber;
+  stream << iType;
 
-   return stream;
+  return stream;
 }
 
-QDataStream & operator>> (QDataStream & stream, QSqlError & t)
-{
-   QString sDatabaseText; QString sDriverText;
-   qint32 iNumber(0); qint32 iType(0);
-   stream >> sDatabaseText;
-   stream >> sDriverText;
-   stream >> iNumber;
-   stream >> iType;
+QDataStream &operator>>(QDataStream &stream, QSqlError &t) {
+  QString sDatabaseText;
+  QString sDriverText;
+  qint32 iNumber(0);
+  stream >> sDatabaseText;
+  stream >> sDriverText;
+  stream >> iNumber;
 
-   t.setDatabaseText(sDatabaseText);
-   t.setDriverText(sDriverText);
-   t.setNumber(static_cast<int>(iNumber));
-   t.setType(static_cast<QSqlError::ErrorType>(iType));
+  t.databaseText() = sDatabaseText;
+  t.driverText() = sDriverText;
+  t.nativeErrorCode() = QString::number(iNumber);
 
-   return stream;
+  return stream;
 }

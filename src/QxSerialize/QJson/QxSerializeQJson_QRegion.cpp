@@ -34,9 +34,9 @@
 #ifndef _QX_NO_JSON
 #ifdef _QX_ENABLE_QT_GUI
 
+#include <QxSerialize/QJson/QxSerializeQJson_QRect.h>
 #include <QxSerialize/QJson/QxSerializeQJson_QRegion.h>
 #include <QxSerialize/QJson/QxSerializeQJson_QVector.h>
-#include <QxSerialize/QJson/QxSerializeQJson_QRect.h>
 
 #include <QxMemLeak/mem_leak.h>
 
@@ -44,18 +44,17 @@ namespace qx {
 namespace cvt {
 namespace detail {
 
-QJsonValue QxConvert_ToJson_Helper(const QRegion & t, const QString & format)
-{
-   QVector<QRect> rectList = t.rects();
-   return qx::cvt::to_json(rectList, format);
+QJsonValue QxConvert_ToJson_Helper(const QRegion &t, const QString &format) {
+  QVector<QRect> rectList = QVector<QRect>(t.begin(), t.end());
+  return qx::cvt::to_json(rectList, format);
 }
 
-qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, QRegion & t, const QString & format)
-{
-   QVector<QRect> rectList;
-   qx::cvt::from_json(j, rectList, format);
-   t.setRects(rectList.data(), rectList.count());
-   return qx_bool(true);
+qx_bool QxConvert_FromJson_Helper(const QJsonValue &j, QRegion &t,
+                                  const QString &format) {
+  QVector<QRect> rectList;
+  qx::cvt::from_json(j, rectList, format);
+  t.setRects(rectList.data(), rectList.count());
+  return qx_bool(true);
 }
 
 } // namespace detail

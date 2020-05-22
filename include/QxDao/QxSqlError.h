@@ -43,8 +43,8 @@
  * \brief Define a SQL error exception and retrieve QSqlError type of Qt library
  */
 
-#include <iostream>
 #include <exception>
+#include <iostream>
 
 #include <QtCore/qbytearray.h>
 
@@ -55,24 +55,33 @@ namespace dao {
 
 /*!
  * \ingroup QxDao
- * \brief qx::dao::sql_error : define a SQL error exception and retrieve QSqlError type of Qt library
+ * \brief qx::dao::sql_error : define a SQL error exception and retrieve
+ * QSqlError type of Qt library
  */
-class sql_error : public std::exception
-{
+class sql_error : public std::exception {
 
 private:
-
-   QSqlError m_error;
-   QByteArray m_errorMessage;
+  QSqlError m_error;
+  QByteArray m_errorMessage;
 
 public:
+  sql_error(const QSqlError &err) : std::exception(), m_error(err) {
+    if (!m_error.text().isEmpty() && (m_error.type() == QSqlError::NoError)) {
+      m_error = QSqlError(m_error.driverText(), m_error.databaseText(),
+                          QSqlError::UnknownError, m_error.nativeErrorCode());
+    }
+    m_errorMessage = m_error.text().toLocal8Bit();
+  }
+  virtual ~sql_error() noexcept {}
 
-   sql_error(const QSqlError & err) : std::exception(), m_error(err) { if (! m_error.text().isEmpty() && (m_error.type() == QSqlError::NoError)) { m_error.setType(QSqlError::UnknownError); }; m_errorMessage = m_error.text().toLocal8Bit(); }
-   virtual ~sql_error() throw() { ; }
-
-   virtual const char * what() const throw() { if (m_error.isValid()) { return m_errorMessage.constData(); } else { return ""; } }
-   QSqlError get() const { return m_error; }
-
+  virtual const char *what() const noexcept {
+    if (m_error.isValid()) {
+      return m_errorMessage.constData();
+    } else {
+      return "";
+    }
+  }
+  QSqlError get() const { return m_error; }
 };
 
 } // namespace dao

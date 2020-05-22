@@ -31,24 +31,27 @@
 
 #ifdef _MSC_VER
 #pragma warning(push)
-#pragma warning(disable:4996)
-#pragma warning(disable:4094)
+#pragma warning(disable : 4996)
+#pragma warning(disable : 4094)
 #endif // _MSC_VER
 
 #include <QxSerialize/QxSerialize.h>
 
 #ifndef QX_REGISTER_FACTORY_HPP
-#define QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_HPP(className, classNameFormatted) \
-extern qx::QxFactory< className > G_QX_REGISTER_FACTORY_##classNameFormatted;
-#define QX_REGISTER_FACTORY_HPP(className) \
-QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_HPP(className, className)
+#define QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_HPP(className,                  \
+                                                   classNameFormatted)         \
+  extern qx::QxFactory<className> G_QX_REGISTER_FACTORY_##classNameFormatted;
+#define QX_REGISTER_FACTORY_HPP(className)                                     \
+  QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_HPP(className, className)
 #endif // QX_REGISTER_FACTORY_HPP
 
 #ifndef QX_REGISTER_FACTORY_CPP
-#define QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_CPP(className, classNameFormatted) \
-qx::QxFactory< className > G_QX_REGISTER_FACTORY_##classNameFormatted(QString(#className));
-#define QX_REGISTER_FACTORY_CPP(className) \
-QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_CPP(className, className)
+#define QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_CPP(className,                  \
+                                                   classNameFormatted)         \
+  qx::QxFactory<className> G_QX_REGISTER_FACTORY_##classNameFormatted(         \
+      QStringLiteral(#className));
+#define QX_REGISTER_FACTORY_CPP(className)                                     \
+  QX_REGISTER_FACTORY_COMPLEX_CLASS_NAME_CPP(className, className)
 #endif // QX_REGISTER_FACTORY_CPP
 
 #ifdef _MSC_VER

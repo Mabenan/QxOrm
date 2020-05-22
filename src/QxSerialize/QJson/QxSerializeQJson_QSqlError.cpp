@@ -41,27 +41,29 @@ namespace qx {
 namespace cvt {
 namespace detail {
 
-QJsonValue QxConvert_ToJson_Helper(const QSqlError & t, const QString & format)
-{
-   Q_UNUSED(format);
-   QJsonArray arr;
-   arr.append(QJsonValue(t.databaseText()));
-   arr.append(QJsonValue(t.driverText()));
-   arr.append(QJsonValue(t.number()));
-   arr.append(QJsonValue(static_cast<int>(t.type())));
-   return QJsonValue(arr);
+QJsonValue QxConvert_ToJson_Helper(const QSqlError &t, const QString &format) {
+  Q_UNUSED(format);
+  QJsonArray arr;
+  arr.append(QJsonValue(t.databaseText()));
+  arr.append(QJsonValue(t.driverText()));
+  arr.append(QJsonValue(t.nativeErrorCode().toInt()));
+  arr.append(QJsonValue(static_cast<int>(t.type())));
+  return QJsonValue(arr);
 }
 
-qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, QSqlError & t, const QString & format)
-{
-   Q_UNUSED(format); t = QSqlError();
-   if (! j.isArray()) { return qx_bool(true); }
-   QJsonArray arr = j.toArray();
-   t.setDatabaseText(arr.at(0).toString());
-   t.setDriverText(arr.at(1).toString());
-   t.setNumber(qRound(arr.at(2).toDouble()));
-   t.setType(static_cast<QSqlError::ErrorType>(qRound(arr.at(3).toDouble())));
-   return qx_bool(true);
+qx_bool QxConvert_FromJson_Helper(const QJsonValue &j, QSqlError &t,
+                                  const QString &format) {
+  Q_UNUSED(format);
+  t = QSqlError();
+  if (!j.isArray()) {
+    return qx_bool(true);
+  }
+  QJsonArray arr = j.toArray();
+  t.databaseText() = arr.at(0).toString();
+  t.driverText() = arr.at(1).toString();
+  t.nativeErrorCode() = QString::number(qRound(arr.at(2).toDouble()));
+
+  return qx_bool(true);
 }
 
 } // namespace detail
