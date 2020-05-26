@@ -36,52 +36,75 @@ namespace cvt {
 namespace detail {
 
 template <> struct QxConvert_ToJson< qx::trait::no_type > {
-static inline QJsonValue toJson(const qx::trait::no_type & t, const QString & format)
-{ Q_UNUSED(t); Q_UNUSED(format); return QJsonValue(); } };
+    static inline QJsonValue toJson(qx::trait::no_type t, const QString &format)
+    {
+        Q_UNUSED(t);
+        Q_UNUSED(format);
+        return QJsonValue(); } };
 
 template <> struct QxConvert_ToJson< bool > {
-static inline QJsonValue toJson(const bool & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(t); } };
+    static inline QJsonValue toJson(bool t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(t); } };
 
 template <> struct QxConvert_ToJson< short > {
-static inline QJsonValue toJson(const short & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<int>(t)); } };
+    static inline QJsonValue toJson(short t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<int>(t)); } };
 
 template <> struct QxConvert_ToJson< int > {
-static inline QJsonValue toJson(const int & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(t); } };
+    static inline QJsonValue toJson(int t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(t); } };
 
 template <> struct QxConvert_ToJson< long > {
-static inline QJsonValue toJson(const long & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<double>(t)); } };
+    static inline QJsonValue toJson(long t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<double>(t)); } };
 
 template <> struct QxConvert_ToJson< long long > {
-static inline QJsonValue toJson(const long long & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<double>(t)); } };
+    static inline QJsonValue toJson(long long t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<double>(t)); } };
 
 template <> struct QxConvert_ToJson< float > {
-static inline QJsonValue toJson(const float & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<double>(t)); } };
+    static inline QJsonValue toJson(float t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<double>(t)); } };
 
 template <> struct QxConvert_ToJson< double > {
-static inline QJsonValue toJson(const double & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(t); } };
+    static inline QJsonValue toJson(double t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(t); } };
 
 template <> struct QxConvert_ToJson< unsigned short > {
-static inline QJsonValue toJson(const unsigned short & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<int>(t)); } };
+    static inline QJsonValue toJson(unsigned short t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<int>(t)); } };
 
 template <> struct QxConvert_ToJson< unsigned int > {
-static inline QJsonValue toJson(const unsigned int & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<int>(t)); } };
+    static inline QJsonValue toJson(unsigned int t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<int>(t)); } };
 
 template <> struct QxConvert_ToJson< unsigned long > {
-static inline QJsonValue toJson(const unsigned long & t, const QString & format)
+    static inline QJsonValue toJson(unsigned long t, const QString & format)
 { Q_UNUSED(format); return QJsonValue(static_cast<double>(t)); } };
 
 template <> struct QxConvert_ToJson< unsigned long long > {
-static inline QJsonValue toJson(const unsigned long long & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(static_cast<double>(t)); } };
+    static inline QJsonValue toJson(unsigned long long t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(static_cast<double>(t)); } };
 
 template <> struct QxConvert_ToJson< QDateTime > {
 static inline QJsonValue toJson(const QDateTime & t, const QString & format)
@@ -98,8 +121,8 @@ static inline QJsonValue toJson(const QDateTime & t, const QString & format)
 };
 
 template <> struct QxConvert_ToJson< QDate > {
-static inline QJsonValue toJson(const QDate & t, const QString & format)
-{
+    static inline QJsonValue toJson(QDate &t, const QString &format)
+    {
 #ifdef _QX_ENABLE_MONGODB
    if (t.isValid() && format.startsWith("mongodb"))
    { QDateTime dt(t); return QxConvert_ToJson<QDateTime>::toJson(dt, format); }
@@ -109,7 +132,7 @@ static inline QJsonValue toJson(const QDate & t, const QString & format)
 };
 
 template <> struct QxConvert_ToJson< QTime > {
-static inline QJsonValue toJson(const QTime & t, const QString & format)
+    static inline QJsonValue toJson(QTime t, const QString & format)
 { Q_UNUSED(format); if (t.isValid()) { return QJsonValue(t.toString(QX_JSON_DATE_TIME_FORMAT)); }; return QJsonValue(); } };
 
 template <> struct QxConvert_ToJson< QByteArray > {
@@ -132,8 +155,10 @@ static inline QJsonValue toJson(const QVariant & t, const QString & format)
 { Q_UNUSED(format); return QJsonValue::fromVariant(t); } };
 
 template <> struct QxConvert_ToJson< QUuid > {
-static inline QJsonValue toJson(const QUuid & t, const QString & format)
-{ Q_UNUSED(format); return QJsonValue(t.toString()); } };
+    static inline QJsonValue toJson(QUuid t, const QString &format)
+    {
+        Q_UNUSED(format);
+        return QJsonValue(t.toString()); } };
 
 template <> struct QxConvert_ToJson< qx::QxDateNeutral > {
 static inline QJsonValue toJson(const qx::QxDateNeutral & t, const QString & format)
@@ -165,7 +190,10 @@ static inline QJsonValue toJson(const std::wstring & t, const QString & format)
 
 template <> struct QxConvert_ToJson< qx_bool > {
 static inline QJsonValue toJson(const qx_bool & t, const QString & format)
-{ Q_UNUSED(format); QJsonObject obj; obj["value"] = t.getValue(); obj["code"] = static_cast<double>(t.getCode()); obj["desc"] = t.getDesc(); return QJsonValue(obj); } };
+{
+    Q_UNUSED(format); QJsonObject obj; obj[QStringLiteral("value")] = t.getValue(); obj[QStringLiteral("code")] = static_cast<double>(t.getCode()); obj[QStringLiteral("desc")] = t.getDesc(); return QJsonValue(obj);
+}
+};
 
 #ifdef _QX_ENABLE_BOOST
 

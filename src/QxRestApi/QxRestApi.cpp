@@ -223,8 +223,8 @@ QxRestApi::QxRestApiImpl::processRequestAsArray(const QJsonValue &request) {
   QJsonArray responseArray;
   QJsonArray requestArray = request.toArray();
   if (requestArray.count() <= 0) {
-    buildError(9999, "Request array is empty");
-    return m_errorJson;
+      buildError(9999, QStringLiteral("Request array is empty"));
+      return m_errorJson;
   }
 
   bool bTransaction = false;
@@ -290,34 +290,33 @@ void QxRestApi::QxRestApiImpl::clear() {
 }
 
 void QxRestApi::QxRestApiImpl::resetRequest() {
-  m_requestId = "";
-  m_action = "";
-  m_entity = "";
-  m_data = "";
-  m_query = "";
-  m_function = "";
-  m_database = "";
-  m_qxQuery = qx_query();
-  m_dataJson = QJsonValue();
-  m_requestJson = QJsonValue();
-  m_responseJson = QJsonValue();
-  m_eSaveMode = qx::dao::save_mode::e_none;
-  m_columns.clear();
-  m_relations.clear();
-  m_outputFormat.clear();
-  m_instance.reset();
+    m_requestId = QLatin1String("");
+    m_action = QLatin1String(""); m_entity = QLatin1String("");
+    m_data = QLatin1String("");
+    m_query = QLatin1String("");
+    m_function = QLatin1String("");
+    m_database = QLatin1String("");
+ m_qxQuery = qx_query();
+    m_dataJson = QJsonValue();
+    m_requestJson = QJsonValue();
+    m_responseJson = QJsonValue();
+    m_eSaveMode = qx::dao::save_mode::e_none;
+    m_columns.clear();
+    m_relations.clear();
+    m_outputFormat.clear();
+    m_instance.reset();
 }
 
 void QxRestApi::QxRestApiImpl::buildError(int errCode, const QString &errDesc) {
-  m_error =
-      QSqlError(errDesc, "", QSqlError::UnknownError, QString::number(errCode));
-  QJsonObject errJson;
-  QJsonObject errDetail;
-  errDetail.insert("code", errCode);
-  errDetail.insert("desc", errDesc);
-  errJson.insert("error", errDetail);
-  if (!m_requestId.isEmpty()) {
-    errJson.insert("request_id", m_requestId);
+    m_error = QSqlError(errDesc,
+                        QLatin1String(""),
+                        QSqlError::UnknownError,
+                        QString::number(errCode));
+    QJsonObject errJson; QJsonObject errDetail; errDetail.insert(QStringLiteral("code"), errCode);
+    errDetail.insert(QStringLiteral("desc"), errDesc);
+    errJson.insert(QStringLiteral("error"), errDetail);
+    if (!m_requestId.isEmpty()) {
+        errJson.insert(QStringLiteral("request_id"), m_requestId);
   }
   m_errorJson = errJson;
 }
@@ -329,38 +328,38 @@ void QxRestApi::QxRestApiImpl::buildError(const QSqlError &error) {
   m_error = error;
   QJsonObject errJson;
   QJsonObject errDetail;
-  errDetail.insert("code", error.nativeErrorCode().toInt());
+  errDetail.insert(QStringLiteral("code"), error.nativeErrorCode().toInt());
   QString errorText = error.driverText();
-  errorText += QString("\n");
+  errorText += QStringLiteral("\n");
   errorText += error.databaseText();
-  errDetail.insert("desc", errorText);
-  errJson.insert("error", errDetail);
+  errDetail.insert(QStringLiteral("desc"), errorText);
+  errJson.insert(QStringLiteral("error"), errDetail);
   if (!m_requestId.isEmpty()) {
-    errJson.insert("request_id", m_requestId);
+      errJson.insert(QStringLiteral("request_id"), m_requestId);
   }
   m_errorJson = errJson;
 }
 
 bool QxRestApi::QxRestApiImpl::createInstance() {
   // Some actions doesn't require any instance
-  if (m_action == "get_meta_data") {
-    return true;
+  if (m_action == QLatin1String("get_meta_data")) {
+      return true;
   }
-  if (m_action == "get_databases") {
-    return true;
+  if (m_action == QLatin1String("get_databases")) {
+      return true;
   }
-  if (m_action == "call_custom_query") {
-    return true;
+  if (m_action == QLatin1String("call_custom_query")) {
+      return true;
   }
-  if (m_action == "call_entity_function") {
-    return true;
+  if (m_action == QLatin1String("call_entity_function")) {
+      return true;
   }
 
   // Check if entity implements qx::IxPersistable interface
   m_instance.reset();
   if (m_entity.isEmpty()) {
-    buildError(9999, "JSON request is invalid : 'entity' field is empty");
-    return false;
+      buildError(9999, QStringLiteral("JSON request is invalid : 'entity' field is empty"));
+      return false;
   }
   if (!qx::QxClassX::implementIxPersistable(m_entity)) {
     buildError(9999, "Entity '" + m_entity +
@@ -377,27 +376,27 @@ bool QxRestApi::QxRestApiImpl::createInstance() {
   }
 
   // Check if action requires some input data
-  if (m_action == "count") {
-    return true;
+  if (m_action == QLatin1String("count")) {
+      return true;
   }
-  if (m_action == "delete_all") {
-    return true;
+  if (m_action == QLatin1String("delete_all")) {
+      return true;
   }
-  if (m_action == "destroy_all") {
-    return true;
+  if (m_action == QLatin1String("destroy_all")) {
+      return true;
   }
-  if (m_action == "delete_by_query") {
-    return true;
+  if (m_action == QLatin1String("delete_by_query")) {
+      return true;
   }
-  if (m_action == "destroy_by_query") {
-    return true;
+  if (m_action == QLatin1String("destroy_by_query")) {
+      return true;
   }
 
   // Check if some input data has been provided by caller
-  if (m_dataJson.isNull() && (m_action != "fetch_all") &&
-      (m_action != "fetch_by_query")) {
-    buildError(9999, "No data provided for entity '" + m_entity + "'");
-    return false;
+  if (m_dataJson.isNull() && (m_action != QLatin1String("fetch_all"))
+      && (m_action != QLatin1String("fetch_by_query"))) {
+      buildError(9999, "No data provided for entity '" + m_entity + "'");
+      return false;
   }
 
   // Check data format : single instance, or array of instances, or collection
@@ -427,17 +426,18 @@ bool QxRestApi::QxRestApiImpl::createInstance() {
                            m_entity + "'");
       return false;
     }
-    if ((dataFirstObject.count() == 2) && dataFirstObject.contains("key") &&
-        dataFirstObject.contains("value")) {
-      lst = m_instance->qxNewPersistableCollection(false);
+    if ((dataFirstObject.count() == 2) && dataFirstObject.contains(QStringLiteral("key"))
+        && dataFirstObject.contains(QStringLiteral("value"))) {
+        lst = m_instance->qxNewPersistableCollection(false);
     } else {
-      lst = m_instance->qxNewPersistableCollection(true);
+        lst = m_instance->qxNewPersistableCollection(true);
     }
     m_instance = std::static_pointer_cast<qx::IxPersistable>(lst);
-  } else if ((m_action == "fetch_all") || (m_action == "fetch_by_query")) {
-    std::shared_ptr<qx::IxPersistableCollection> lst;
-    lst = m_instance->qxNewPersistableCollection(true);
-    m_instance = std::static_pointer_cast<qx::IxPersistable>(lst);
+  } else if ((m_action == QLatin1String("fetch_all"))
+             || (m_action == QLatin1String("fetch_by_query"))) {
+      std::shared_ptr<qx::IxPersistableCollection> lst;
+      lst = m_instance->qxNewPersistableCollection(true);
+      m_instance = std::static_pointer_cast<qx::IxPersistable>(lst);
   }
 
   // Fill data in qx::IxPersistable instance
@@ -470,40 +470,41 @@ bool QxRestApi::QxRestApiImpl::parseRequest(const QString &request) {
 bool QxRestApi::QxRestApiImpl::decodeRequest() {
   // Check if request is a valid JSON object
   if (m_requestJson.isNull()) {
-    buildError(9999, "Request is NULL");
-    return false;
+      buildError(9999, QStringLiteral("Request is NULL"));
+      return false;
   }
   if (!m_requestJson.isObject()) {
-    buildError(9999, "Request is not a JSON object");
-    return false;
+      buildError(9999, QStringLiteral("Request is not a JSON object"));
+      return false;
   }
   QJsonObject request = m_requestJson.toObject();
 
   // Extract request identifier
-  if (request.contains("request_id")) {
-    m_requestId = request.value("request_id").toString();
+  if (request.contains(QStringLiteral("request_id"))) {
+      m_requestId = request.value(QStringLiteral("request_id")).toString();
   }
 
   // Extract action
-  if (request.contains("action")) {
-    m_action = request.value("action").toString();
+  if (request.contains(QStringLiteral("action"))) {
+      m_action = request.value(QStringLiteral("action")).toString();
   } else {
-    buildError(9999, "Parameter 'action' is required and cannot be empty");
-    return false;
+      buildError(9999,
+                 QStringLiteral(
+                     "Parameter 'action' is required and cannot be empty")); return false;
   }
   if (m_action.isEmpty()) {
-    buildError(9999, "Parameter 'action' cannot be empty");
+    buildError(9999, QStringLiteral("Parameter 'action' cannot be empty"));
     return false;
   }
 
   // Extract entity
-  if (request.contains("entity")) {
-    m_entity = request.value("entity").toString();
+  if (request.contains(QStringLiteral("entity"))) {
+        m_entity = request.value(QStringLiteral("entity")).toString();
   }
 
   // Extract data
-  if (request.contains("data")) {
-    m_dataJson = request.value("data");
+  if (request.contains(QStringLiteral("data"))) {
+        m_dataJson = request.value(QStringLiteral("data"));
   } else if (!m_data.isEmpty()) {
     qx_bool bParseOk = qx::cvt::from_string(m_data, m_dataJson);
     if (!bParseOk) {
@@ -513,51 +514,50 @@ bool QxRestApi::QxRestApiImpl::decodeRequest() {
   }
 
   // Extract function
-  if (request.contains("fct")) {
-    qx::cvt::from_json(request.value("fct"), m_function);
+  if (request.contains(QStringLiteral("fct"))) {
+        qx::cvt::from_json(request.value(QStringLiteral("fct")), m_function);
   }
 
   // Extract columns
-  if (request.contains("columns")) {
-    qx::cvt::from_json(request.value("columns"), m_columns);
+  if (request.contains(QStringLiteral("columns"))) {
+        qx::cvt::from_json(request.value(QStringLiteral("columns")), m_columns);
   }
 
   // Extract relations
-  if (request.contains("relations")) {
-    qx::cvt::from_json(request.value("relations"), m_relations);
+  if (request.contains(QStringLiteral("relations"))) {
+        qx::cvt::from_json(request.value(QStringLiteral("relations")), m_relations);
   }
 
   // Extract output format
-  if (request.contains("output_format")) {
-    qx::cvt::from_json(request.value("output_format"), m_outputFormat);
+  if (request.contains(QStringLiteral("output_format"))) {
+        qx::cvt::from_json(request.value(QStringLiteral("output_format")), m_outputFormat);
   }
 
   // Extract database key
-  if (request.contains("database")) {
-    m_database = request.value("database").toString();
+  if (request.contains(QStringLiteral("database"))) {
+        m_database = request.value(QStringLiteral("database")).toString();
   }
 
   // Extract save mode for 'save' action
-  if (request.contains("save_mode")) {
-    QString sSaveMode = request.value("save_mode").toString();
-    bool bSaveModeAsInt = false;
-    int iSaveMode = sSaveMode.toInt(&bSaveModeAsInt);
-    if (bSaveModeAsInt) {
-      m_eSaveMode = static_cast<qx::dao::save_mode::e_save_mode>(iSaveMode);
+  if (request.contains(QStringLiteral("save_mode"))) {
+        QString sSaveMode = request.value(QStringLiteral("save_mode")).toString();
+        bool bSaveModeAsInt = false;
+        int iSaveMode = sSaveMode.toInt(&bSaveModeAsInt);
+        if (bSaveModeAsInt) {
+            m_eSaveMode = static_cast<qx::dao::save_mode::e_save_mode>(iSaveMode);
     } else {
-      m_eSaveMode = ((sSaveMode == "check_insert_or_update")
-                         ? qx::dao::save_mode::e_check_insert_or_update
-                         : ((sSaveMode == "insert_only")
-                                ? qx::dao::save_mode::e_insert_only
-                                : ((sSaveMode == "update_only")
-                                       ? qx::dao::save_mode::e_update_only
-                                       : qx::dao::save_mode::e_none)));
+        m_eSaveMode = ((sSaveMode == QLatin1String("check_insert_or_update"))
+                       ? qx::dao::save_mode::e_check_insert_or_update
+                       : ((sSaveMode == QLatin1String("insert_only"))
+                              ? qx::dao::save_mode::e_insert_only
+                                       : ((sSaveMode == QLatin1String("update_only")) ? qx::dao::save_mode::e_update_only
+                                                              : qx::dao::save_mode::e_none)));
     }
   }
 
   // Extract query
-  if (request.contains("query")) {
-    qx::cvt::from_json(request.value("query"), m_qxQuery);
+  if (request.contains(QStringLiteral("query"))) {
+        qx::cvt::from_json(request.value(QStringLiteral("query")), m_qxQuery);
   } else if (!m_query.isEmpty()) {
     m_qxQuery = qx_query(m_query);
   }
@@ -566,49 +566,53 @@ bool QxRestApi::QxRestApiImpl::decodeRequest() {
 }
 
 bool QxRestApi::QxRestApiImpl::checkRequest() {
-  bool isEntityRequired =
-      ((m_action == "get_meta_data") || (m_action == "call_entity_function"));
-  isEntityRequired =
-      (isEntityRequired || (m_action == "fetch_by_id") ||
-       (m_action == "fetch_all") || (m_action == "fetch_by_query"));
-  isEntityRequired = (isEntityRequired || (m_action == "insert") ||
-                      (m_action == "update") || (m_action == "save"));
-  isEntityRequired =
-      (isEntityRequired || (m_action == "delete_by_id") ||
-       (m_action == "delete_all") || (m_action == "delete_by_query"));
-  isEntityRequired =
-      (isEntityRequired || (m_action == "destroy_by_id") ||
-       (m_action == "destroy_all") || (m_action == "destroy_by_query"));
-  isEntityRequired = (isEntityRequired || (m_action == "exec_custom_query") ||
-                      (m_action == "exist") || (m_action == "validate") ||
-                      (m_action == "count"));
-  if (isEntityRequired && (m_entity.isEmpty())) {
-    buildError(
-        9999,
-        "Parameter 'entity' is required and cannot be empty for action '" +
-            m_action + "'");
-    return false;
+    bool isEntityRequired
+        = ((m_action== QLatin1String("get_meta_data"))
+               || (m_action == QLatin1String("call_entity_function")));
+           isEntityRequired = (isEntityRequired
+                               || (m_action == QLatin1String("fetch_by_id"))
+                        || (m_action ==  QLatin1String("fetch_all"))
+                                   || (m_action == QLatin1String("fetch_by_query")));
+           isEntityRequired
+               = (isEntityRequired || (m_action ==  QLatin1String("insert"))
+                  || (m_action ==  QLatin1String("update")) || (m_action== QLatin1String("save")));
+              isEntityRequired
+               = (isEntityRequired || (m_action ==  QLatin1String("delete_by_id"))
+                     || (m_action == QLatin1String("delete_all"))
+                     || (m_action== QLatin1String("delete_by_query")));
+                 isEntityRequired = (isEntityRequired
+                                     || (m_action ==  QLatin1String("destroy_by_id"))
+                                     || (m_action ==  QLatin1String("destroy_all"))
+                                  || (m_action ==  QLatin1String("destroy_by_query")));
+               isEntityRequired
+                     = (isEntityRequired || (m_action ==  QLatin1String("exec_custom_query")))
+                       || (m_action ==  QLatin1String("exist")) || (m_action ==  QLatin1String("validate")) || (m_action == QLatin1String("count"));
+    if (isEntityRequired && (m_entity.isEmpty()))
+    {
+        buildError(9999,
+                   "Parameter 'entity' is required and cannot be empty for action '" + m_action
+                       + "'");
+        return false;
+    }
+
+    bool isDataRequired = ((m_action == QLatin1String("fetch_by_id"))
+        || (m_action == QLatin1String("delete_by_id")) || (m_action == QLatin1String("destroy_by_id")));
+    isDataRequired = (isDataRequired || (m_action == QLatin1String( "insert"))
+                          || (m_action ==  QLatin1String("update"))
+                          || (m_action == QLatin1String("save")));
+                      isDataRequired = (isDataRequired || (m_action == QLatin1String("exist"))
+                                        || (m_action == QLatin1String("validate")));
+    if (isDataRequired && (m_dataJson.isNull())) {
+        buildError(9999,
+                   "Parameter 'data' is required and cannot be empty for action '" + m_action + "'");
+        return false;
   }
 
-  bool isDataRequired =
-      ((m_action == "fetch_by_id") || (m_action == "delete_by_id") ||
-       (m_action == "destroy_by_id"));
-  isDataRequired = (isDataRequired || (m_action == "insert") ||
-                    (m_action == "update") || (m_action == "save"));
-  isDataRequired =
-      (isDataRequired || (m_action == "exist") || (m_action == "validate"));
-  if (isDataRequired && (m_dataJson.isNull())) {
-    buildError(9999,
-               "Parameter 'data' is required and cannot be empty for action '" +
-                   m_action + "'");
-    return false;
-  }
-
-  bool isQueryRequired =
-      ((m_action == "fetch_by_query") || (m_action == "delete_by_query") ||
-       (m_action == "destroy_by_query"));
-  isQueryRequired = (isQueryRequired || (m_action == "exec_custom_query") ||
-                     (m_action == "call_custom_query"));
+  bool isQueryRequired = ((m_action ==  QLatin1String("fetch_by_query")))
+                         || (m_action == QLatin1String("delete_by_query"))
+                         || (m_action == QLatin1String("destroy_by_query"));
+  isQueryRequired = (isQueryRequired || (m_action == QLatin1String("exec_custom_query")) ||
+                     (m_action == QLatin1String("call_custom_query")));
   if (isQueryRequired && (m_qxQuery.query().isEmpty())) {
     buildError(
         9999, "Parameter 'query' is required and cannot be empty for action '" +
@@ -616,7 +620,7 @@ bool QxRestApi::QxRestApiImpl::checkRequest() {
     return false;
   }
 
-  bool isFunctionRequired = (m_action == "call_entity_function");
+  bool isFunctionRequired = (m_action == QLatin1String("call_entity_function"));
   if (isFunctionRequired && (m_function.isEmpty())) {
     buildError(9999,
                "Parameter 'fct' is required and cannot be empty for action '" +
@@ -632,60 +636,57 @@ bool QxRestApi::QxRestApiImpl::executeAction() {
   m_errorJson = QJsonValue();
 
   try {
-    if (m_action == "count") {
-      m_countResult = 0;
-      m_error =
-          m_instance->qxCount(m_countResult, m_qxQuery, (&m_db), m_relations);
-    } else if (m_action == "fetch_by_id") {
-      QVariant id;
-      m_error = m_instance->qxFetchById(id, m_columns, m_relations, (&m_db));
-    } else if (m_action == "fetch_all") {
-      m_error = m_instance->qxFetchAll(NULL, m_columns, m_relations, (&m_db));
-    } else if (m_action == "fetch_by_query") {
-      m_error = m_instance->qxFetchByQuery(m_qxQuery, NULL, m_columns,
-                                           m_relations, (&m_db));
-    } else if (m_action == "insert") {
-      m_error = m_instance->qxInsert(m_relations, (&m_db));
-    } else if (m_action == "update") {
-      m_error =
-          m_instance->qxUpdate(m_qxQuery, m_columns, m_relations, (&m_db));
-    } else if (m_action == "save") {
-      m_error = m_instance->qxSave(m_relations, (&m_db), m_eSaveMode);
-    } else if (m_action == "delete_by_id") {
-      QVariant id;
-      m_error = m_instance->qxDeleteById(id, (&m_db));
-    } else if (m_action == "delete_all") {
-      m_error = m_instance->qxDeleteAll(&m_db);
-    } else if (m_action == "delete_by_query") {
-      m_error = m_instance->qxDeleteByQuery(m_qxQuery, (&m_db));
-    } else if (m_action == "destroy_by_id") {
-      QVariant id;
-      m_error = m_instance->qxDestroyById(id, (&m_db));
-    } else if (m_action == "destroy_all") {
-      m_error = m_instance->qxDestroyAll(&m_db);
-    } else if (m_action == "destroy_by_query") {
-      m_error = m_instance->qxDestroyByQuery(m_qxQuery, (&m_db));
-    } else if (m_action == "exec_custom_query") {
-      m_error = m_instance->qxExecuteQuery(m_qxQuery, NULL, (&m_db));
-    } else if (m_action == "exist") {
-      QVariant id;
-      m_existResult = m_instance->qxExist(id, (&m_db));
-    } else if (m_action == "validate") {
-      m_validateResult = m_instance->qxValidate();
-    } else if (m_action == "call_custom_query") {
-      m_error = qx::dao::call_query(m_qxQuery, (&m_db));
-    } else if (m_action == "call_entity_function") {
-      if (!callEntityFunction()) {
-        return false;
+      if (m_action == QLatin1String("count")) {
+          m_countResult = 0;
+          m_error = m_instance->qxCount(m_countResult, m_qxQuery, (&m_db), m_relations);
+      } else if (m_action == QLatin1String("fetch_by_id")) {
+          QVariant id;
+          m_error = m_instance->qxFetchById(id, m_columns, m_relations, (&m_db));
+      } else if (m_action == QLatin1String("fetch_all")) {
+          m_error = m_instance->qxFetchAll(NULL, m_columns, m_relations, (&m_db));
+      } else if (m_action == QLatin1String("fetch_by_query")) {
+          m_error = m_instance->qxFetchByQuery(m_qxQuery, NULL, m_columns, m_relations, (&m_db));
+      } else if (m_action == QLatin1String("insert")) {
+          m_error = m_instance->qxInsert(m_relations, (&m_db));
+      } else if (m_action == QLatin1String("update")) {
+          m_error = m_instance->qxUpdate(m_qxQuery, m_columns, m_relations, (&m_db));
+      } else if (m_action == QLatin1String("save")) {
+          m_error = m_instance->qxSave(m_relations, (&m_db), m_eSaveMode);
+      } else if (m_action == QLatin1String("delete_by_id")) {
+          QVariant id;
+          m_error = m_instance->qxDeleteById(id, (&m_db));
+      } else if (m_action == QLatin1String("delete_all")) {
+          m_error = m_instance->qxDeleteAll(&m_db);
+      } else if (m_action == QLatin1String("delete_by_query")) {
+          m_error = m_instance->qxDeleteByQuery(m_qxQuery, (&m_db));
+      } else if (m_action == QLatin1String("destroy_by_id")) {
+          QVariant id;
+          m_error = m_instance->qxDestroyById(id, (&m_db));
+      } else if (m_action == QLatin1String("destroy_all")) {
+          m_error = m_instance->qxDestroyAll(&m_db);
+      } else if (m_action == QLatin1String("destroy_by_query")) {
+          m_error = m_instance->qxDestroyByQuery(m_qxQuery, (&m_db));
+      } else if (m_action == QLatin1String("exec_custom_query")) {
+          m_error = m_instance->qxExecuteQuery(m_qxQuery, NULL, (&m_db));
+      } else if (m_action == QLatin1String("exist")) {
+          QVariant id;
+          m_existResult = m_instance->qxExist(id, (&m_db));
+      } else if (m_action == QLatin1String("validate")) {
+          m_validateResult = m_instance->qxValidate();
+      } else if (m_action == QLatin1String("call_custom_query")) {
+          m_error = qx::dao::call_query(m_qxQuery, (&m_db));
+      } else if (m_action == QLatin1String("call_entity_function")) {
+            if (!callEntityFunction()) {
+              return false;
+          }
+      } else if (m_action == QLatin1String("get_meta_data")) {
+          getMetaData();
+      } else if (m_action == QLatin1String("get_databases")) {
+          getDatabases();
+      } else {
+          buildError(9999, "Unknown action '" + m_action + "'");
+          return false;
       }
-    } else if (m_action == "get_meta_data") {
-      getMetaData();
-    } else if (m_action == "get_databases") {
-      getDatabases();
-    } else {
-      buildError(9999, "Unknown action '" + m_action + "'");
-      return false;
-    }
   } catch (const qx::exception &x) {
     buildError(9999, "An exception occurred executing action '" + m_action +
                          "' : " + QString::number(x.getCode()) + " - " +
@@ -708,53 +709,61 @@ bool QxRestApi::QxRestApiImpl::executeAction() {
 }
 
 bool QxRestApi::QxRestApiImpl::buildResponse() {
-  if (m_action == "get_meta_data") {
-    return m_errorJson.isNull();
-  }
-  if (m_action == "get_databases") {
-    return m_errorJson.isNull();
-  }
+    if (m_action == QLatin1String("get_meta_data")) {
+        return m_errorJson.isNull();
+    }
+    if (m_action == QLatin1String("get_databases")) {
+        return m_errorJson.isNull();
+    }
 
   QJsonObject response;
-  if (m_action == "count") {
-    response.insert("count", static_cast<double>(m_countResult));
-    m_responseJson = response;
-    return true;
-  } else if (m_action == "exist") {
-    response.insert("exist", (m_existResult ? true : false));
-    m_responseJson = response;
-    return true;
-  } else if (m_action == "validate") {
-    response.insert("invalid_values", qx::cvt::to_json(m_validateResult));
-    m_responseJson = response;
-    return true;
-  } else if (m_action == "call_custom_query") {
-    response.insert("query_output", qx::cvt::to_json(m_qxQuery));
-    m_responseJson = response;
-    return true;
-  } else if ((m_action == "delete_all") || (m_action == "delete_by_query")) {
-    response.insert("deleted", true);
-    m_responseJson = response;
-    return true;
-  } else if ((m_action == "destroy_all") || (m_action == "destroy_by_query")) {
-    response.insert("destroyed", true);
-    m_responseJson = response;
-    return true;
-  } else if (m_action == "call_entity_function") {
-    return true;
+  if (m_action == QLatin1String("count")) {
+      response.insert(QStringLiteral("count"), static_cast<double>(m_countResult));
+      m_responseJson = response;
+      return true;
+  } else if (m_action == QLatin1String("exist") )
+      {
+          response.insert(QStringLiteral("exist"), (m_existResult ? true : false));
+          m_responseJson = response;
+          return true;
+      }
+  else if (m_action == QLatin1String("validate") )
+      {
+          response.insert(QStringLiteral("invalid_values"), qx::cvt::to_json(m_validateResult));
+          m_responseJson = response;
+          return true;
+      }
+  else if (m_action == QLatin1String("call_custom_query") )
+      {
+          response.insert(QStringLiteral("query_output"), qx::cvt::to_json(m_qxQuery));
+          m_responseJson = response;
+          return true;
+      }
+  else if ((m_action == QLatin1String("delete_all"))
+           || (m_action == QLatin1String("delete_by_query"))) {
+      response.insert(QStringLiteral("deleted"), true);
+      m_responseJson = response;
+      return true;
+  } else if ((m_action == QLatin1String("destroy_all"))
+             || (m_action == QLatin1String("destroy_by_query"))) {
+      response.insert(QStringLiteral("destroyed"), true);
+      m_responseJson = response;
+      return true;
+  } else if (m_action == QLatin1String("call_entity_function") ){
+      return true;
   }
 
-  QString outputFormat =
-      (m_outputFormat.isEmpty()
-           ? QString()
-           : QString("filter: " + m_outputFormat.join(" | ")));
-  if (outputFormat.isEmpty() &&
-      ((m_action == "insert") || (m_action == "update") ||
-       (m_action == "save"))) {
-    outputFormat = QX_JSON_SERIALIZE_ONLY_ID;
-  } else if (outputFormat.isEmpty() &&
-             ((m_action == "delete_by_id") || (m_action == "destroy_by_id"))) {
-    outputFormat = QX_JSON_SERIALIZE_ONLY_ID;
+  QString outputFormat = (m_outputFormat.isEmpty()
+                              ? QString()
+                              : QString("filter: " + m_outputFormat.join(QStringLiteral(" | "))));
+  if (outputFormat.isEmpty() && ((m_action == QLatin1String("insert"))
+                                  || (m_action == QLatin1String("update"))
+                                      || (m_action == QLatin1String("save")))) {
+      outputFormat = QStringLiteral(QX_JSON_SERIALIZE_ONLY_ID);
+  } else if (outputFormat.isEmpty()
+             && ((m_action== QLatin1String("delete_by_id"))
+                 || (m_action == QLatin1String("destroy_by_id")))) {
+      outputFormat = QStringLiteral(QX_JSON_SERIALIZE_ONLY_ID);
   }
   m_responseJson = m_instance->toJson_(outputFormat);
   return true;
@@ -763,9 +772,9 @@ bool QxRestApi::QxRestApiImpl::buildResponse() {
 bool QxRestApi::QxRestApiImpl::formatResponse() {
   QJsonObject response;
   if (!m_requestId.isEmpty()) {
-    response.insert("request_id", m_requestId);
+      response.insert(QStringLiteral("request_id"), m_requestId);
   }
-  response.insert("data", m_responseJson);
+  response.insert(QStringLiteral("data"), m_responseJson);
   m_responseJson = response;
   return true;
 }
@@ -775,13 +784,12 @@ qx_bool QxRestApi::QxRestApiImpl::callEntityFunction() {
   std::vector<qx::any> anyRequest;
   anyRequest.push_back(m_dataJson);
   if (m_entity.isEmpty()) {
-    buildError(9999,
-               "Unable to call entity function : 'entity' field is empty");
-    return qx_bool(false);
+      buildError(9999, QStringLiteral("Unable to call entity function : 'entity' field is empty"));
+      return qx_bool(false);
   }
   if (m_function.isEmpty()) {
-    buildError(9999, "Unable to call entity function : 'fct' field is empty");
-    return qx_bool(false);
+      buildError(9999, QStringLiteral("Unable to QStringLiteral(call entity function : 'fct' field is empt)y"));
+      return qx_bool(false);
   }
   if (!qx::QxClassX::getFctStatic(m_entity, m_function, true)) {
     buildError(9999,
@@ -803,34 +811,31 @@ qx_bool QxRestApi::QxRestApiImpl::callEntityFunction() {
 void QxRestApi::QxRestApiImpl::getMetaData() {
   QJsonObject response;
   QxClassX::registerAllClasses(true);
-  if (m_entity == "*") {
-    QJsonArray entities;
-    QxCollection<QString, IxClass *> *pAllClasses = QxClassX::getAllClasses();
-    if (!pAllClasses) {
-      buildError(9999, "Unable to access to registered classes");
-      return;
-    }
-    for (auto itr = pAllClasses->begin(); itr != pAllClasses->end(); ++itr) {
-      IxClass *pClass = itr->second;
-      if (!pClass || !pClass->implementIxPersistable()) {
-        continue;
+  if (m_entity == QLatin1String("*")) {
+      QJsonArray entities;
+      QxCollection<QString, IxClass *> *pAllClasses = QxClassX::getAllClasses();
+      if (!pAllClasses) {
+          buildError(9999, QStringLiteral("Unable to access to registered classes")); return;
       }
-      entities.append(getMetaData(pClass));
-    }
-    response.insert("entities", entities);
+      for (auto itr = pAllClasses->begin(); itr != pAllClasses->end(); ++itr) {
+          IxClass *pClass = itr->second;
+          if (!pClass || !pClass->implementIxPersistable()) {
+              continue;
+          }
+          entities.append(getMetaData(pClass));
+      }
+      response.insert(QStringLiteral("entities"),  entities);
   } else {
-    IxClass *pClass = QxClassX::getClass(m_entity);
-    if (!pClass) {
-      buildError(9999, "Entity not found : " + m_entity);
-      return;
-    }
-    if (!pClass->implementIxPersistable()) {
-      buildError(9999,
-                 "Entity doesn't implement qx::IxPersistable interface : " +
-                     m_entity);
-      return;
-    }
-    response.insert("entity", getMetaData(pClass));
+      IxClass *pClass = QxClassX::getClass(m_entity);
+      if (!pClass) {
+          buildError(9999, "Entity not found : " + m_entity);
+          return;
+      }
+      if (!pClass->implementIxPersistable()) {
+          buildError(9999, "Entity doesn't implement qx::IxPersistable interface : " + m_entity);
+          return;
+      }
+      response.insert(QStringLiteral("entity"), getMetaData(pClass));
   }
   m_responseJson = response;
 }
@@ -838,23 +843,22 @@ void QxRestApi::QxRestApiImpl::getMetaData() {
 QJsonValue QxRestApi::QxRestApiImpl::getMetaData(IxClass *pClass) {
   // Fill data about entity
   QJsonObject entity;
-  entity.insert("key", pClass->getKey());
-  entity.insert("name", pClass->getName());
-  entity.insert("description", pClass->getDescription());
-  entity.insert("version", static_cast<int>(pClass->getVersion()));
-  entity.insert(
-      "base_entity",
-      (pClass->getBaseClass() ? pClass->getBaseClass()->getKey() : QString()));
+  entity.insert(QStringLiteral("key"), pClass->getKey());
+  entity.insert(QStringLiteral("name"), pClass->getName());
+  entity.insert(QStringLiteral("description"), pClass->getDescription());
+  entity.insert(QStringLiteral("version"), static_cast<int>(pClass->getVersion()));
+  entity.insert(QStringLiteral("base_entity"),
+                (pClass->getBaseClass() ? pClass->getBaseClass()->getKey() : QString()));
 
   // Fill primary key information
   IxDataMember *pDataMemberId = pClass->getId();
   QJsonObject primaryKey;
   if (pDataMemberId) {
-    primaryKey.insert("key", pDataMemberId->getKey());
-    primaryKey.insert("description", pDataMemberId->getDescription());
-    primaryKey.insert("type", pDataMemberId->getType());
+      primaryKey.insert(QStringLiteral("key"), pDataMemberId->getKey());
+      primaryKey.insert(QStringLiteral("description"), pDataMemberId->getDescription());
+      primaryKey.insert(QStringLiteral("type"), pDataMemberId->getType());
   }
-  entity.insert("entity_id", primaryKey);
+  entity.insert(QStringLiteral("entity_id"), primaryKey);
 
   // Fill list of properties
   QJsonArray properties;
@@ -870,13 +874,13 @@ QJsonValue QxRestApi::QxRestApiImpl::getMetaData(IxClass *pClass) {
         continue;
       }
       QJsonObject property;
-      property.insert("key", p->getKey());
-      property.insert("description", p->getDescription());
-      property.insert("type", p->getType());
+      property.insert(QStringLiteral("key"), p->getKey());
+      property.insert(QStringLiteral("description"), p->getDescription());
+      property.insert(QStringLiteral("type"), p->getType());
       properties.append(property);
     }
   }
-  entity.insert("properties", properties);
+  entity.insert(QStringLiteral("properties"), properties);
 
   // Fill list of relationships
   QJsonArray relations;
@@ -891,21 +895,19 @@ QJsonValue QxRestApi::QxRestApiImpl::getMetaData(IxClass *pClass) {
         continue;
       }
       QJsonObject relation;
-      relation.insert("key", p->getKey());
-      relation.insert("description", p->getDescription());
-      relation.insert("type", p->getType());
-      relation.insert("type_relation", pRelation->getDescription());
-      relation.insert("target",
-                      (pRelation->getClass() ? pRelation->getClass()->getKey()
-                                             : QString()));
+      relation.insert(QStringLiteral("key"), p->getKey());
+      relation.insert(QStringLiteral("description"), p->getDescription());
+      relation.insert(QStringLiteral("type"), p->getType());
+      relation.insert(QStringLiteral("type_relation"), pRelation->getDescription());
+      relation.insert(QStringLiteral("target"),
+                      (pRelation->getClass() ? pRelation->getClass()->getKey() : QString()));
       relations.append(relation);
     }
   }
-  entity.insert("relations", relations);
+  entity.insert(QStringLiteral("relations"), relations);
 
   return entity;
 }
-
 void QxRestApi::QxRestApiImpl::getDatabases() {}
 
 #endif // _QX_NO_JSON

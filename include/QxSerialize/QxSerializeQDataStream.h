@@ -66,9 +66,14 @@ inline QByteArray to_byte_array(const T & obj, void * owner = NULL, unsigned int
    QByteArray ba; QString err;
    QDataStream stream((& ba), QIODevice::WriteOnly);
    stream << (quint32)(9438);
-   try { stream << obj; }
-   catch (const std::exception & e) { err = QString("serialization error '%ERR%'").replace("%ERR%", e.what()); }
-   catch (...) { err = QString("serialization error '%ERR%'").replace("%ERR%", "unknown error"); }
+   try { stream << obj;
+   } catch (const std::exception &e) {
+       err = QStringLiteral("serialization error '%ERR%'").replace(QLatin1String("%ERR%"), e.what());
+   } catch (...) {
+       err = QStringLiteral("serialization error '%ERR%'")
+                 .replace(QLatin1String("%ERR%"), QLatin1String("unknown error"));
+
+   }
    if (! err.isEmpty()) { qDebug("[QxOrm] qx::serialization::qt::to_byte_array() : %s", qPrintable(err)); ba.clear(); }
    return ba;
 }
@@ -78,13 +83,20 @@ inline qx_bool from_byte_array(T & obj, const QByteArray & data, unsigned int fl
 {
    Q_UNUSED(flags);
    qx_bool result = false;
-   if (data.isEmpty()) { return qx_bool(false, "input binary data is empty"); }
+   if (data.isEmpty()) {
+       return qx_bool(false, QStringLiteral("input binary data is empty"));
+   }
    QDataStream stream(data);
    quint32 magic = 0; stream >> magic;
-   if (magic != 9438) { return qx_bool(false, "input binary data is not valid"); }
-   try { stream >> obj; result = true; }
-   catch (const std::exception & e) { result.setDesc(QString("deserialization error '%ERR%'").replace("%ERR%", e.what())); }
-   catch (...) { result.setDesc(QString("deserialization error '%ERR%'").replace("%ERR%", "unknown error")); }
+   if (magic != 9438) {
+       return qx_bool(false, QStringLiteral("input binary data is not valid"));
+   }
+   try { stream >> obj; result = true;
+   } catch (const std::exception &e) { result.setDesc(QString(QStringLiteral("deserialization error '%ERR%'")).replace(QLatin1String("%ERR%"), e.what()));
+   } catch (...) {
+       result.setDesc((QString)QStringLiteral("deserialization error '%ERR%'")
+                          .replace(QLatin1String("%ERR%"), QLatin1String("unknown error")));
+   }
    if (! result.getDesc().isEmpty()) { QString msg = result.getDesc(); qDebug("[QxOrm] qx::serialization::qt::from_byte_array() : %s", qPrintable(msg)); }
    return result;
 }

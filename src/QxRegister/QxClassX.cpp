@@ -47,7 +47,8 @@ QX_DLL_EXPORT_QX_SINGLETON_CPP(qx::QxClassX)
 
 namespace qx {
 
-QxClassX::QxClassX() : QxSingleton<QxClassX>("qx::QxClassX")
+QxClassX::QxClassX()
+    : QxSingleton<QxClassX>(QStringLiteral("qx::QxClassX"))
 {
    initSqlTypeByClassName();
    initValidatorMessage();
@@ -126,7 +127,7 @@ IxDataMember * QxClassX::getDataMember(const QString & sClassKey, const QString 
       pClass = QxClassX::getClass(sBaseClassKey);
       pDataX = QxClassX::getDataMemberX(sBaseClassKey);
       pData = ((pDataX && pDataX->exist(sDataKey)) ? pDataX->get(sDataKey) : NULL);
-      sBaseClassKey = ((pClass && pClass->getBaseClass()) ? pClass->getBaseClass()->getKey() : QString(""));
+      sBaseClassKey = ((pClass && pClass->getBaseClass()) ? pClass->getBaseClass()->getKey() : QLatin1String(""));
    } while (bRecursive && ! pData && pClass && ! sBaseClassKey.isEmpty() && ! pClass->isFinalClass());
 
    return pData;
@@ -141,7 +142,8 @@ IxFunction * QxClassX::getFctMember(const QString & sClassKey, const QString & s
       pClass = QxClassX::getClass(sBaseClassKey);
       pFctX = QxClassX::getFctMemberX(sBaseClassKey);
       pFct = ((pFctX && pFctX->exist(sFctKey)) ? pFctX->getByKey(sFctKey).get() : NULL);
-      sBaseClassKey = ((pClass && pClass->getBaseClass()) ? pClass->getBaseClass()->getKey() : QString(""));
+      sBaseClassKey = ((pClass && pClass->getBaseClass()) ? pClass->getBaseClass()->getKey()
+                                                          : QLatin1String(""));
    } while (bRecursive && ! pFct && pClass && ! sBaseClassKey.isEmpty() && ! pClass->isFinalClass());
 
    return pFct;
@@ -156,7 +158,8 @@ IxFunction * QxClassX::getFctStatic(const QString & sClassKey, const QString & s
       pClass = QxClassX::getClass(sBaseClassKey);
       pFctX = QxClassX::getFctStaticX(sBaseClassKey);
       pFct = ((pFctX && pFctX->exist(sFctKey)) ? pFctX->getByKey(sFctKey).get() : NULL);
-      sBaseClassKey = ((pClass && pClass->getBaseClass()) ? pClass->getBaseClass()->getKey() : QString(""));
+      sBaseClassKey = ((pClass && pClass->getBaseClass()) ? pClass->getBaseClass()->getKey()
+                                                                : QLatin1String(""));
    } while (bRecursive && ! pFct && pClass && ! sBaseClassKey.isEmpty() && ! pClass->isFinalClass());
 
    return pFct;
@@ -243,13 +246,18 @@ QString QxClassX::dumpAllClasses()
 {
    QxClassX::registerAllClasses(true);
    QxCollection<QString, IxClass *> * pAllClasses = QxClassX::getAllClasses();
-   if (! pAllClasses) { qAssert(false); return ""; }
+   if (! pAllClasses) {
+        qAssert(false); return QLatin1String(""); }
 
    QString sDump;
    long lCount = pAllClasses->count();
    qDebug("[QxOrm] start dump all registered classes (%ld)", lCount);
    for (auto itr = pAllClasses->begin(); itr != pAllClasses->end(); ++itr)
-   { IxClass * pClass = itr->second; if (pClass) { sDump += pClass->dumpClass(); } }
+   {
+        IxClass *pClass = itr->second;
+        if (pClass) {
+            sDump += pClass->dumpClass();
+        } }
    qDebug("[QxOrm] %s", "end dump all registered classes");
 
    return sDump;
@@ -259,72 +267,85 @@ QString QxClassX::dumpSqlSchema()
 {
    qDebug("[QxOrm] qx::QxClassX::dumpSqlSchema() : %s", "be careful with this function, it's just an example and tested only with SQLite database, so it's strongly recommended to write your own function to create your SQL schema");
    QxCollection<QString, IxClass *> * pAllClasses = QxClassX::getAllClasses();
-   if (! pAllClasses) { qAssert(false); return ""; }
+   if (! pAllClasses) {
+        qAssert(false);
+        return QLatin1String(""); }
    QString sql; long lSqlCount = 0;
 
    for (long k = 0; k < pAllClasses->count(); k++)
    {
       IxClass * pClass = pAllClasses->getByIndex(k);
-      if (! pClass) { continue; }
+      if (! pClass) { continue;
+      }
 
       // If the class is a parameter or a service from 'QxService' module, it's not a persistent class
-      if (pClass->isKindOf("qx::service::IxParameter") || pClass->isKindOf("qx::service::IxService")) { continue; }
+      if (
+          pClass->isKindOf(QStringLiteral("qx::service::IxParameter"))
+          || pClass->isKindOf(QStringLiteral("qx::service::IxService"))) { continue; }
 
-      // ----
-      // Here, you can filter other classes using property bag (meta-data), for example :
-      //    QString sProp = pClass->getPropertyBag("NOT_A_DATABASE_OBJECT").toString();
-      //    if (sProp == "1") { continue; }
-      // ----
+                     // ----
+                     // Here, you can filter other classes using property bag (meta-data), for example :
+                     //    QString sProp = pClass->getPropertyBag("NOT_A_DATABASE_OBJECT").toString();
+                     //    if (sProp == "1") { continue; }
+                     // ----
 
-      // Get the version of the class : if (version = 0) then 'CREATE TABLE', else if (version > 0) then 'ALTER TABLE'
-      long lVersion = pClass->getVersion();
-      bool bCreateTable = (lVersion <= 0);
-      sql += (bCreateTable ? "CREATE TABLE " : "ALTER TABLE ");
-      sql += pClass->getName() + " ";
-      sql += (bCreateTable ? "(" : "ADD (");
-      int iSqlCountRef = sql.count();
+                     // Get the version of the class : if (version = 0) then 'CREATE TABLE', else if (version > 0) then 'ALTER TABLE'
+                     long lVersion
+          = pClass->getVersion();
+          bool bCreateTable = (lVersion <= 0);
+          sql += (bCreateTable ? QStringLiteral("CREATE TABLE ") : QStringLiteral("ALTER TABLE "));
+          sql += pClass->getName() + " ";
+          sql += (bCreateTable ? QStringLiteral("(") : QStringLiteral("ADD ("));
+          int iSqlCountRef = sql.count();
 
-      // Get the primary key (id) of table, all columns into table, and other parameters associated to table
-      IxDataMember * pId = pClass->getId();
-      IxDataMemberX * pDataMemberX = pClass->getDataMemberX();
-      QxSoftDelete oSoftDelete = pClass->getSoftDelete();
+          // Get the primary key (id) of table, all columns into table, and other parameters associated to table
+          IxDataMember *pId = pClass->getId();
+          IxDataMemberX *pDataMemberX = pClass->getDataMemberX();
+          QxSoftDelete oSoftDelete = pClass->getSoftDelete();
 
-      // Insert primary key (id) to SQL schema
-      if (pId && (bCreateTable || (pId->getVersion() >= lVersion)))
-      { sql += pId->getSqlNameAndTypeAndParams(", ") + ", "; qAssert(! pId->getSqlType().isEmpty()); }
+          // Insert primary key (id) to SQL schema
+          if (pId && (bCreateTable || (pId->getVersion() >= lVersion))) {
+              sql += pId->getSqlNameAndTypeAndParams(QStringLiteral(", ")) + QStringLiteral(", ");
+           qAssert(!pId->getSqlType().isEmpty());
+          }
 
-      // Insert all columns to SQL schema
-      for (long l = 0; (pDataMemberX && (l < pDataMemberX->count_WithDaoStrategy())); l++)
-      {
-         IxDataMember * p = pDataMemberX->get_WithDaoStrategy(l);
-         if (isValid_DataMember(p) && (p != pId) && (bCreateTable || (p->getVersion() >= lVersion)))
-         { sql += p->getSqlNameAndTypeAndParams(", ") + ", "; qAssert(! p->getSqlType().isEmpty()); }
+          // Insert all columns to SQL schema
+          for (long l = 0; (pDataMemberX && (l < pDataMemberX->count_WithDaoStrategy())); l++) {
+              IxDataMember *p = pDataMemberX->get_WithDaoStrategy(l);
+              if (isValid_DataMember(p) && (p != pId)
+                  && (bCreateTable || (p->getVersion() >= lVersion))) {
+                  sql += p->getSqlNameAndTypeAndParams( QStringLiteral(", ") )+ QStringLiteral(", ");
+                  qAssert(!p->getSqlType().isEmpty());
+              }
 
-         // ----
-         // Here, you can use property bag (meta-data) to add some SQL features, for example :
-         //    QString sProp = p->getPropertyBag("INDEX").toString();
-         //    if (sProp == "1") { sql += "CREATE INDEX" + etc...; }
-         // ----
-      }
+              // ----
+              // Here, you can use property bag (meta-data) to add some SQL features, for example :
+              //    QString sProp = p->getPropertyBag("INDEX").toString();
+              //    if (sProp == "1") { sql += "CREATE INDEX" + etc...; }
+              // ----
+          }
 
-      // Insert soft delete behaviour to SQL schema
-      if (bCreateTable && ! oSoftDelete.isEmpty())
-      { sql += oSoftDelete.buildSqlQueryToCreateTable() + ", "; }
+          // Insert soft delete behaviour to SQL schema
+          if (bCreateTable && !oSoftDelete.isEmpty()) {
+              sql += oSoftDelete.buildSqlQueryToCreateTable() + ", ";
+          }
 
-      // Insert all relations to SQL schema
-      for (long l = 0; (pDataMemberX && (l < pDataMemberX->count_WithDaoStrategy())); l++)
-      {
-         IxDataMember * p = pDataMemberX->get_WithDaoStrategy(l);
-         QxSqlRelationParams params(0, 0, (& sql), NULL, NULL, NULL);
-         if (isValid_SqlRelation(p) && (p != pId) && (bCreateTable || (p->getVersion() >= lVersion)))
-         { p->getSqlRelation()->createTable(params); }
-      }
+          // Insert all relations to SQL schema
+          for (long l = 0; (pDataMemberX && (l < pDataMemberX->count_WithDaoStrategy())); l++) {
+              IxDataMember *p = pDataMemberX->get_WithDaoStrategy(l);
+              QxSqlRelationParams params(0, 0, (&sql), NULL, NULL, NULL);
+              if (isValid_SqlRelation(p) && (p != pId)
+                  && (bCreateTable || (p->getVersion() >= lVersion))) {
+                  p->getSqlRelation()->createTable(params);
+              }
+          }
 
-      // Terminate SQL schema for current class
-      bool bAddBracket = (sql.count() != iSqlCountRef);
-      sql = sql.left(sql.count() - 2); // Remove last ", "
-      if (bAddBracket) { sql += ")\n"; }
-      else { sql += "\n"; }
+          // Terminate SQL schema for current class
+          bool bAddBracket
+          = (sql.count() != iSqlCountRef);
+          sql = sql.left(sql.count() - 2); // Remove last ", "
+          if (bAddBracket) { sql += QStringLiteral(")\n"); }
+          else {sql += QStringLiteral("\n"); }
       lSqlCount++;
 
       // Create extra-table from relations (for example, many-to-many relation needs an extra-table)
@@ -363,50 +384,51 @@ void QxClassX::initSqlTypeByClassName()
 {
    m_lstSqlTypeByClassName.clear();
 
-   m_lstSqlTypeByClassName.insert("bool", "SMALLINT");
-   m_lstSqlTypeByClassName.insert("qx_bool", "SMALLINT");
-   m_lstSqlTypeByClassName.insert("char", "SMALLINT");
-   m_lstSqlTypeByClassName.insert("short", "SMALLINT");
-   m_lstSqlTypeByClassName.insert("int", "INTEGER");
-   m_lstSqlTypeByClassName.insert("long", "INTEGER");
-   m_lstSqlTypeByClassName.insert("long long", "INTEGER");
-   m_lstSqlTypeByClassName.insert("float", "FLOAT");
-   m_lstSqlTypeByClassName.insert("double", "FLOAT");
-   m_lstSqlTypeByClassName.insert("long double", "FLOAT");
-   m_lstSqlTypeByClassName.insert("unsigned short", "SMALLINT");
-   m_lstSqlTypeByClassName.insert("unsigned int", "INTEGER");
-   m_lstSqlTypeByClassName.insert("unsigned long", "INTEGER");
-   m_lstSqlTypeByClassName.insert("unsigned long long", "INTEGER");
-   m_lstSqlTypeByClassName.insert("std::string", "TEXT");
-   m_lstSqlTypeByClassName.insert("std::wstring", "TEXT");
-   m_lstSqlTypeByClassName.insert("QString", "TEXT");
-   m_lstSqlTypeByClassName.insert("QVariant", "TEXT");
-   m_lstSqlTypeByClassName.insert("QUuid", "TEXT");
-   m_lstSqlTypeByClassName.insert("QDate", "DATE");
-   m_lstSqlTypeByClassName.insert("QTime", "TIME");
-   m_lstSqlTypeByClassName.insert("QDateTime", "TIMESTAMP");
-   m_lstSqlTypeByClassName.insert("QByteArray", "BLOB");
-   m_lstSqlTypeByClassName.insert("qx::QxDateNeutral", "TEXT");
-   m_lstSqlTypeByClassName.insert("qx::QxTimeNeutral", "TEXT");
-   m_lstSqlTypeByClassName.insert("qx::QxDateTimeNeutral", "TEXT");
+   m_lstSqlTypeByClassName.insert(QStringLiteral("bool"), QStringLiteral("SMALLINT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("qx_bool"), QStringLiteral("SMALLINT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("char"), QStringLiteral("SMALLINT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("short"), QStringLiteral("SMALLINT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("int"), QStringLiteral("INTEGER"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("long"), QStringLiteral("INTEGER"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("long long"), QStringLiteral("INTEGER"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("float"), QStringLiteral("FLOAT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("double"), QStringLiteral("FLOAT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("long double"), QStringLiteral("FLOAT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("unsigned short"), QStringLiteral("SMALLINT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("unsigned int"), QStringLiteral("INTEGER"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("unsigned long"), QStringLiteral("INTEGER"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("unsigned long long"), QStringLiteral("INTEGER"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("std::string"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("std::wstring"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QString"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QVariant"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QUuid"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QDate"), QStringLiteral("DATE"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QTime"), QStringLiteral("TIME"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QDateTime"), QStringLiteral("TIMESTAMP"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("QByteArray"), QStringLiteral("BLOB"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("qx::QxDateNeutral"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("qx::QxTimeNeutral"), QStringLiteral("TEXT"));
+   m_lstSqlTypeByClassName.insert(QStringLiteral("qx::QxDateTimeNeutral"), QStringLiteral("TEXT"));
 }
 
 void QxClassX::initValidatorMessage()
 {
    m_lstValidatorMessage.clear();
 
-   m_lstValidatorMessage.insert("not_null", "value '%NAME%' cannot be null");
-   m_lstValidatorMessage.insert("not_empty", "value '%NAME%' cannot be empty");
-   m_lstValidatorMessage.insert("min_value", "value '%NAME%' must be greater than or equal to '%CONSTRAINT%'");
-   m_lstValidatorMessage.insert("max_value", "value '%NAME%' must be lesser than or equal to '%CONSTRAINT%'");
-   m_lstValidatorMessage.insert("min_length", "size of '%NAME%' must be greater than or equal to '%CONSTRAINT%' characters");
-   m_lstValidatorMessage.insert("max_length", "size of '%NAME%' must be lesser than or equal to '%CONSTRAINT%' characters");
-   m_lstValidatorMessage.insert("date_past", "date '%NAME%' must be in the past");
-   m_lstValidatorMessage.insert("date_future", "date '%NAME%' must be in the future");
-   m_lstValidatorMessage.insert("min_decimal", "value '%NAME%' must be greater than or equal to '%CONSTRAINT%'");
-   m_lstValidatorMessage.insert("max_decimal", "value '%NAME%' must be lesser than or equal to '%CONSTRAINT%'");
-   m_lstValidatorMessage.insert("regular_expression", "value '%NAME%' doesn't match the regular expression '%CONSTRAINT%'");
-   m_lstValidatorMessage.insert("e_mail", "value '%NAME%' is not a valid e-mail");
+
+   m_lstValidatorMessage.insert(QStringLiteral("not_null"), QStringLiteral("value '%NAME%' cannot be null"));
+   m_lstValidatorMessage.insert(QStringLiteral("not_empty"), QStringLiteral("value '%NAME%' cannot be empty"));
+   m_lstValidatorMessage.insert(QStringLiteral("min_value"), QStringLiteral("value '%NAME%' must be greater than or equal to '%CONSTRAINT%'"));
+   m_lstValidatorMessage.insert(QStringLiteral("max_value"), QStringLiteral("value '%NAME%' must be lesser than or equal to '%CONSTRAINT%'"));
+   m_lstValidatorMessage.insert(QStringLiteral("min_length"), QStringLiteral("size of '%NAME%' must be greater than or equal to '%CONSTRAINT%' characters"));
+   m_lstValidatorMessage.insert(QStringLiteral("max_length"), QStringLiteral("size of '%NAME%' must be lesser than or equal to '%CONSTRAINT%' characters"));
+   m_lstValidatorMessage.insert(QStringLiteral("date_past"), QStringLiteral("date '%NAME%' must be in the past"));
+   m_lstValidatorMessage.insert(QStringLiteral("date_future"), QStringLiteral("date '%NAME%' must be in the future"));
+   m_lstValidatorMessage.insert(QStringLiteral("min_decimal"), QStringLiteral("value '%NAME%' must be greater than or equal to '%CONSTRAINT%'"));
+   m_lstValidatorMessage.insert(QStringLiteral("max_decimal"), QStringLiteral("value '%NAME%' must be lesser than or equal to '%CONSTRAINT%'"));
+   m_lstValidatorMessage.insert(QStringLiteral("regular_expression"), QStringLiteral("value '%NAME%' doesn't match the regular expression '%CONSTRAINT%'"));
+   m_lstValidatorMessage.insert(QStringLiteral("e_mail"), QStringLiteral("value '%NAME%' is not a valid e-mail"));
 }
 
 namespace trait {

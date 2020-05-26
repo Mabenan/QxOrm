@@ -41,7 +41,8 @@
  * \file IxParameter.h
  * \author Lionel Marty
  * \ingroup QxService
- * \brief Common interface for all parameters transfered by QxService module of QxOrm library
+ * \brief Common interface for all parameters transfered by QxService module of
+ * QxOrm library
  */
 
 #include <QtCore/qdatastream.h>
@@ -58,41 +59,49 @@ class IxParameter;
 } // namespace service
 } // namespace qx
 
-QX_DLL_EXPORT QDataStream & operator<< (QDataStream & stream, const qx::service::IxParameter & t) QX_USED;
-QX_DLL_EXPORT QDataStream & operator>> (QDataStream & stream, qx::service::IxParameter & t) QX_USED;
+QX_DLL_EXPORT QDataStream &
+operator<<(QDataStream &stream, const qx::service::IxParameter &t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator>>(QDataStream &stream,
+                                      qx::service::IxParameter &t) QX_USED;
 
 namespace qx {
 namespace service {
 
 /*!
  * \ingroup QxService
- * \brief qx::service::IxParameter : common interface for all parameters transfered by QxService module of QxOrm library
+ * \brief qx::service::IxParameter : common interface for all parameters
+ * transfered by QxService module of QxOrm library
  *
- * <a href="https://www.qxorm.com/qxorm_en/tutorial_2.html" target="_blank">Click here to access to a tutorial to explain how to work with QxService module.</a>
+ * <a href="https://www.qxorm.com/qxorm_en/tutorial_2.html"
+ * target="_blank">Click here to access to a tutorial to explain how to work
+ * with QxService module.</a>
  */
-class QX_DLL_EXPORT IxParameter
-{
+class QX_DLL_EXPORT IxParameter {
 
-   friend QX_DLL_EXPORT QDataStream & ::operator<< (QDataStream & stream, const qx::service::IxParameter & t);
-   friend QX_DLL_EXPORT QDataStream & ::operator>> (QDataStream & stream, qx::service::IxParameter & t);
+  friend QX_DLL_EXPORT
+      QDataStream & ::operator<<(QDataStream &stream,
+                                 const qx::service::IxParameter &t);
+  friend QX_DLL_EXPORT QDataStream & ::operator>>(QDataStream &stream,
+                                                  qx::service::IxParameter &t);
 
 public:
+  IxParameter();
+  virtual ~IxParameter();
 
-   IxParameter();
-   virtual ~IxParameter();
-
-   // Need to override these methods only if you are using 'qx::service::QxConnect::serialization_qt' type (based on QDataStream) or 'qx::service::QxConnect::serialization_json' type (based on QJson engine)
-   // You can use QX_SERVICE_IX_PARAMETER_SERIALIZATION_HPP and QX_SERVICE_IX_PARAMETER_SERIALIZATION_CPP macro to override
-   virtual void registerClass() const;
-   virtual QString getClassName() const;
-   virtual void save(QDataStream & stream) const;
-   virtual void load(QDataStream & stream);
+  // Need to override these methods only if you are using
+  // 'qx::service::QxConnect::serialization_qt' type (based on QDataStream) or
+  // 'qx::service::QxConnect::serialization_json' type (based on QJson engine)
+  // You can use QX_SERVICE_IX_PARAMETER_SERIALIZATION_HPP and
+  // QX_SERVICE_IX_PARAMETER_SERIALIZATION_CPP macro to override
+  virtual void registerClass() const;
+  virtual QString getClassName() const;
+  virtual void save(QDataStream &stream) const;
+  virtual void load(QDataStream &stream);
 
 #ifndef _QX_NO_JSON
-   virtual QJsonValue saveToJson() const;
-   virtual qx_bool loadFromJson(const QJsonValue & val);
+  virtual QJsonValue saveToJson() const;
+  virtual qx_bool loadFromJson(const QJsonValue &val);
 #endif // _QX_NO_JSON
-
 };
 
 typedef std::shared_ptr<IxParameter> IxParameter_ptr;
@@ -102,43 +111,55 @@ typedef std::shared_ptr<IxParameter> IxParameter_ptr;
 
 QX_REGISTER_INTERNAL_HELPER_HPP(QX_DLL_EXPORT, qx::service::IxParameter, 0)
 
-#define QX_SERVICE_IX_PARAMETER_QDATASTREAM_HPP(className) \
-public: \
-virtual void save(QDataStream & stream) const; \
-virtual void load(QDataStream & stream);
+#define QX_SERVICE_IX_PARAMETER_QDATASTREAM_HPP(className)                     \
+public:                                                                        \
+  virtual void save(QDataStream &stream) const;                                \
+  virtual void load(QDataStream &stream);
 
-#define QX_SERVICE_IX_PARAMETER_QDATASTREAM_CPP(className) \
-void className::save(QDataStream & stream) const { qx::QxSerializeRegistered< className >::save(stream, (* this)); } \
-void className::load(QDataStream & stream) { qx::QxSerializeRegistered< className >::load(stream, (* this)); }
+#define QX_SERVICE_IX_PARAMETER_QDATASTREAM_CPP(className)                     \
+  void className::save(QDataStream &stream) const {                            \
+    qx::QxSerializeRegistered<className>::save(stream, (*this));               \
+  }                                                                            \
+  void className::load(QDataStream &stream) {                                  \
+    qx::QxSerializeRegistered<className>::load(stream, (*this));               \
+  }
 
 #ifndef _QX_NO_JSON
 
-#define QX_SERVICE_IX_PARAMETER_QJSON_HPP(className) \
-public: \
-virtual QJsonValue saveToJson() const; \
-virtual qx_bool loadFromJson(const QJsonValue & val);
+#define QX_SERVICE_IX_PARAMETER_QJSON_HPP(className)                           \
+public:                                                                        \
+  virtual QJsonValue saveToJson() const;                                       \
+  virtual qx_bool loadFromJson(const QJsonValue &val);
 
-#define QX_SERVICE_IX_PARAMETER_QJSON_CPP(className) \
-QJsonValue className::saveToJson() const { return qx::cvt::detail::QxSerializeJsonRegistered< className >::save((* this), ""); } \
-qx_bool className::loadFromJson(const QJsonValue & val) { return qx::cvt::detail::QxSerializeJsonRegistered< className >::load(val, (* this), ""); }
+#define QX_SERVICE_IX_PARAMETER_QJSON_CPP(className)                           \
+  QJsonValue className::saveToJson() const {                                   \
+    return qx::cvt::detail::QxSerializeJsonRegistered<className>::save(        \
+        (*this), QLatin1String(""));                                           \
+  }                                                                            \
+  qx_bool className::loadFromJson(const QJsonValue &val) {                     \
+    return qx::cvt::detail::QxSerializeJsonRegistered<className>::load(        \
+        val, (*this), QLatin1String(""));                                      \
+  }
 
-#else // _QX_NO_JSON
+#else                                                // _QX_NO_JSON
 #define QX_SERVICE_IX_PARAMETER_QJSON_HPP(className) /* Nothing */
 #define QX_SERVICE_IX_PARAMETER_QJSON_CPP(className) /* Nothing */
-#endif // _QX_NO_JSON
+#endif                                               // _QX_NO_JSON
 
-#define QX_SERVICE_IX_PARAMETER_SERIALIZATION_HPP(className) \
-QX_SERVICE_IX_PARAMETER_QDATASTREAM_HPP(className) \
-QX_SERVICE_IX_PARAMETER_QJSON_HPP(className) \
-public: \
-virtual void registerClass() const; \
-virtual QString getClassName() const;
+#define QX_SERVICE_IX_PARAMETER_SERIALIZATION_HPP(className)                   \
+  QX_SERVICE_IX_PARAMETER_QDATASTREAM_HPP(className)                           \
+  QX_SERVICE_IX_PARAMETER_QJSON_HPP(className)                                 \
+public:                                                                        \
+  virtual void registerClass() const;                                          \
+  virtual QString getClassName() const;
 
-#define QX_SERVICE_IX_PARAMETER_SERIALIZATION_CPP(className) \
-QX_SERVICE_IX_PARAMETER_QDATASTREAM_CPP(className) \
-QX_SERVICE_IX_PARAMETER_QJSON_CPP(className) \
-void className::registerClass() const { qx::QxClass< className >::getSingleton(); } \
-QString className::getClassName() const { return #className; }
+#define QX_SERVICE_IX_PARAMETER_SERIALIZATION_CPP(className)                   \
+  QX_SERVICE_IX_PARAMETER_QDATASTREAM_CPP(className)                           \
+  QX_SERVICE_IX_PARAMETER_QJSON_CPP(className)                                 \
+  void className::registerClass() const {                                      \
+    qx::QxClass<className>::getSingleton();                                    \
+  }                                                                            \
+  QString className::getClassName() const { return QStringLiteral(#className); }
 
 #endif // _IX_SERVICE_PARAMETER_H_
 #endif // _QX_ENABLE_QT_NETWORK

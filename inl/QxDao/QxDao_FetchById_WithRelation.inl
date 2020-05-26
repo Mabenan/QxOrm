@@ -281,7 +281,8 @@ struct QxDao_FetchById_WithRelation
    static inline QSqlError fetchById(const QString & relation, T & t, QSqlDatabase * pDatabase)
    {
       QStringList lst;
-      if (! relation.isEmpty()) { lst = relation.split("|"); }
+      if (!relation.isEmpty()) { lst = relation.split(QStringLiteral("|"));
+      }
       return QxDao_FetchById_WithRelation<T>::fetchById(lst, t, pDatabase);
    }
 

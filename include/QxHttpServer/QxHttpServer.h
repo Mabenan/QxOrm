@@ -84,22 +84,23 @@ public:
    typedef std::function<void (qx::QxHttpRequest &, qx::QxHttpResponse &)> type_fct_custom_request_handler;
 
 private:
-
    struct QxHttpServerImpl;
    std::unique_ptr<QxHttpServerImpl> m_pImpl; //!< Private implementation idiom
 
 public:
-
    QxHttpServer(QObject * parent = NULL);
    virtual ~QxHttpServer();
 
    Q_INVOKABLE void startServer();
    Q_INVOKABLE void stopServer();
 
-   void setCustomRequestHandler(type_fct_custom_request_handler fct);
-   QxHttpServer & dispatch(const QString & command, const QString & path, type_fct_custom_request_handler fct, long position = -1);
-   void beforeDispatching(type_fct_custom_request_handler fct);
-   void afterDispatching(type_fct_custom_request_handler fct);
+   void setCustomRequestHandler(const type_fct_custom_request_handler &fct);
+   QxHttpServer &dispatch(const QString &command,
+                          const QString &path,
+                          const type_fct_custom_request_handler &fct,
+                          long position = -1);
+   void beforeDispatching(const type_fct_custom_request_handler &fct);
+   void afterDispatching(const type_fct_custom_request_handler &fct);
    void clearDispatcher();
 
 #if (QT_VERSION >= 0x050000)

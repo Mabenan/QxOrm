@@ -251,9 +251,10 @@ struct QxSqlDatabase::QxSqlDatabaseImpl {
 };
 
 QxSqlDatabase::QxSqlDatabase()
-    : QxSingleton<QxSqlDatabase>("qx::QxSqlDatabase"),
-      m_pImpl(new QxSqlDatabaseImpl(this)) {
-  ;
+    : QxSingleton<QxSqlDatabase>(QStringLiteral("qx::QxSqlDatabase"))
+    , m_pImpl(new QxSqlDatabaseImpl(this))
+{
+    ;
 }
 
 QxSqlDatabase::~QxSqlDatabase() { ; }
@@ -263,7 +264,7 @@ QString QxSqlDatabase::getDriverName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_sDriverName;
   }
-  QVariant setting = m_pImpl->getSetting("DriverName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("DriverName"));
   if (!setting.isNull()) {
     return setting.toString();
   }
@@ -275,7 +276,7 @@ QString QxSqlDatabase::getConnectOptions() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_sConnectOptions;
   }
-  QVariant setting = m_pImpl->getSetting("ConnectOptions");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("ConnectOptions"));
   if (!setting.isNull()) {
     return setting.toString();
   }
@@ -287,7 +288,7 @@ QString QxSqlDatabase::getDatabaseName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_sDatabaseName;
   }
-  QVariant setting = m_pImpl->getSetting("DatabaseName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("DatabaseName"));
   if (!setting.isNull()) {
     return setting.toString();
   }
@@ -299,7 +300,7 @@ QString QxSqlDatabase::getUserName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_sUserName;
   }
-  QVariant setting = m_pImpl->getSetting("UserName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("UserName"));
   if (!setting.isNull()) {
     return setting.toString();
   }
@@ -311,7 +312,7 @@ QString QxSqlDatabase::getPassword() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_sPassword;
   }
-  QVariant setting = m_pImpl->getSetting("Password");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("Password"));
   if (!setting.isNull()) {
     return setting.toString();
   }
@@ -323,7 +324,7 @@ QString QxSqlDatabase::getHostName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_sHostName;
   }
-  QVariant setting = m_pImpl->getSetting("HostName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("HostName"));
   if (!setting.isNull()) {
     return setting.toString();
   }
@@ -335,7 +336,7 @@ int QxSqlDatabase::getPort() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_iPort;
   }
-  QVariant setting = m_pImpl->getSetting("Port");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("Port"));
   if (!setting.isNull()) {
     return setting.toInt();
   }
@@ -347,7 +348,7 @@ bool QxSqlDatabase::getTraceSqlQuery() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bTraceSqlQuery;
   }
-  QVariant setting = m_pImpl->getSetting("TraceSqlQuery");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("TraceSqlQuery"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -359,7 +360,7 @@ bool QxSqlDatabase::getTraceSqlRecord() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bTraceSqlRecord;
   }
-  QVariant setting = m_pImpl->getSetting("TraceSqlRecord");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("TraceSqlRecord"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -371,7 +372,7 @@ bool QxSqlDatabase::getTraceSqlBoundValues() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bTraceSqlBoundValues;
   }
-  QVariant setting = m_pImpl->getSetting("TraceSqlBoundValues");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("TraceSqlBoundValues"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -383,7 +384,7 @@ bool QxSqlDatabase::getTraceSqlBoundValuesOnError() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bTraceSqlBoundValuesOnError;
   }
-  QVariant setting = m_pImpl->getSetting("TraceSqlBoundValuesOnError");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("TraceSqlBoundValuesOnError"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -395,7 +396,7 @@ QxSqlDatabase::ph_style QxSqlDatabase::getSqlPlaceHolderStyle() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_ePlaceHolderStyle;
   }
-  QVariant setting = m_pImpl->getSetting("SqlPlaceHolderStyle");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("SqlPlaceHolderStyle"));
   if (!setting.isNull()) {
     return static_cast<QxSqlDatabase::ph_style>(setting.toInt());
   }
@@ -407,7 +408,7 @@ bool QxSqlDatabase::getSessionThrowable() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bSessionThrowable;
   }
-  QVariant setting = m_pImpl->getSetting("SessionThrowable");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("SessionThrowable"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -419,7 +420,7 @@ bool QxSqlDatabase::getSessionAutoTransaction() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bSessionAutoTransaction;
   }
-  QVariant setting = m_pImpl->getSetting("SessionAutoTransaction");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("SessionAutoTransaction"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -431,7 +432,7 @@ bool QxSqlDatabase::getValidatorThrowable() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bValidatorThrowable;
   }
-  QVariant setting = m_pImpl->getSetting("ValidatorThrowable");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("ValidatorThrowable"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -443,7 +444,7 @@ bool QxSqlDatabase::getAutoReplaceSqlAliasIntoQuery() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bAutoReplaceSqlAliasIntoQuery;
   }
-  QVariant setting = m_pImpl->getSetting("AutoReplaceSqlAliasIntoQuery");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("AutoReplaceSqlAliasIntoQuery"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -455,7 +456,7 @@ bool QxSqlDatabase::getVerifyOffsetRelation() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bVerifyOffsetRelation;
   }
-  QVariant setting = m_pImpl->getSetting("VerifyOffsetRelation");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("VerifyOffsetRelation"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -467,7 +468,7 @@ bool QxSqlDatabase::getAddAutoIncrementIdToUpdateQuery() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bAddAutoIncrementIdToUpdateQuery;
   }
-  QVariant setting = m_pImpl->getSetting("AddAutoIncrementIdToUpdateQuery");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("AddAutoIncrementIdToUpdateQuery"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -479,7 +480,7 @@ bool QxSqlDatabase::getForceParentIdToAllChildren() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bForceParentIdToAllChildren;
   }
-  QVariant setting = m_pImpl->getSetting("ForceParentIdToAllChildren");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("ForceParentIdToAllChildren"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -495,7 +496,7 @@ bool QxSqlDatabase::getAddSqlSquareBracketsForTableName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bAddSqlSquareBracketsForTableName;
   }
-  QVariant setting = m_pImpl->getSetting("AddSqlSquareBracketsForTableName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("AddSqlSquareBracketsForTableName"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -507,7 +508,7 @@ bool QxSqlDatabase::getAddSqlSquareBracketsForColumnName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bAddSqlSquareBracketsForColumnName;
   }
-  QVariant setting = m_pImpl->getSetting("AddSqlSquareBracketsForColumnName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("AddSqlSquareBracketsForColumnName"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -519,7 +520,7 @@ bool QxSqlDatabase::getFormatSqlQueryBeforeLogging() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bFormatSqlQueryBeforeLogging;
   }
-  QVariant setting = m_pImpl->getSetting("FormatSqlQueryBeforeLogging");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("FormatSqlQueryBeforeLogging"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -531,7 +532,7 @@ QStringList QxSqlDatabase::getSqlDelimiterForTableName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_lstSqlDelimiterForTableName;
   }
-  QVariant setting = m_pImpl->getSetting("SqlDelimiterForTableName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("SqlDelimiterForTableName"));
   if (!setting.isNull()) {
     return setting.toStringList();
   }
@@ -543,7 +544,7 @@ QStringList QxSqlDatabase::getSqlDelimiterForColumnName() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_lstSqlDelimiterForColumnName;
   }
-  QVariant setting = m_pImpl->getSetting("SqlDelimiterForColumnName");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("SqlDelimiterForColumnName"));
   if (!setting.isNull()) {
     return setting.toStringList();
   }
@@ -555,7 +556,7 @@ int QxSqlDatabase::getTraceSqlOnlySlowQueriesDatabase() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_iTraceSqlOnlySlowQueriesDatabase;
   }
-  QVariant setting = m_pImpl->getSetting("TraceSqlOnlySlowQueriesDatabase");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("TraceSqlOnlySlowQueriesDatabase"));
   if (!setting.isNull()) {
     return setting.toInt();
   }
@@ -567,7 +568,7 @@ int QxSqlDatabase::getTraceSqlOnlySlowQueriesTotal() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_iTraceSqlOnlySlowQueriesTotal;
   }
-  QVariant setting = m_pImpl->getSetting("TraceSqlOnlySlowQueriesTotal");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("TraceSqlOnlySlowQueriesTotal"));
   if (!setting.isNull()) {
     return setting.toInt();
   }
@@ -579,7 +580,7 @@ bool QxSqlDatabase::getDisplayTimerDetails() const {
       (m_pImpl->m_lstSettingsByDatabase.count() <= 0)) {
     return m_pImpl->m_bDisplayTimerDetails;
   }
-  QVariant setting = m_pImpl->getSetting("DisplayTimerDetails");
+  QVariant setting = m_pImpl->getSetting(QStringLiteral("DisplayTimerDetails"));
   if (!setting.isNull()) {
     return setting.toBool();
   }
@@ -589,10 +590,12 @@ bool QxSqlDatabase::getDisplayTimerDetails() const {
 void QxSqlDatabase::setDriverName(
     const QString &s, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting(
-      "DriverName", s, bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_sDriverName = s;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("DriverName"),
+                                             s,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_sDriverName = s;
   }
   getSqlGenerator();
 }
@@ -601,7 +604,7 @@ void QxSqlDatabase::setConnectOptions(
     const QString &s, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal = m_pImpl->setSetting(
-      "ConnectOptions", s, bJustForCurrentThread, pJustForThisDatabase);
+      QStringLiteral("ConnectOptions"), s, bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_sConnectOptions = s;
   }
@@ -610,17 +613,19 @@ void QxSqlDatabase::setConnectOptions(
 void QxSqlDatabase::setDatabaseName(
     const QString &s, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting(
-      "DatabaseName", s, bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_sDatabaseName = s;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("DatabaseName"),
+                                             s,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_sDatabaseName = s;
   }
 }
 
 void QxSqlDatabase::setUserName(
     const QString &s, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting("UserName", s, bJustForCurrentThread,
+  bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("UserName"), s, bJustForCurrentThread,
                                            pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_sUserName = s;
@@ -630,17 +635,19 @@ void QxSqlDatabase::setUserName(
 void QxSqlDatabase::setPassword(
     const QString &s, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting("Password", s, bJustForCurrentThread,
-                                           pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_sPassword = s;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("Password"),
+                                             s,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_sPassword = s;
   }
 }
 
 void QxSqlDatabase::setHostName(
     const QString &s, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting("HostName", s, bJustForCurrentThread,
+  bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("HostName"), s, bJustForCurrentThread,
                                            pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_sHostName = s;
@@ -649,10 +656,12 @@ void QxSqlDatabase::setHostName(
 
 void QxSqlDatabase::setPort(int i, bool bJustForCurrentThread /* = false */,
                             QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting("Port", i, bJustForCurrentThread,
-                                           pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_iPort = i;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("Port"),
+                                             i,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_iPort = i;
   }
 }
 
@@ -660,7 +669,7 @@ void QxSqlDatabase::setTraceSqlQuery(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal = m_pImpl->setSetting(
-      "TraceSqlQuery", b, bJustForCurrentThread, pJustForThisDatabase);
+      QStringLiteral("TraceSqlQuery"), b, bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bTraceSqlQuery = b;
   }
@@ -669,10 +678,12 @@ void QxSqlDatabase::setTraceSqlQuery(
 void QxSqlDatabase::setTraceSqlRecord(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting(
-      "TraceSqlRecord", b, bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bTraceSqlRecord = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("TraceSqlRecord"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bTraceSqlRecord = b;
   }
 }
 
@@ -680,7 +691,7 @@ void QxSqlDatabase::setTraceSqlBoundValues(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal = m_pImpl->setSetting(
-      "TraceSqlBoundValues", b, bJustForCurrentThread, pJustForThisDatabase);
+      QStringLiteral("TraceSqlBoundValues"), b, bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bTraceSqlBoundValues = b;
   }
@@ -689,11 +700,12 @@ void QxSqlDatabase::setTraceSqlBoundValues(
 void QxSqlDatabase::setTraceSqlBoundValuesOnError(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal =
-      m_pImpl->setSetting("TraceSqlBoundValuesOnError", b,
-                          bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bTraceSqlBoundValuesOnError = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("TraceSqlBoundValuesOnError"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bTraceSqlBoundValuesOnError = b;
   }
 }
 
@@ -702,7 +714,7 @@ void QxSqlDatabase::setSqlPlaceHolderStyle(
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   int i = static_cast<int>(e);
   bool bUpdateGlobal = m_pImpl->setSetting(
-      "SqlPlaceHolderStyle", i, bJustForCurrentThread, pJustForThisDatabase);
+      QStringLiteral("SqlPlaceHolderStyle"), i, bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_ePlaceHolderStyle = e;
   }
@@ -711,10 +723,12 @@ void QxSqlDatabase::setSqlPlaceHolderStyle(
 void QxSqlDatabase::setSessionThrowable(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting(
-      "SessionThrowable", b, bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bSessionThrowable = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("SessionThrowable"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bSessionThrowable = b;
   }
 }
 
@@ -722,7 +736,7 @@ void QxSqlDatabase::setSessionAutoTransaction(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal = m_pImpl->setSetting(
-      "SessionAutoTransaction", b, bJustForCurrentThread, pJustForThisDatabase);
+      QStringLiteral("SessionAutoTransaction"), b, bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bSessionAutoTransaction = b;
   }
@@ -731,10 +745,12 @@ void QxSqlDatabase::setSessionAutoTransaction(
 void QxSqlDatabase::setValidatorThrowable(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting(
-      "ValidatorThrowable", b, bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bValidatorThrowable = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("ValidatorThrowable"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bValidatorThrowable = b;
   }
 }
 
@@ -775,7 +791,7 @@ void QxSqlDatabase::setAutoReplaceSqlAliasIntoQuery(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal =
-      m_pImpl->setSetting("AutoReplaceSqlAliasIntoQuery", b,
+      m_pImpl->setSetting(QStringLiteral("AutoReplaceSqlAliasIntoQuery"), b,
                           bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bAutoReplaceSqlAliasIntoQuery = b;
@@ -785,10 +801,12 @@ void QxSqlDatabase::setAutoReplaceSqlAliasIntoQuery(
 void QxSqlDatabase::setVerifyOffsetRelation(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal = m_pImpl->setSetting(
-      "VerifyOffsetRelation", b, bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bVerifyOffsetRelation = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("VerifyOffsetRelation"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bVerifyOffsetRelation = b;
   }
 }
 
@@ -796,7 +814,7 @@ void QxSqlDatabase::setAddAutoIncrementIdToUpdateQuery(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal =
-      m_pImpl->setSetting("AddAutoIncrementIdToUpdateQuery", b,
+      m_pImpl->setSetting(QStringLiteral("AddAutoIncrementIdToUpdateQuery"), b,
                           bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bAddAutoIncrementIdToUpdateQuery = b;
@@ -806,18 +824,16 @@ void QxSqlDatabase::setAddAutoIncrementIdToUpdateQuery(
 void QxSqlDatabase::setForceParentIdToAllChildren(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal =
-      m_pImpl->setSetting("ForceParentIdToAllChildren", b,
-                          bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bForceParentIdToAllChildren = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("ForceParentIdToAllChildren"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bForceParentIdToAllChildren = b;
   }
 }
 
-void QxSqlDatabase::setFctDatabaseOpen(
-    QxSqlDatabase::type_fct_db_open fct,
-    bool bJustForCurrentThread /* = false */,
-    QSqlDatabase *pJustForThisDatabase /* = NULL */) {
+void QxSqlDatabase::setFctDatabaseOpen(const type_fct_db_open &fct, bool bJustForCurrentThread, QSqlDatabase *pJustForThisDatabase) {
   Q_UNUSED(bJustForCurrentThread);
   Q_UNUSED(pJustForThisDatabase);
   m_pImpl->m_fctDatabaseOpen = fct;
@@ -826,11 +842,12 @@ void QxSqlDatabase::setFctDatabaseOpen(
 void QxSqlDatabase::setAddSqlSquareBracketsForTableName(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal =
-      m_pImpl->setSetting("AddSqlSquareBracketsForTableName", b,
-                          bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bAddSqlSquareBracketsForTableName = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("AddSqlSquareBracketsForTableName"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bAddSqlSquareBracketsForTableName = b;
   }
 }
 
@@ -838,7 +855,7 @@ void QxSqlDatabase::setAddSqlSquareBracketsForColumnName(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal =
-      m_pImpl->setSetting("AddSqlSquareBracketsForColumnName", b,
+      m_pImpl->setSetting(QStringLiteral("AddSqlSquareBracketsForColumnName"), b,
                           bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bAddSqlSquareBracketsForColumnName = b;
@@ -848,11 +865,12 @@ void QxSqlDatabase::setAddSqlSquareBracketsForColumnName(
 void QxSqlDatabase::setFormatSqlQueryBeforeLogging(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal =
-      m_pImpl->setSetting("FormatSqlQueryBeforeLogging", b,
-                          bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_bFormatSqlQueryBeforeLogging = b;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("FormatSqlQueryBeforeLogging"),
+                                             b,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_bFormatSqlQueryBeforeLogging = b;
   }
 }
 
@@ -860,7 +878,7 @@ void QxSqlDatabase::setSqlDelimiterForTableName(
     const QStringList &lst, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal =
-      m_pImpl->setSetting("SqlDelimiterForTableName", lst,
+      m_pImpl->setSetting(QStringLiteral("SqlDelimiterForTableName"), lst,
                           bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_lstSqlDelimiterForTableName = lst;
@@ -870,11 +888,12 @@ void QxSqlDatabase::setSqlDelimiterForTableName(
 void QxSqlDatabase::setSqlDelimiterForColumnName(
     const QStringList &lst, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal =
-      m_pImpl->setSetting("SqlDelimiterForColumnName", lst,
-                          bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_lstSqlDelimiterForColumnName = lst;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("SqlDelimiterForColumnName"),
+                                             lst,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_lstSqlDelimiterForColumnName = lst;
   }
 }
 
@@ -882,7 +901,7 @@ void QxSqlDatabase::setTraceSqlOnlySlowQueriesDatabase(
     int i, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal =
-      m_pImpl->setSetting("TraceSqlOnlySlowQueriesDatabase", i,
+      m_pImpl->setSetting(QStringLiteral("TraceSqlOnlySlowQueriesDatabase"), i,
                           bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_iTraceSqlOnlySlowQueriesDatabase = i;
@@ -892,11 +911,12 @@ void QxSqlDatabase::setTraceSqlOnlySlowQueriesDatabase(
 void QxSqlDatabase::setTraceSqlOnlySlowQueriesTotal(
     int i, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
-  bool bUpdateGlobal =
-      m_pImpl->setSetting("TraceSqlOnlySlowQueriesTotal", i,
-                          bJustForCurrentThread, pJustForThisDatabase);
-  if (bUpdateGlobal) {
-    m_pImpl->m_iTraceSqlOnlySlowQueriesTotal = i;
+    bool bUpdateGlobal = m_pImpl->setSetting(QStringLiteral("TraceSqlOnlySlowQueriesTotal"),
+                                             i,
+                                             bJustForCurrentThread,
+                                             pJustForThisDatabase);
+    if (bUpdateGlobal) {
+        m_pImpl->m_iTraceSqlOnlySlowQueriesTotal = i;
   }
 }
 
@@ -904,7 +924,7 @@ void QxSqlDatabase::setDisplayTimerDetails(
     bool b, bool bJustForCurrentThread /* = false */,
     QSqlDatabase *pJustForThisDatabase /* = NULL */) {
   bool bUpdateGlobal = m_pImpl->setSetting(
-      "DisplayTimerDetails", b, bJustForCurrentThread, pJustForThisDatabase);
+      QStringLiteral("DisplayTimerDetails"), b, bJustForCurrentThread, pJustForThisDatabase);
   if (bUpdateGlobal) {
     m_pImpl->m_bDisplayTimerDetails = b;
   }
@@ -951,9 +971,8 @@ QSqlDatabase QxSqlDatabase::QxSqlDatabaseImpl::getDatabaseByCurrThreadId(
 
   if (!isValid()) {
     qDebug("[QxOrm] qx::QxSqlDatabase : '%s'", "parameters are not valid");
-    dbError =
-        QSqlError("[QxOrm] qx::QxSqlDatabase : 'parameters are not valid'", "",
-                  QSqlError::UnknownError);
+    dbError = QSqlError(QStringLiteral("[QxOrm] qx::QxSqlDatabase : 'parameters are not valid'"),
+                        QLatin1String(""), QSqlError::UnknownError);
     qAssert(false);
     return QSqlDatabase();
   }
@@ -963,8 +982,8 @@ QSqlDatabase QxSqlDatabase::QxSqlDatabaseImpl::getDatabaseByCurrThreadId(
     qDebug("[QxOrm] qx::QxSqlDatabase : '%s'",
            "unable to find current thread id");
     dbError = QSqlError(
-        "[QxOrm] qx::QxSqlDatabase : 'unable to find current thread id'", "",
-        QSqlError::UnknownError);
+        QStringLiteral("[QxOrm] qx::QxSqlDatabase : 'unable to find current thread id'"), QLatin1String(""),
+    QSqlError::UnknownError);
     qAssert(false);
     return QSqlDatabase();
   }
@@ -1020,16 +1039,17 @@ QxSqlDatabase::QxSqlDatabaseImpl::createDatabase(QSqlError &dbError) {
       db.setPort(m_pParent->getPort());
     }
     if (!db.open()) {
-      displayLastError(db, "unable to open connection to database");
-      bError = true;
+        displayLastError(db, QStringLiteral("unable to open connection to database"));
+        bError = true;
     }
     if (bError) {
       dbError = db.lastError();
     }
     if (bError && !dbError.isValid()) {
-      dbError = QSqlError(
-          "[QxOrm] qx::QxSqlDatabase : 'unable to open connection to database'",
-          "", QSqlError::UnknownError);
+        dbError = QSqlError("[QxOrm] qx::QxSqlDatabase : 'unable to open "
+                                           "connection to database'",
+                            QLatin1String(""),
+                            QSqlError::UnknownError);
     }
   }
 
@@ -1063,13 +1083,13 @@ QString QxSqlDatabase::QxSqlDatabaseImpl::formatLastError(
     const QSqlDatabase &db) const {
   QString sLastError;
   if (db.lastError().nativeErrorCode().toInt() != -1) {
-    sLastError += QString("Error number '") + db.lastError().nativeErrorCode() +
-                  QString("' : ");
+      sLastError += QStringLiteral("Error number '")
+                    + db.lastError().nativeErrorCode() + QStringLiteral("' : ");
   }
   if (!db.lastError().text().isEmpty()) {
     sLastError += db.lastError().text();
   } else {
-    sLastError += "<no error description>";
+      sLastError += QStringLiteral("<no error description>");
   }
   return sLastError;
 }
@@ -1097,16 +1117,15 @@ qx::dao::detail::IxSqlGenerator *QxSqlDatabase::getSqlGenerator() {
   }
   QMutexLocker locker(&m_pImpl->m_oDbMutex);
 
-  if (m_pImpl->m_sDriverName == "QMYSQL") {
-    m_pImpl->m_pSqlGenerator =
-        std::make_shared<qx::dao::detail::QxSqlGenerator_MySQL>();
-  } else if (m_pImpl->m_sDriverName == "QPSQL") {
-    m_pImpl->m_pSqlGenerator =
-        std::make_shared<qx::dao::detail::QxSqlGenerator_PostgreSQL>();
-  } else if (m_pImpl->m_sDriverName == "QSQLITE") {
+  if (m_pImpl->m_sDriverName == QLatin1String("QMYSQL")) {
+      m_pImpl->m_pSqlGenerator = std::make_shared<qx::dao::detail::QxSqlGenerator_MySQL>();
+  } else if (m_pImpl->m_sDriverName == QLatin1String("QPSQL"))
+      {
+          m_pImpl->m_pSqlGenerator = std::make_shared<qx::dao::detail::QxSqlGenerator_PostgreSQL>();
+  } else if (m_pImpl->m_sDriverName == QLatin1String("QSQLITE")) {
     m_pImpl->m_pSqlGenerator =
         std::make_shared<qx::dao::detail::QxSqlGenerator_SQLite>();
-  } else if (m_pImpl->m_sDriverName == "QOCI") {
+  } else if (m_pImpl->m_sDriverName == QLatin1String("QOCI")) {
     m_pImpl->m_pSqlGenerator =
         std::make_shared<qx::dao::detail::QxSqlGenerator_Oracle>();
   }
@@ -1147,12 +1166,12 @@ void QxSqlDatabase::clearAllDatabases() {
   QMutexLocker locker(&pSingleton->m_pImpl->m_oDbMutex);
 
   qx::QxSqlDatabase::closeAllDatabases();
-  pSingleton->m_pImpl->m_sDriverName = "";
-  pSingleton->m_pImpl->m_sConnectOptions = "";
-  pSingleton->m_pImpl->m_sDatabaseName = "";
-  pSingleton->m_pImpl->m_sUserName = "";
-  pSingleton->m_pImpl->m_sPassword = "";
-  pSingleton->m_pImpl->m_sHostName = "";
+  pSingleton->m_pImpl->m_sDriverName = QLatin1String("");
+  pSingleton->m_pImpl->m_sConnectOptions = QLatin1String("");
+  pSingleton->m_pImpl->m_sDatabaseName = QLatin1String("");
+  pSingleton->m_pImpl->m_sUserName = QLatin1String("");
+  pSingleton->m_pImpl->m_sPassword = QLatin1String("");
+  pSingleton->m_pImpl->m_sHostName = QLatin1String("");
   pSingleton->m_pImpl->m_iPort = -1;
 }
 

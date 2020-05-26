@@ -96,7 +96,7 @@ Q_UNUSED(qx_fct); \
 if (params.size() < PARAMCOUNT) { return qx_bool(false, 0, QX_FUNCTION_ERR_NUMBER_PARAMS); } \
 qx_bool bValid = true; \
 try { p = qx::any_cast<P>(params[PARAMCOUNT - 1]); } \
-catch (...) { bValid = qx_bool(false, 0, QString(QX_FUNCTION_ERR_INVALID_PARAM).replace("XXX", QString::number(PARAMCOUNT))); } \
+catch (...) { bValid = qx_bool(false, 0, QString(QX_FUNCTION_ERR_INVALID_PARAM).replace(QStringLiteral("XXX"), QString::number(PARAMCOUNT))); } \
 return bValid;
 
 #define QX_FUNCTION_GET_PARAM_TYPE_STRING(PARAMCOUNT) \
@@ -105,7 +105,7 @@ QStringList lst = params.split(qx_fct->getSeparator()); \
 if (lst.size() < PARAMCOUNT) { return qx_bool(false, 0, QX_FUNCTION_ERR_NUMBER_PARAMS); } \
 qx_bool bValid = true; \
 try { bValid = qx::cvt::from_string(lst.at(PARAMCOUNT - 1), p); } \
-catch (...) { bValid = qx_bool(false, 0, QString(QX_FUNCTION_ERR_INVALID_PARAM).replace("XXX", QString::number(PARAMCOUNT))); } \
+catch (...) { bValid = qx_bool(false, 0, QString(QX_FUNCTION_ERR_INVALID_PARAM).replace(QStringLiteral("XXX"), QString::number(PARAMCOUNT))); } \
 return bValid;
 
 #define QX_FUNCTION_GET_PARAM_TYPE_STRING_TO_QSTRING(PARAMCOUNT) \

@@ -54,17 +54,27 @@ struct QxSqlQueryHelper_FetchAll
 
    static void sql(QString & sql, qx::IxSqlQueryBuilder & builder, const QStringList & columns)
    {
-      if ((columns.count() <= 0) || (columns.at(0) == "*")) { QxSqlQueryHelper_FetchAll<T>::sql(sql, builder); return; }
+       if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+           QxSqlQueryHelper_FetchAll<T>::sql(sql, builder);
+           return;
+       }
       static_assert(qx::trait::is_qx_registered<T>::value, "qx::trait::is_qx_registered<T>::value");
       qx::IxSqlQueryBuilder::sql_FetchAll(sql, builder, columns);
    }
 
    static void resolveInput(T & t, QSqlQuery & query, qx::IxSqlQueryBuilder & builder, const QStringList & columns)
-   { if ((columns.count() <= 0) || (columns.at(0) == "*")) { QxSqlQueryHelper_FetchAll<T>::resolveInput(t, query, builder); return; } }
+   {
+       if ((columns.count() <= 0) || (columns.at(0) == QStringLiteral("*"))) {
+           QxSqlQueryHelper_FetchAll<T>::resolveInput(t, query, builder);
+           return;
+       }
+   }
 
    static void resolveOutput(T & t, QSqlQuery & query, qx::IxSqlQueryBuilder & builder, const QStringList & columns)
    {
-      if ((columns.count() <= 0) || (columns.at(0) == "*")) { QxSqlQueryHelper_FetchAll<T>::resolveOutput(t, query, builder); return; }
+      if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+            QxSqlQueryHelper_FetchAll<T>::resolveOutput(t, query, builder);
+            return; }
       static_assert(qx::trait::is_qx_registered<T>::value, "qx::trait::is_qx_registered<T>::value");
       qx::IxSqlQueryBuilder::resolveOutput_FetchAll((& t), query, builder, columns);
    }

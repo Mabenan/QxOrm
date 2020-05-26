@@ -164,8 +164,8 @@ struct QxHttpTransaction::QxHttpTransactionImpl {
 
 };
 
-QxHttpTransaction::QxHttpTransaction() :
-		qx::service::QxTransaction(), m_pImpl(new QxHttpTransactionImpl(this)), http(
+QxHttpTransaction::QxHttpTransaction(QObject * parent) :
+        qx::service::QxTransaction(parent), m_pImpl(new QxHttpTransactionImpl(this)), http(
 				true) {
 	;
 }
@@ -215,11 +215,11 @@ qx_bool QxHttpTransaction::writeSocketServer(QTcpSocket &socket) {
 	bool chunked = (m_pImpl->m_response.isChunked() && m_pImpl->m_chunkAllowed);
 	bool compress = qx::service::QxConnect::getSingleton()->getCompressData();
 	QString contentType = m_pImpl->m_response.header("Content-Type").toLower();
-	compress = (compress
-			&& (contentType.startsWith("text/")
-					|| contentType.startsWith("application/json")
-					|| contentType.startsWith("application/javascript")));
-	compress = (compress
+    compress = (compress
+                && (contentType.startsWith(QLatin1String("text/"))
+                        || contentType.startsWith(QLatin1String("application/json"))
+                    || contentType.startsWith(QLatin1String("application/javascript"))));
+    compress = (compress
 			&& (m_pImpl->m_request.header("Accept-Encoding").toLower().contains(
 					"gzip")));
 	compress = (compress && (m_pImpl->m_response.data().size() > 99));
@@ -289,11 +289,11 @@ qx_bool QxHttpTransaction::readSocketServer(QTcpSocket &socket) {
 	QByteArray line = overAllStream.readLine().trimmed();
 	readPos = line.length() - 1;
 	qDebug() << QString::fromUtf8(line);
-	QStringList lst = QString::fromUtf8(line).split(" ");
-	setMessageReturn(qx_bool(true));
+    QStringList lst = QString::fromUtf8(line).split(QStringLiteral( " "));
+    setMessageReturn(qx_bool(true));
 	// HTTP request first line
 
-	if (lst.length() < 3 || !lst.at(2).contains("HTTP")) {
+    if (lst.length() < 3 || !lst.at(2).contains(QLatin1String("HTTP"))) {
 
 		this->http = false;
 		bool bReadOk = true;
@@ -357,12 +357,12 @@ qx_bool QxHttpTransaction::readSocketServer(QTcpSocket &socket) {
 		return bReadOk;
 	} else {
 		this->http = true;
-		if (!lst.at(2).contains("HTTP")) {
-			setMessageReturn(
-					qx_bool(400,
-							QString("Bad request : invalid HTTP request first line, third parameter must contain 'HTTP' : ")
-									+ QString::fromUtf8(line)));
-			return qx_bool(true);
+        if (!lst.at(2).contains(QLatin1String( "HTTP"))) {
+            setMessageReturn(
+                qx_bool(400, QStringLiteral("Bad request : invalid HTTP request first line, "
+                                                 "third parameter must contain 'HTTP' : ")
+                        + QString::fromUtf8(line)));
+            return qx_bool(true);
 		}
 		const QString & command = lst.at(0);
 		qDebug() << command;
@@ -410,17 +410,19 @@ qx_bool QxHttpTransaction::readSocketServer(QTcpSocket &socket) {
 			if (key.toLower() == "content-length") {
 				iContentLength = value.toInt();
 			}
-		} while (1);
+        }
+        while(1);
 
-		// Check HTTP 1.0 compatibility
-		if (m_pImpl->m_request.version().contains("1.0")) {
-			m_pImpl->m_chunkAllowed = false;
+                           // Check HTTP 1.0 compatibility
+        if (m_pImpl->m_request.version().contains(QLatin1String("1.0")))
+        {
+            m_pImpl->m_chunkAllowed = false;
 			if (m_pImpl->m_request.header("Connection").toLower()
 					!= "keep-alive") {
 				setForceConnectionStatus(
 						qx::service::QxTransaction::conn_close);
-			}
-		}
+            }
+        }
 
 		QByteArray body;
 		if (iContentLength > 0) {
@@ -467,9 +469,8 @@ qx_bool QxHttpTransaction::readSocketServer(QTcpSocket &socket) {
 			m_pImpl->m_request.params().insert(QUrl::fromPercentEncoding(key),
 					QUrl::fromPercentEncoding(value));
 		} else if (!param.isEmpty()) {
-			m_pImpl->m_request.params().insert(QUrl::fromPercentEncoding(param),
-					"");
-		}
+            m_pImpl->m_request.params().insert(QUrl::fromPercentEncoding(param), QLatin1String(""));
+        }
 	}
 
 	return qx_bool(true);
@@ -482,8 +483,8 @@ qx_bool QxHttpTransaction::writeChunked(const QByteArray &data) {
 		return qx_bool(true);
 	}
 	if (!m_pImpl->m_socket) {
-		return qx_bool(false, "No socket to write HTTP chunked data");
-	}
+        return qx_bool(false, QStringLiteral("No socket to write HTTP chunked data"));
+    }
 	if (!m_pImpl->m_chunkAllowed) {
 		m_pImpl->m_response.data() += data;
 		return qx_bool(true);

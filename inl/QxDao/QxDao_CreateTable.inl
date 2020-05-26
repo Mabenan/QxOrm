@@ -45,11 +45,22 @@ struct QxDao_CreateTable
 
       if (dao.database().driverName() != "QSQLITE")
       {
-         QString sWarningMsg = "-- WARNING -- the function qx::dao::create_table<T>() can be used only with a SQLite database to create examples or prototypes, for other databases, it is recommended :";
-         sWarningMsg += "\n\t - to use QxEntityEditor application and its DDL SQL database schema export plugin ;";
-         sWarningMsg += "\n\t - or to manage the database schema with an external tool provided by the SGBD (SQLite Manager for SQLite, pgAdmin for PostgreSQL, MySQL Workbench for MySQL, etc...) ;";
-         sWarningMsg += "\n\t - or to generate database schema using the introspection engine of QxOrm library : go to 'https://www.qxorm.com/qxorm_en/faq.html#faq_230' web page for more details.";
-         qDebug("[QxOrm] %s", qPrintable(sWarningMsg));
+          QString sWarningMsg =
+              "-- WARNING -- the function qx::dao::create_table<T>() can be used only with a "
+              "SQLite database to create examples or prototypes, for other databases, it "
+              "is " "recommended :";
+              sWarningMsg
+              += "\n\t - to use QxEntityEditor application and its DDL SQL database schema "
+                 "export plugin ;"; sWarningMsg
+              += "\n\t - or QLatin1String(to manage the database schema with an external tool "
+                 "provided "
+                 "by the SGBD (SQLite Manager for SQLite, pgAdmin for PostgreSQL, MySQL "
+                 "Workbench for MySQL, etc...) ;";
+          sWarningMsg += "\n\t - or )to generate database schema using the "
+                         "introspeQLatin1String(ction engine of "
+                         "QxOrm library : go to 'https://www.qxorm.com/qxorm_en/faq.html#faq_230' "
+                         ")web page for more details.";
+          qDebug("[QxOrm] %s", qPrintable(sWarningMsg));
       }
 
       QString sql = dao.builder().buildSql().getSqlQuery();

@@ -48,15 +48,26 @@ QxSqlGenerator_Standard::~QxSqlGenerator_Standard() { ; }
 
 void QxSqlGenerator_Standard::init() { ; }
 
-QString QxSqlGenerator_Standard::getAutoIncrement() const { return "AUTOINCREMENT"; }
+QString QxSqlGenerator_Standard::getAutoIncrement() const
+{
+    return QStringLiteral("AUTOINCREMENT");
+}
 
-QString QxSqlGenerator_Standard::getWildCard() const { return "%"; }
+QString QxSqlGenerator_Standard::getWildCard() const
+{
+    return QStringLiteral("%");
+}
 
-QString QxSqlGenerator_Standard::getTableAliasSep() const { return " AS "; }
+QString QxSqlGenerator_Standard::getTableAliasSep() const
+{
+    return QStringLiteral(" AS ");
+}
 
 QString QxSqlGenerator_Standard::getLimit(const QxSqlLimit * pLimit) const
 {
-   if (! pLimit) { qAssert(false); return ""; }
+    if (!pLimit) {
+        qAssert(false); return QLatin1String("");
+    }
    QString sStartRow = pLimit->getStartRow_ParamKey();
    QString sRowsCount = pLimit->getRowsCount_ParamKey();
    return ("LIMIT " + sRowsCount + " OFFSET " + sStartRow);
@@ -95,24 +106,30 @@ void QxSqlGenerator_Standard::formatSqlQuery(IxDao_Helper * pDaoHelper, QString 
 {
    Q_UNUSED(pDaoHelper);
 
-   if (sql.startsWith("SELECT ")) { sql = "\nSELECT " + sql.right(sql.size() - 7); }
-   else if (sql.startsWith("INSERT ")) { sql = "\nINSERT " + sql.right(sql.size() - 7); }
-   else if (sql.startsWith("UPDATE ")) { sql = "\nUPDATE " + sql.right(sql.size() - 7); }
-   else if (sql.startsWith("DELETE ")) { sql = "\nDELETE " + sql.right(sql.size() - 7); }
-   else if (sql.startsWith("CREATE ")) { sql = "\nCREATE " + sql.right(sql.size() - 7); }
+   if (sql.startsWith(QLatin1String("SELECT "))) {
+       sql = "\nSELECT " + sql.right(sql.size() - 7);
+   } else if (sql.startsWith(QLatin1String("INSERT "))) {
+       sql = "\nINSERT " + sql.right(sql.size() - 7);
+   } else if (sql.startsWith(QLatin1String("UPDATE "))) {
+       sql = "\nUPDATE " + sql.right(sql.size() - 7);
+   } else if (sql.startsWith(QLatin1String("DELETE "))) {
+       sql = "\nDELETE " + sql.right(sql.size() - 7);
+   } else if (sql.startsWith(QLatin1String("CREATE "))) {
+       sql = "\nCREATE " + sql.right(sql.size() - 7);
+   }
 
-   sql.replace(" FROM ", "\n  FROM ");
-   sql.replace(" WHERE ", "\n  WHERE ");
-   sql.replace(" LEFT OUTER JOIN ", "\n  LEFT OUTER JOIN ");
-   sql.replace(" INNER JOIN ", "\n  INNER JOIN ");
-   sql.replace(" ORDER BY ", "\n  ORDER BY ");
-   sql.replace(" GROUP BY ", "\n  GROUP BY ");
-   sql.replace(" AND ", "\n  AND ");
-   sql.replace(" OR ", "\n  OR ");
-   sql.replace(" VALUES ", "\n  VALUES ");
-   sql.replace(" SET ", "\n  SET ");
-   sql.replace(" RETURNING ", "\n  RETURNING ");
-   sql += "\n";
+   sql.replace(QLatin1String(" FROM "), QLatin1String("\n  FROM "));
+   sql.replace(QLatin1String(" WHERE "), QLatin1String("\n  WHERE "));
+   sql.replace(QLatin1String(" LEFT OUTER JOIN "), QLatin1String("\n  LEFT OUTER JOIN "));
+   sql.replace(QLatin1String(" INNER JOIN "), QLatin1String("\n  INNER JOIN "));
+   sql.replace(QLatin1String(" ORDER BY "), QLatin1String("\n  ORDER BY "));
+   sql.replace(QLatin1String(" GROUP BY "), QLatin1String("\n  GROUP BY "));
+   sql.replace(QLatin1String(" AND "), QLatin1String("\n  AND "));
+   sql.replace(QLatin1String(" OR "), QLatin1String("\n  OR "));
+   sql.replace(QLatin1String(" VALUES "), QLatin1String("\n  VALUES "));
+   sql.replace(QLatin1String(" SET "), QLatin1String("\n  SET "));
+   sql.replace(QLatin1String(" RETURNING "), QLatin1String("\n  RETURNING "));
+   sql += QLatin1String("\n");
 }
 
 } // namespace detail

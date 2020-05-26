@@ -83,11 +83,19 @@ void QxTransaction::clear()
 
 void QxTransaction::executeServer()
 {
-   if (m_sServiceName.isEmpty()) { m_bMessageReturn = qx_bool(QX_ERROR_SERVICE_NOT_SPECIFIED, "[QxOrm] empty service name => cannot instantiate service and execute process"); return; }
-   if (m_sServiceMethod.isEmpty()) { m_bMessageReturn = qx_bool(QX_ERROR_SERVICE_NOT_SPECIFIED, "[QxOrm] empty service method => cannot execute process"); return; }
+    if (m_sServiceName.isEmpty()) { m_bMessageReturn = qx_bool(QX_ERROR_SERVICE_NOT_SPECIFIED, QStringLiteral("[QxOrm] empty service name => cannot instantiate service and execute process")); return;
+    }
+    if (m_sServiceMethod.isEmpty()) { m_bMessageReturn = qx_bool(QX_ERROR_SERVICE_NOT_SPECIFIED, QStringLiteral("[QxOrm] empty service method => cannot execute process")); return;
+    }
 
    qx::service::IxService * ptr = qx::create_nude_ptr<qx::service::IxService>(m_sServiceName);
-   if (ptr == NULL) { m_bMessageReturn = qx_bool(QX_ERROR_SERVICE_INVALID, "[QxOrm] invalid service name => cannot instantiate service and execute process"); return; }
+   if (ptr == NULL) {
+       m_bMessageReturn = qx_bool(
+           QX_ERROR_SERVICE_INVALID,
+           QStringLiteral(
+               "[QxOrm] invalid service name => cannot instantiate service and execute process"));
+       return;
+   }
    m_pServiceInstance = IxService_ptr(ptr);
    m_pServiceInstance->registerClass();
    m_pServiceInstance->setInputParameter(m_pInputParameter);
@@ -97,14 +105,27 @@ void QxTransaction::executeServer()
    {
       m_pServiceInstance->onBeforeProcess();
       qx_bool bInvokeOk = qx::QxClassX::invoke(m_sServiceName, m_sServiceMethod, (* m_pServiceInstance));
-      if (! bInvokeOk) { m_bMessageReturn = qx_bool(QX_ERROR_SERVICE_INVALID, "[QxOrm] invalid service method => cannot execute process"); return; }
+      if (!bInvokeOk) {
+          m_bMessageReturn
+                         = qx_bool(QX_ERROR_SERVICE_INVALID,
+                                   QStringLiteral("[QxOrm] invalid service method => cannot execute process"));
+          return;
+      }
       m_pOutputParameter = m_pServiceInstance->getOutputParameter_BaseClass();
       m_bMessageReturn = m_pServiceInstance->getMessageReturn();
       m_pServiceInstance->onAfterProcess();
    }
    catch (const qx::exception & x) { m_bMessageReturn = x.toQxBool(); }
-   catch (const std::exception & e) { QString msg(e.what()); if (msg.isEmpty()) { msg = "[QxOrm] unexpected error occured executing service method"; }; m_bMessageReturn = qx_bool(QX_ERROR_UNKNOWN, msg); }
-   catch (...) { m_bMessageReturn = qx_bool(QX_ERROR_UNKNOWN, "[QxOrm] unknown error occured executing service method"); }
+   catch (const std::exception & e) {
+        QString msg(e.what());
+        if (msg.isEmpty()) {
+            msg = QStringLiteral("[QxOrm] unexpected error occured executing service method");
+        };
+        m_bMessageReturn = qx_bool(QX_ERROR_UNKNOWN, msg); }
+   catch (...) {
+        m_bMessageReturn = qx_bool(QX_ERROR_UNKNOWN,
+                                   QStringLiteral(
+                                       "[QxOrm] unknown error occured executing service method")); }
    m_pServiceInstance.reset();
 }
 
@@ -132,7 +153,11 @@ qx_bool QxTransaction::readSocketServer(QTcpSocket & socket)
 void QxTransaction::executeClient(IxService * pService, const QString & sMethod)
 {
    if ((pService == NULL) || sMethod.isEmpty()) { qAssert(false); return; }
-   if (pService->getServiceName().isEmpty()) { pService->setMessageReturn(qx_bool(QX_ERROR_SERVICE_NOT_SPECIFIED, "[QxOrm] empty service name")); return; }
+   if (pService->getServiceName().isEmpty()) {
+       pService->setMessageReturn(
+           qx_bool(QX_ERROR_SERVICE_NOT_SPECIFIED, QStringLiteral("[QxOrm] empty service name")));
+       return;
+   }
    std::unique_ptr<QTcpSocket> socket;
    pService->registerClass();
 
@@ -172,9 +197,21 @@ void QxTransaction::executeClient(IxService * pService, const QString & sMethod)
    setInputParameter(pService->getInputParameter_BaseClass());
 
    qx_bool bWriteOk = writeSocketClient(* socket);
-   if (! bWriteOk) { pService->setMessageReturn(qx_bool(QX_ERROR_SERVICE_WRITE_ERROR, QString("[QxOrm] unable to write request to socket : '") + bWriteOk.getDesc() + QString("'"))); return; }
+   if (!bWriteOk) {
+       pService->setMessageReturn(
+           qx_bool(QX_ERROR_SERVICE_WRITE_ERROR,
+                   QStringLiteral("[QxOrm] unable to writet to socket : '")
+                       + bWriteOk.getDesc() + QStringLiteral("'")));
+       return;
+   }
    qx_bool bReadOk = readSocketClient(* socket);
-   if (! bReadOk) { pService->setMessageReturn(qx_bool(QX_ERROR_SERVICE_READ_ERROR, QString("[QxOrm] unable to read reply from socket : '") + bReadOk.getDesc() + QString("'"))); return; }
+   if (!bReadOk) {
+       pService->setMessageReturn(
+           qx_bool(QX_ERROR_SERVICE_READ_ERROR,
+                   QStringLiteral("[QxOrm] unable to read return : '")
+                       + bReadOk.getDesc() + QStringLiteral("'")));
+       return;
+   }
 
    pService->setOutputParameter(getOutputParameter());
    pService->setMessageReturn(getMessageReturn());

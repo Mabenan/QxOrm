@@ -41,23 +41,37 @@ namespace qx {
 namespace cache {
 namespace detail {
 
-QxCache::QxCache() : qx::QxSingleton<QxCache>("qx::cache::detail::QxCache"), m_lMaxCost(999999999), m_lCurrCost(0) { ; }
+QxCache::QxCache()
+    : qx::QxSingleton<QxCache>(QStringLiteral("qx::cache::detail::QxCache"))
+    , m_lMaxCost(999999999)
+    , m_lCurrCost(0)
+{
+    ;
+}
 
-QxCache::~QxCache() { ; }
+QxCache::~QxCache() {
+    ; }
 
-long QxCache::getCurrCost() const { return m_lCurrCost; }
+long QxCache::getCurrCost() const {
+    return m_lCurrCost; }
 
-long QxCache::getMaxCost() const { return m_lMaxCost; }
+long QxCache::getMaxCost() const {
+    return m_lMaxCost; }
 
-long QxCache::count() const { return m_cache.count(); }
+long QxCache::count() const {
+    return m_cache.count(); }
 
-long QxCache::size() const { return this->count(); }
+long QxCache::size() const {
+    return this->count(); }
 
-bool QxCache::isEmpty() const { return (this->count() == 0); }
+bool QxCache::isEmpty() const {
+    return (this->count() == 0); }
 
-bool QxCache::exist(const QString & sKey) const { return m_cache.exist(sKey); }
+bool QxCache::exist(const QString & sKey) const {
+    return m_cache.exist(sKey); }
 
-bool QxCache::contains(const QString & sKey) const { return this->exist(sKey); }
+bool QxCache::contains(const QString & sKey) const {
+    return this->exist(sKey); }
 
 void QxCache::setMaxCost(long l)
 {
@@ -69,21 +83,24 @@ void QxCache::setMaxCost(long l)
 qx::any QxCache::at(const QString & sKey)
 {
    QMutexLocker locker(& m_oMutexCache);
-   if (! this->exist(sKey)) { return qx::any(); }
+   if (! this->exist(sKey)) { return qx::any();
+   }
    return std::get<2>(m_cache.getByKey(sKey));
 }
 
 long QxCache::insertionCost(const QString & sKey)
 {
    QMutexLocker locker(& m_oMutexCache);
-   if (! this->exist(sKey)) { return -1; }
+   if (! this->exist(sKey)) { return -1;
+   }
    return std::get<0>(m_cache.getByKey(sKey));
 }
 
 QDateTime QxCache::insertionDateTime(const QString & sKey)
 {
    QMutexLocker locker(& m_oMutexCache);
-   if (! this->exist(sKey)) { return QDateTime(); }
+   if (! this->exist(sKey)) { return QDateTime();
+   }
    return std::get<1>(m_cache.getByKey(sKey));
 }
 
@@ -96,12 +113,14 @@ void QxCache::clear()
 
 bool QxCache::insert(const QString & sKey, const qx::any & anyObj, long lCost /* = 1 */, const QDateTime & dt /* = QDateTime() */)
 {
-   if (sKey.isEmpty()) { qAssert(false); return false; }
+   if (sKey.isEmpty()) { qAssert(false); return false;
+   }
    this->remove(sKey);
 
    QMutexLocker locker(& m_oMutexCache);
    lCost = ((lCost < 0) ? 0 : lCost);
-   QDateTime dtTemp(dt); if (! dtTemp.isValid()) { dtTemp = QDateTime::currentDateTime(); }
+   QDateTime dtTemp(dt); if (! dtTemp.isValid()) { dtTemp = QDateTime::currentDateTime();
+   }
    QxCache::type_qx_cache item = std::make_tuple(lCost, dtTemp, anyObj);
    bool bInsertOk = m_cache.insert(sKey, item);
    if (bInsertOk) { m_lCurrCost += lCost; updateCost(); }
@@ -112,10 +131,12 @@ bool QxCache::insert(const QString & sKey, const qx::any & anyObj, long lCost /*
 bool QxCache::remove(const QString & sKey)
 {
    QMutexLocker locker(& m_oMutexCache);
-   if (! this->exist(sKey)) { return false; }
+   if (! this->exist(sKey)) { return false;
+   }
    long lCost = std::get<0>(m_cache.getByKey(sKey));
    bool bRemoveOk = m_cache.removeByKey(sKey);
-   if (bRemoveOk) { m_lCurrCost -= lCost; }
+   if (bRemoveOk) { m_lCurrCost -= lCost;
+   }
 
    return bRemoveOk;
 }
@@ -128,7 +149,8 @@ void QxCache::updateCost()
       long lCost = std::get<0>(m_cache.getByIndex(0));
       m_cache.removeByIndex(0);
       m_lCurrCost -= lCost;
-      QString sMsg = QString("qx::cache : auto remove object in cache '") + sKey + QString("'");
+      QString sMsg = QString(QStringLiteral("qx::cache : auto remove object in cache '")) + sKey
+                     + QString(QStringLiteral("'"));
       qDebug("[QxOrm] %s", qPrintable(sMsg));
    }
 }

@@ -53,12 +53,22 @@ QString QxSqlExpression::toString() const
 
    switch (m_type)
    {
-      case _where:               sReturn = "WHERE";   break;
-      case _and:                 sReturn = "AND";     break;
-      case _or:                  sReturn = "OR";      break;
-      case _open_parenthesis:    sReturn = "(";       break;
-      case _close_parenthesis:   sReturn = ")";       break;
-      default:                   qAssert(false);
+   case _where:
+       sReturn = QStringLiteral("WHERE"); break;
+   case _and:
+       sReturn = QStringLiteral("AND");
+       break;
+case _or:
+       sReturn = QStringLiteral("OR");
+       break;
+   case _open_parenthesis:
+       sReturn = QStringLiteral("(");
+       break;
+   case _close_parenthesis:
+       sReturn = QStringLiteral(")");
+       break;
+   default:
+       qAssert(false);
    }
 
    return sReturn;

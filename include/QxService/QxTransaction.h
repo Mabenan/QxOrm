@@ -154,7 +154,7 @@ protected:
 
 public:
 
-   QxTransaction() : QObject(), m_uiInputTransactionSize(0), m_uiOutputTransactionSize(0), m_lPortSource(0), m_lPortTarget(0), m_eForceConnectionStatus(conn_none) { ; }
+   QxTransaction(QObject *parent = nullptr) : QObject(parent), m_uiInputTransactionSize(0), m_uiOutputTransactionSize(0), m_lPortSource(0), m_lPortTarget(0), m_eForceConnectionStatus(conn_none) { ; }
    virtual ~QxTransaction() { ; }
    virtual void clear();
 

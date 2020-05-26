@@ -231,7 +231,8 @@ QString IxClass::dumpClass() const
    QString sDump;
    sDump += "-- class '" + m_pImpl->m_sKey + "' (name '" + m_pImpl->m_sName + "', ";
    sDump += "description '" + m_pImpl->m_sDescription + "', version '" + QString::number(m_pImpl->m_lVersion) + "', ";
-   sDump += "base class '" + (getBaseClass() ? getBaseClass()->getKey() : "") + "')\n";
+   sDump += "base class '" + (getBaseClass() ? getBaseClass()->getKey() : QLatin1String(""))
+            + "')\n";
 
    long lCount = (m_pImpl->m_pDataMemberX ? m_pImpl->m_pDataMemberX->count() : 0);
    sDump += "\t* list of registered properties (" + QString::number(lCount) + ")\n";
@@ -242,8 +243,9 @@ QString IxClass::dumpClass() const
       {
          IxDataMember * p = m_pImpl->m_pDataMemberX->get(l); if (! p) { continue; }
          IxSqlRelation * pRelation = p->getSqlRelation();
-         QString sInfos = p->getKey() + ((p == pId) ? QString(" (id)") : QString()) + " - " + p->getType();
-         sInfos += (pRelation ? (QString(" (") + pRelation->getDescription() + QString(")")) : QString());
+
+         QString sInfos = p->getKey() + ((p == pId) ? QStringLiteral(" (id)") : QString()) + " - " + p->getType();
+         sInfos += (pRelation ? (QStringLiteral(" (") + pRelation->getDescription() + QStringLiteral(")")) : QString());
          sDump += "\t\t" + sInfos + "\n";
       }
    }

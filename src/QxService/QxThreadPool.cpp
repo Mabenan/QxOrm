@@ -91,8 +91,11 @@ void QxThreadPool::runServer()
    QxServer server(this);
    server.setMaxPendingConnections(QxConnect::getSingleton()->getThreadCount());
    quint16 serverPort = (quint16)(QxConnect::getSingleton()->getPort());
-   if (! server.listen(QHostAddress::Any, serverPort))
-   { raiseError(QString("[QxOrm] cannot run server : '") + server.errorString() + QString("'"), QxTransaction_ptr()); return; }
+   if (!server.listen(QHostAddress::Any, serverPort)) {
+       raiseError(QStringLiteral("[QxOrm] cannot run server : '") + server.errorString()  + QStringLiteral("'"),
+                  QxTransaction_ptr());
+       return;
+   }
    Q_EMIT serverIsRunning(true, (& server));
    exec();
    Q_EMIT serverIsRunning(false, NULL);

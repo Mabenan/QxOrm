@@ -209,22 +209,35 @@ template <typename R, typename P1, typename P2, typename P3, typename P4, typena
 IxFunction * QxClass<T>::fctStatic_9(const typename QxFunction_9<void, R, P1, P2, P3, P4, P5, P6, P7, P8, P9>::type_fct & fct, const QString & sKey)
 { return this->insertFctStatic(qx::function::bind_fct_9<void, R, P1, P2, P3, P4, P5, P6, P7, P8, P9>(fct), sKey); }
 
-template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-QxClass<qx::trait::no_base_class_defined>::QxClass() : IxClass(), QxSingleton< QxClass<qx::trait::no_base_class_defined> >("qx::QxClass_no_base_class_defined") { setName("qx::trait::no_base_class_defined"); setFinalClass(true); }
+template<>
+QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE QxClass<qx::trait::no_base_class_defined>::QxClass()
+    : IxClass()
+    , QxSingleton<QxClass<qx::trait::no_base_class_defined>>(QStringLiteral("qx::QxClass_no_base_class_defined"))
+{
+    setName(QStringLiteral("qx::trait::no_base_class_defined"));
+    setFinalClass(true);
+}
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-QxClass<QObject>::QxClass() : IxClass(), QxSingleton< QxClass<QObject> >("qx::QxClass_QObject") { setKey("QObject"); setName("QObject"); setFinalClass(true); }
+QxClass<QObject>::QxClass() : IxClass(), QxSingleton< QxClass<QObject> >(QStringLiteral("qx::QxClass_QObject")) {
+    setKey(QStringLiteral("QObject"));
+   setName(QStringLiteral("QObject"));
+    setFinalClass(true); }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-void QxClass<qx::trait::no_base_class_defined>::registerClass() { ; }
+void QxClass<qx::trait::no_base_class_defined>::registerClass() {
+    ; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-void QxClass<QObject>::registerClass() { ; }
+void QxClass<QObject>::registerClass() {
+    ; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-void QxClass<qx::trait::no_base_class_defined>::beforeRegisterClass() { ; }
+void QxClass<qx::trait::no_base_class_defined>::beforeRegisterClass() {
+    ; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-void QxClass<QObject>::beforeRegisterClass() { ; }
+void QxClass<QObject>::beforeRegisterClass() {
+    ; }
 
 } // namespace qx

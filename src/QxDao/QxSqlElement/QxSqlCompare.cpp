@@ -99,9 +99,11 @@ QString QxSqlCompare::getExtraSettings() const { return (QString::number(static_
 
 void QxSqlCompare::setExtraSettings(const QString & s)
 {
-   int iPos = s.indexOf("|");
-   if (iPos == -1) { m_type = static_cast<QxSqlCompare::type>(s.toInt()); return; }
-   m_type = static_cast<QxSqlCompare::type>(s.left(iPos).toInt());
+    int iPos = s.indexOf(QLatin1String("|"));
+    if (iPos == -1) {
+        m_type = static_cast<QxSqlCompare::type>(s.toInt());
+        return; }
+   m_type = static_cast<QxSqlCompare::type>(s.leftRef(iPos).toInt());
    m_sCustomOperator = s.right(s.size() - (iPos + 1));
 }
 

@@ -63,89 +63,112 @@ namespace qx {
 
 /*!
  * \ingroup QxDao
- * \brief qx::IxSqlQueryBuilder : common interface to build SQL queries to communicate with database
+ * \brief qx::IxSqlQueryBuilder : common interface to build SQL queries to
+ * communicate with database
  */
-class QX_DLL_EXPORT IxSqlQueryBuilder
-{
+class QX_DLL_EXPORT IxSqlQueryBuilder {
 
 private:
-
-   struct IxSqlQueryBuilderImpl;
-   std::unique_ptr<IxSqlQueryBuilderImpl> m_pImpl; //!< Private implementation idiom
+  struct IxSqlQueryBuilderImpl;
+  std::unique_ptr<IxSqlQueryBuilderImpl>
+      m_pImpl; //!< Private implementation idiom
 
 public:
+  IxSqlQueryBuilder();
+  virtual ~IxSqlQueryBuilder() = 0;
 
-   IxSqlQueryBuilder();
-   virtual ~IxSqlQueryBuilder() = 0;
+  IxDataMemberX *getDataMemberX() const;
+  QxCollection<QString, IxDataMember *> *getLstDataMember() const;
+  IxSqlRelationX *getLstRelation() const;
+  qx::dao::detail::IxDao_Helper *getDaoHelper() const;
+  void setDaoHelper(qx::dao::detail::IxDao_Helper *p);
 
-   IxDataMemberX * getDataMemberX() const;
-   QxCollection<QString, IxDataMember *> * getLstDataMember() const;
-   IxSqlRelationX * getLstRelation() const;
-   qx::dao::detail::IxDao_Helper * getDaoHelper() const;
-   void setDaoHelper(qx::dao::detail::IxDao_Helper * p);
+  void setHashRelation(const QString &s);
+  void setCartesianProduct(bool b);
+  QString getSqlQuery() const;
+  QString getHashRelation() const;
+  QString table() const;
+  QxSoftDelete getSoftDelete() const;
+  bool getCartesianProduct() const;
+  long getDataCount() const;
+  long getRelationCount() const;
+  IxDataMember *getDataId() const;
+  IxDataMember *nextData(long &l) const;
+  IxSqlRelation *nextRelation(long &l) const;
 
-   void setHashRelation(const QString & s);
-   void setCartesianProduct(bool b);
-   QString getSqlQuery() const;
-   QString getHashRelation() const;
-   QString table() const;
-   QxSoftDelete getSoftDelete() const;
-   bool getCartesianProduct() const;
-   long getDataCount() const;
-   long getRelationCount() const;
-   IxDataMember * getDataId() const;
-   IxDataMember * nextData(long & l) const;
-   IxSqlRelation * nextRelation(long & l) const;
+  void initIdX(long lAllRelationCount);
+  bool insertIdX(long lIndex, const QVariant &idOwner, const QVariant &idData,
+                 void *ptr);
+  void *existIdX(long lIndex, const QVariant &idOwner, const QVariant &idData);
+  void setSqlQuery(const QString &sql, const QString &key = QString());
+  void addSqlQueryAlias(const QString &sql, const QString &sqlAlias);
+  bool getAddAutoIncrementIdToUpdateQuery() const;
+  void replaceSqlQueryAlias(QString &sql) const;
 
-   void initIdX(long lAllRelationCount);
-   bool insertIdX(long lIndex, const QVariant & idOwner, const QVariant & idData, void * ptr);
-   void * existIdX(long lIndex, const QVariant & idOwner, const QVariant & idData);
-   void setSqlQuery(const QString & sql, const QString & key = QString());
-   void addSqlQueryAlias(const QString & sql, const QString & sqlAlias);
-   bool getAddAutoIncrementIdToUpdateQuery() const;
-   void replaceSqlQueryAlias(QString & sql) const;
+  virtual void init();
+  virtual void clone(const IxSqlQueryBuilder &other);
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) = 0;
 
-   virtual void init();
-   virtual void clone(const IxSqlQueryBuilder & other);
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL) = 0;
+  static QString addSqlCondition(const QString &sql) {
+    return (sql.contains(QStringLiteral(" WHERE "))
+                ? QStringLiteral(" AND ")
+                : QStringLiteral(" WHERE "));
+  }
 
-   static QString addSqlCondition(const QString & sql) { return (sql.contains(" WHERE ") ? " AND " : " WHERE "); }
+  static void sql_CreateTable(QString &sql, IxSqlQueryBuilder &builder);
+  static void sql_DeleteById(QString &sql, IxSqlQueryBuilder &builder,
+                             bool bSoftDelete);
+  static void sql_Exist(QString &sql, IxSqlQueryBuilder &builder);
+  static void sql_FetchAll(QString &sql, IxSqlQueryBuilder &builder);
+  static void sql_FetchAll(QString &sql, IxSqlQueryBuilder &builder,
+                           const QStringList &columns);
+  static void sql_FetchAll_WithRelation(qx::QxSqlRelationLinked *pRelationX,
+                                        QString &sql,
+                                        IxSqlQueryBuilder &builder);
+  static void sql_FetchById(QString &sql, IxSqlQueryBuilder &builder);
+  static void sql_FetchById(QString &sql, IxSqlQueryBuilder &builder,
+                            const QStringList &columns);
+  static void sql_FetchById_WithRelation(qx::QxSqlRelationLinked *pRelationX,
+                                         QString &sql,
+                                         IxSqlQueryBuilder &builder);
+  static void sql_Insert(QString &sql, IxSqlQueryBuilder &builder);
+  static void sql_Update(QString &sql, IxSqlQueryBuilder &builder);
+  static void sql_Update(QString &sql, IxSqlQueryBuilder &builder,
+                         const QStringList &columns);
+  static void sql_Count_WithRelation(qx::QxSqlRelationLinked *pRelationX,
+                                     QString &sql, IxSqlQueryBuilder &builder);
 
-   static void sql_CreateTable(QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_DeleteById(QString & sql, IxSqlQueryBuilder & builder, bool bSoftDelete);
-   static void sql_Exist(QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_FetchAll(QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_FetchAll(QString & sql, IxSqlQueryBuilder & builder, const QStringList & columns);
-   static void sql_FetchAll_WithRelation(qx::QxSqlRelationLinked * pRelationX, QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_FetchById(QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_FetchById(QString & sql, IxSqlQueryBuilder & builder, const QStringList & columns);
-   static void sql_FetchById_WithRelation(qx::QxSqlRelationLinked * pRelationX, QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_Insert(QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_Update(QString & sql, IxSqlQueryBuilder & builder);
-   static void sql_Update(QString & sql, IxSqlQueryBuilder & builder, const QStringList & columns);
-   static void sql_Count_WithRelation(qx::QxSqlRelationLinked * pRelationX, QString & sql, IxSqlQueryBuilder & builder);
+  static void resolveOutput_FetchAll(void *t, QSqlQuery &query,
+                                     IxSqlQueryBuilder &builder);
+  static void resolveOutput_FetchAll(void *t, QSqlQuery &query,
+                                     IxSqlQueryBuilder &builder,
+                                     const QStringList &columns);
+  static void
+  resolveOutput_FetchAll_WithRelation(qx::QxSqlRelationLinked *pRelationX,
+                                      void *t, QSqlQuery &query,
+                                      IxSqlQueryBuilder &builder);
 
-   static void resolveOutput_FetchAll(void * t, QSqlQuery & query, IxSqlQueryBuilder & builder);
-   static void resolveOutput_FetchAll(void * t, QSqlQuery & query, IxSqlQueryBuilder & builder, const QStringList & columns);
-   static void resolveOutput_FetchAll_WithRelation(qx::QxSqlRelationLinked * pRelationX, void * t, QSqlQuery & query, IxSqlQueryBuilder & builder);
-
-   static void resolveInput_Insert(void * t, QSqlQuery & query, IxSqlQueryBuilder & builder);
-   static void resolveInput_Update(void * t, QSqlQuery & query, IxSqlQueryBuilder & builder);
-   static void resolveInput_Update(void * t, QSqlQuery & query, IxSqlQueryBuilder & builder, const QStringList & columns);
+  static void resolveInput_Insert(void *t, QSqlQuery &query,
+                                  IxSqlQueryBuilder &builder);
+  static void resolveInput_Update(void *t, QSqlQuery &query,
+                                  IxSqlQueryBuilder &builder);
+  static void resolveInput_Update(void *t, QSqlQuery &query,
+                                  IxSqlQueryBuilder &builder,
+                                  const QStringList &columns);
 
 protected:
+  bool verifyColumns(const QStringList &columns) const QX_USED;
 
-   bool verifyColumns(const QStringList & columns) const QX_USED;
-
-   bool isInitDone() const;
-   QxSoftDelete & softDelete();
-   const QxSoftDelete & softDelete() const;
-   void setSoftDelete(const QxSoftDelete & o);
-   void setDataMemberX(IxDataMemberX * p);
-   bool findSqlQuery(const QString & key);
-   bool findSqlAlias(const QString & key);
-   void insertSqlAlias(const QString & key);
-
+  bool isInitDone() const;
+  QxSoftDelete &softDelete();
+  const QxSoftDelete &softDelete() const;
+  void setSoftDelete(const QxSoftDelete &o);
+  void setDataMemberX(IxDataMemberX *p);
+  bool findSqlQuery(const QString &key);
+  bool findSqlAlias(const QString &key);
+  void insertSqlAlias(const QString &key);
 };
 
 typedef std::shared_ptr<IxSqlQueryBuilder> IxSqlQueryBuilder_ptr;

@@ -54,11 +54,14 @@ QMutex QxSingletonX::m_oMutexSingletonX; // replaced by 'getMutexSingletonX()'
 bool QxSingletonX::m_bOnClearSingletonX = false; // replaced by 'getOnClearSingletonX()'
 */
 
-QxSingletonX::QxSingletonX() : QxSingleton<QxSingletonX>("qx::QxSingletonX")
+QxSingletonX::QxSingletonX()
+    : QxSingleton<QxSingletonX>(QStringLiteral("qx::QxSingletonX"))
 {
 #if _QX_USE_QX_SINGLETON_X
    int iResult = std::atexit(& QxSingletonX::deleteAllSingleton); Q_UNUSED(iResult);
-   QString sAssertMsg = QString("cannot register 'qx::QxSingletonX::deleteAllSingleton()' function at exit program (using 'std::atexit')"); Q_UNUSED(sAssertMsg);
+   QString sAssertMsg(QStringLiteral("cannot register 'qx::QxSingletonX::deleteAllSingleton()' "
+                                     "function at exit program (using 'std::atexit')"));
+   Q_UNUSED(sAssertMsg);
    qAssertMsg((iResult == 0), "[QxOrm] qx::QxSingletonX() constructor", qPrintable(sAssertMsg));
 #endif // _QX_USE_QX_SINGLETON_X
 }
@@ -96,7 +99,7 @@ bool QxSingletonX::addSingleton(const QString & sKey, IxSingleton * pSingleton)
    QMutex * pMutex = (QCoreApplication::instance() ? getMutexSingletonX() : NULL);
    QMutexLocker locker(pMutex);
    bool bExist = getMapSingletonX().contains(sKey);
-   QString sAssertMsg = QString("singleton key '%1' already exists or is empty").arg(sKey); Q_UNUSED(sAssertMsg);
+   QString sAssertMsg = QStringLiteral("singleton key '%1' already exists or is empty").arg(sKey); Q_UNUSED(sAssertMsg);
    qAssertMsg((! bExist && ! sKey.isEmpty()), "[QxOrm] qx::QxSingletonX::addSingleton()", qPrintable(sAssertMsg));
    if (! pSingleton || bExist || sKey.isEmpty()) { return false; }
    getMapSingletonX().insert(sKey, pSingleton);
@@ -117,7 +120,7 @@ bool QxSingletonX::removeSingleton(const QString & sKey)
 #endif // _QX_TRACE_CONSTRUCTOR_DESTRUCTOR
    QMutex * pMutex = (QCoreApplication::instance() ? getMutexSingletonX() : NULL);
    QMutexLocker locker(pMutex);
-   QString sAssertMsg = QString("singleton key '%1' doesn't exist in the singleton manager").arg(sKey); Q_UNUSED(sAssertMsg);
+   QString sAssertMsg = QStringLiteral("singleton key '%1' doesn't exist in the singleton manager").arg(sKey); Q_UNUSED(sAssertMsg);
    qAssertMsg((getMapSingletonX().contains(sKey)), "[QxOrm] qx::QxSingletonX::removeSingleton()", qPrintable(sAssertMsg));
    bool bRemoveOk = (getMapSingletonX().remove(sKey) > 0);
    return bRemoveOk;

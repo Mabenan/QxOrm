@@ -40,12 +40,13 @@
  * \file QxBool.h
  * \author Lionel Marty
  * \ingroup QxCommon
- * \brief qx_bool : QxOrm library boolean type with code and description message when an error occured
+ * \brief qx_bool : QxOrm library boolean type with code and description message
+ * when an error occured
  */
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/serialization.hpp>
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
 #include <QtCore/qdatastream.h>
@@ -58,91 +59,146 @@ namespace qx {
 class QxBool;
 } // namespace qx
 
-QX_DLL_EXPORT QDataStream & operator<< (QDataStream & stream, const qx::QxBool & t) QX_USED;
-QX_DLL_EXPORT QDataStream & operator>> (QDataStream & stream, qx::QxBool & t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator<<(QDataStream &stream,
+                                      const qx::QxBool &t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator>>(QDataStream &stream,
+                                      qx::QxBool &t) QX_USED;
 
 namespace qx {
 
 /*!
  * \ingroup QxCommon
- * \brief qx_bool : boolean type with code and description message when an error occured
+ * \brief qx_bool : boolean type with code and description message when an error
+ * occured
  */
-class QxBool
-{
+class QxBool {
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-   friend class boost::serialization::access;
+  friend class boost::serialization::access;
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-   friend QX_DLL_EXPORT QDataStream & ::operator<< (QDataStream & stream, const qx::QxBool & t);
-   friend QX_DLL_EXPORT QDataStream & ::operator>> (QDataStream & stream, qx::QxBool & t);
+  friend QX_DLL_EXPORT QDataStream & ::operator<<(QDataStream &stream,
+                                                  const qx::QxBool &t);
+  friend QX_DLL_EXPORT QDataStream & ::operator>>(QDataStream &stream,
+                                                  qx::QxBool &t);
 
 private:
-
-   bool m_bValue;    //!< Data boolean value
-   long m_lCode;     //!< Error code when value is false
-   QString m_sDesc;  //!< Error description when value is false
+  bool m_bValue;   //!< Data boolean value
+  long m_lCode;    //!< Error code when value is false
+  QString m_sDesc; //!< Error description when value is false
 
 public:
+  QxBool() : m_bValue(false), m_lCode(0) { ; }
+  QxBool(bool b) : m_bValue(b), m_lCode(0) { qAssert(checkInitialized(b)); }
+  QxBool(long lCode, const QString &sDesc)
+      : m_bValue(false), m_lCode(lCode), m_sDesc(sDesc) {
+    ;
+  }
+  QxBool(bool bValue, long lCode, const QString &sDesc)
+      : m_bValue(bValue), m_lCode(lCode), m_sDesc(sDesc) {
+    qAssert(checkInitialized(bValue));
+  }
+  QxBool(const QxBool &other)
+      : m_bValue(other.getValue()), m_lCode(other.getCode()),
+        m_sDesc(other.getDesc()) {
+    ;
+  }
+  ~QxBool() { ; }
 
-   QxBool() : m_bValue(false), m_lCode(0) { ; }
-   QxBool(bool b) : m_bValue(b), m_lCode(0) { qAssert(checkInitialized(b)); }
-   QxBool(long lCode, const QString & sDesc) : m_bValue(false), m_lCode(lCode), m_sDesc(sDesc) { ; }
-   QxBool(bool bValue, long lCode, const QString & sDesc) : m_bValue(bValue), m_lCode(lCode), m_sDesc(sDesc) { qAssert(checkInitialized(bValue)); }
-   QxBool(const QxBool & other) : m_bValue(other.getValue()), m_lCode(other.getCode()), m_sDesc(other.getDesc()) { ; }
-   ~QxBool() { ; }
+  inline bool getValue() const { return m_bValue; }
+  inline long getCode() const { return m_lCode; }
+  inline QString getDesc() const { return m_sDesc; }
 
-   inline bool getValue() const                          { return m_bValue; }
-   inline long getCode() const                           { return m_lCode; }
-   inline QString getDesc() const                        { return m_sDesc; }
+  inline void setValue(bool bValue) {
+    m_bValue = bValue;
+    qAssert(checkInitialized(bValue));
+  }
+  inline void setCode(long lCode) { m_lCode = lCode; }
+  inline void setDesc(const QString &sDesc) { m_sDesc = sDesc; }
 
-   inline void setValue(bool bValue)                     { m_bValue = bValue; qAssert(checkInitialized(bValue)); }
-   inline void setCode(long lCode)                       { m_lCode = lCode; }
-   inline void setDesc(const QString & sDesc)            { m_sDesc = sDesc; }
+  inline QxBool &operator=(const QxBool &other) {
+    m_bValue = other.getValue();
+    m_lCode = other.getCode();
+    m_sDesc = other.getDesc();
+    return (*this);
+  }
+  inline QxBool &operator=(const bool b) {
+    m_bValue = b;
+    qAssert(checkInitialized(b));
+    return (*this);
+  }
 
-   inline QxBool & operator=(const QxBool & other)       { m_bValue = other.getValue(); m_lCode = other.getCode(); m_sDesc = other.getDesc(); return (* this); }
-   inline QxBool & operator=(const bool b)               { m_bValue = b; qAssert(checkInitialized(b)); return (* this); }
+  inline operator bool() const { return (m_bValue != false); }
+  inline bool operator!() const { return (m_bValue == false); }
 
-   inline operator bool() const                          { return (m_bValue != false); }
-   inline bool operator!() const                         { return (m_bValue == false); }
+  inline bool operator==(const QxBool &other) const {
+    return ((m_bValue == other.getValue()) && (m_lCode == other.getCode()) &&
+            (m_sDesc == other.getDesc()));
+  }
+  inline bool operator==(const bool b) const {
+    qAssert(checkInitialized(b));
+    return (m_bValue == b);
+  }
+  inline bool operator!=(const QxBool &other) const {
+    return ((m_bValue != other.getValue()) || (m_lCode != other.getCode()) ||
+            (m_sDesc != other.getDesc()));
+  }
+  inline bool operator!=(const bool b) const {
+    qAssert(checkInitialized(b));
+    return (m_bValue != b);
+  }
+  inline bool operator&&(const QxBool &other) const {
+    return (m_bValue && other.getValue());
+  }
+  inline bool operator&&(const bool b) const {
+    qAssert(checkInitialized(b));
+    return (m_bValue && b);
+  }
+  inline bool operator||(const QxBool &other) const {
+    return (m_bValue || other.getValue());
+  }
+  inline bool operator||(const bool b) const {
+    qAssert(checkInitialized(b));
+    return (m_bValue || b);
+  }
 
-   inline bool operator==(const QxBool & other) const    { return ((m_bValue == other.getValue()) && (m_lCode == other.getCode()) && (m_sDesc == other.getDesc())); }
-   inline bool operator==(const bool b) const            { qAssert(checkInitialized(b)); return (m_bValue == b); }
-   inline bool operator!=(const QxBool & other) const    { return ((m_bValue != other.getValue()) || (m_lCode != other.getCode()) || (m_sDesc != other.getDesc())); }
-   inline bool operator!=(const bool b) const            { qAssert(checkInitialized(b)); return (m_bValue != b); }
-   inline bool operator&&(const QxBool & other) const    { return (m_bValue && other.getValue()); }
-   inline bool operator&&(const bool b) const            { qAssert(checkInitialized(b)); return (m_bValue && b); }
-   inline bool operator||(const QxBool & other) const    { return (m_bValue || other.getValue()); }
-   inline bool operator||(const bool b) const            { qAssert(checkInitialized(b)); return (m_bValue || b); }
+  QString toString() const {
+    return (QString(m_bValue ? QStringLiteral("1") : QStringLiteral("0")) +
+            QStringLiteral("|") +
+            QString::number(static_cast<qlonglong>(m_lCode)) +
+            QStringLiteral("|") + m_sDesc);
+  }
 
-   QString toString() const { return (QString(m_bValue ? "1" : "0") + "|" + QString::number(static_cast<qlonglong>(m_lCode)) + "|" + m_sDesc); }
-
-   void fromString(const QString & s)
-   {
-      if (s.trimmed().isEmpty()) { (* this) = QxBool(); return; }
-      bool bValue = s.startsWith("1");
-      int iPos = s.indexOf("|", 2);
-      if (iPos == -1) { (* this) = QxBool(bValue); return; }
-      long lCode = s.mid(2, (iPos - 2)).toLong();
-      QString sDesc = s.right(s.size() - (iPos + 1));
-      (* this) = QxBool(bValue, lCode, sDesc);
-   }
+  void fromString(const QString &s) {
+    if (s.trimmed().isEmpty()) {
+      (*this) = QxBool();
+      return;
+    }
+    bool bValue = s.startsWith(QStringLiteral("1"));
+    int iPos = s.indexOf(QStringLiteral("|"), 2);
+    if (iPos == -1) {
+      (*this) = QxBool(bValue);
+      return;
+    }
+    long lCode = s.mid(2, (iPos - 2)).toLong();
+    QString sDesc = s.right(s.size() - (iPos + 1));
+    (*this) = QxBool(bValue, lCode, sDesc);
+  }
 
 private:
-
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-   template <class Archive>
-   void serialize(Archive & ar, const unsigned int file_version)
-   {
-      Q_UNUSED(file_version);
-      ar & boost::serialization::make_nvp("value", m_bValue);
-      ar & boost::serialization::make_nvp("code", m_lCode);
-      ar & boost::serialization::make_nvp("desc", m_sDesc);
-   }
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int file_version) {
+    Q_UNUSED(file_version);
+    ar &boost::serialization::make_nvp("value", m_bValue);
+    ar &boost::serialization::make_nvp("code", m_lCode);
+    ar &boost::serialization::make_nvp("desc", m_sDesc);
+  }
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-   inline bool checkInitialized(const bool b) const { return ((static_cast<int>(b) == 0) || (static_cast<int>(b) == 1)); }
-
+  inline bool checkInitialized(const bool b) const {
+    return ((static_cast<int>(b) == 0) || (static_cast<int>(b) == 1));
+  }
 };
 
 } // namespace qx

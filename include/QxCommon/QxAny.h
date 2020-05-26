@@ -40,7 +40,8 @@
  * \file QxAny.h
  * \author Lionel Marty
  * \ingroup QxCommon
- * \brief qx::any : basic implementation of boost::any (written by Kevlin Henney) when boost dependency is not available
+ * \brief qx::any : basic implementation of boost::any (written by Kevlin
+ * Henney) when boost dependency is not available
  */
 
 #ifndef _QX_NO_RTTI
@@ -49,117 +50,143 @@
 #else // _QX_NO_RTTI
 #include <QxTraits/get_class_name.h>
 #include <QxTraits/get_class_name_primitive.h>
-#define QX_TYPE_ID(T) std::string(qx::trait::get_class_name< T >::get())
+#define QX_TYPE_ID(T) std::string(qx::trait::get_class_name<T>::get())
 #endif // _QX_NO_RTTI
 
 #ifndef Q_OS_WIN
 #if (__GNUC__ >= 4)
-#define QX_ANY_FORCE_HIDDEN_VISIBILITY __attribute__ ((visibility("hidden"))) // To avoid a GCC warning : 'qx::any::holder<T>' declared with greater visibility than the type of its field 'qx::any::holder<T>::held' [-Wattributes]
-#endif // (__GNUC__ >= 4)
-#endif // Q_OS_WIN
+#define QX_ANY_FORCE_HIDDEN_VISIBILITY                                         \
+  __attribute__((visibility(                                                   \
+      "hidden"))) // To avoid a GCC warning : 'qx::any::holder<T>' declared with
+                  // greater visibility than the type of its field
+                  // 'qx::any::holder<T>::held' [-Wattributes]
+#endif            // (__GNUC__ >= 4)
+#endif            // Q_OS_WIN
 
 #ifndef QX_ANY_FORCE_HIDDEN_VISIBILITY
 #define QX_ANY_FORCE_HIDDEN_VISIBILITY /* Nothing */
-#endif // QX_ANY_FORCE_HIDDEN_VISIBILITY
+#endif                                 // QX_ANY_FORCE_HIDDEN_VISIBILITY
 
 namespace qx {
 
 class any;
-template <typename ValueType> ValueType * any_cast(any *);
-template <typename ValueType> ValueType * unsafe_any_cast(any *);
+template <typename ValueType> ValueType *any_cast(any *);
+template <typename ValueType> ValueType *unsafe_any_cast(any *);
 
-class any
-{
+class any {
 
-   template <typename ValueType> friend ValueType * qx::any_cast(any *);
-   template <typename ValueType> friend ValueType * qx::unsafe_any_cast(any *);
+  template <typename ValueType> friend ValueType *qx::any_cast(any *);
+  template <typename ValueType> friend ValueType *qx::unsafe_any_cast(any *);
 
 public:
-
 #ifndef _QX_NO_RTTI
-   typedef const std::type_info & type_check;
-#else // _QX_NO_RTTI
-   typedef std::string type_check;
+  typedef const std::type_info &type_check;
+#else  // _QX_NO_RTTI
+  typedef std::string type_check;
 #endif // _QX_NO_RTTI
 
-   any() : content(NULL) { ; }
-   any(const any & other) : content(other.content ? other.content->clone() : NULL) { ; }
-   ~any() { if (content) { delete content; } }
+  any() : content(NULL) { ; }
+  any(const any &other)
+      : content(other.content ? other.content->clone() : NULL) {
+    ;
+  }
+  ~any() {
+    if (content) {
+      delete content;
+    }
+  }
 
-   template <typename ValueType>
-   any(const ValueType & value) : content(new holder<typename std::remove_cv<typename std::decay<const ValueType>::type>::type>(value)) { ; }
+  template <typename ValueType>
+  any(const ValueType &value)
+      : content(new holder<typename std::remove_cv<
+                    typename std::decay<const ValueType>::type>::type>(value)) {
+    ;
+  }
 
-   any & swap(any & other) { std::swap(content, other.content); return (* this); }
+  any &swap(any &other) {
+    std::swap(content, other.content);
+    return (*this);
+  }
 
-   template <typename ValueType>
-   any & operator=(const ValueType & other) { any(other).swap(* this); return (* this); }
+  template <typename ValueType> any &operator=(const ValueType &other) {
+    any(other).swap(*this);
+    return (*this);
+  }
 
-   any & operator=(any other) { any(other).swap(* this); return (* this); }
-   bool empty() const { return (! content); }
-   void clear() { any().swap(* this); }
-   type_check type() const { return (content ? content->type() : QX_TYPE_ID(void)); }
+  any &operator=(const any &other) {
+    any(other).swap(*this);
+    return (*this);
+  }
+  bool empty() const { return (!content); }
+  void clear() { any().swap(*this); }
+  type_check type() const {
+    return (content ? content->type() : QX_TYPE_ID(void));
+  }
 
 private:
+  struct placeholder {
+    virtual ~placeholder() { ; }
+    virtual type_check type() const = 0;
+    virtual placeholder *clone() const = 0;
+  };
 
-   struct placeholder
-   {
-      virtual ~placeholder() { ; }
-      virtual type_check type() const = 0;
-      virtual placeholder * clone() const = 0;
-   };
+  template <typename ValueType>
+  struct QX_ANY_FORCE_HIDDEN_VISIBILITY holder : public placeholder {
+    holder(const ValueType &value) : held(value) { ; }
+    virtual type_check type() const { return QX_TYPE_ID(ValueType); }
+    virtual placeholder *clone() const { return new holder(held); }
+    ValueType held;
 
-   template <typename ValueType>
-   struct QX_ANY_FORCE_HIDDEN_VISIBILITY holder : public placeholder
-   {
-      holder(const ValueType & value) : held(value) { ; }
-      virtual type_check type() const { return QX_TYPE_ID(ValueType); }
-      virtual placeholder * clone() const { return new holder(held); }
-      ValueType held;
+  private:
+    holder &operator=(const holder &);
+  };
 
-      private:
-      holder & operator=(const holder &);
-   };
-
-   placeholder * content;
-
+  placeholder *content;
 };
 
-inline void swap(any & lhs, any & other) { lhs.swap(other); }
+inline void swap(any &lhs, any &other) { lhs.swap(other); }
 
-struct bad_any_cast : public std::exception
-{ virtual const char * what() const throw() { return "qx::bad_any_cast : failed conversion using qx::any_cast"; } };
+struct bad_any_cast : public std::exception {
+  virtual const char *what() const throw() {
+    return "qx::bad_any_cast : failed conversion using qx::any_cast";
+  }
+};
 
-template <typename ValueType>
-ValueType * any_cast(any * operand)
-{ return ((operand && (operand->type() == QX_TYPE_ID(ValueType))) ? (& static_cast<any::holder<typename std::remove_cv<ValueType>::type> *>(operand->content)->held) : NULL); }
+template <typename ValueType> ValueType *any_cast(any *operand) {
+  return ((operand && (operand->type() == QX_TYPE_ID(ValueType)))
+              ? (&static_cast<
+                      any::holder<typename std::remove_cv<ValueType>::type> *>(
+                      operand->content)
+                      ->held)
+              : NULL);
+}
 
-template <typename ValueType>
-const ValueType * any_cast(const any * operand)
-{ return any_cast<ValueType>(const_cast<any *>(operand)); }
+template <typename ValueType> const ValueType *any_cast(const any *operand) {
+  return any_cast<ValueType>(const_cast<any *>(operand));
+}
 
-template <typename ValueType>
-ValueType any_cast(any & operand)
-{
-   typedef typename std::remove_reference<ValueType>::type nonref;
-   nonref * result = any_cast<nonref>(& operand);
-   if (! result) { throw qx::bad_any_cast(); }
-   return static_cast<ValueType>(* result);
+template <typename ValueType> ValueType any_cast(any &operand) {
+  typedef typename std::remove_reference<ValueType>::type nonref;
+  nonref *result = any_cast<nonref>(&operand);
+  if (!result) {
+    throw qx::bad_any_cast();
+  }
+  return static_cast<ValueType>(*result);
+}
+
+template <typename ValueType> ValueType any_cast(const any &operand) {
+  typedef typename std::remove_reference<ValueType>::type nonref;
+  return any_cast<const nonref &>(const_cast<any &>(operand));
+}
+
+template <typename ValueType> ValueType *unsafe_any_cast(any *operand) {
+  return (&static_cast<any::holder<ValueType> *>(operand->content)->held);
 }
 
 template <typename ValueType>
-ValueType any_cast(const any & operand)
-{
-   typedef typename std::remove_reference<ValueType>::type nonref;
-   return any_cast<const nonref &>(const_cast<any &>(operand));
+const ValueType *unsafe_any_cast(const any *operand) {
+  return unsafe_any_cast<ValueType>(const_cast<any *>(operand));
 }
-
-template <typename ValueType>
-ValueType * unsafe_any_cast(any * operand)
-{ return (& static_cast<any::holder<ValueType> *>(operand->content)->held); }
-
-template <typename ValueType>
-const ValueType * unsafe_any_cast(const any * operand)
-{ return unsafe_any_cast<ValueType>(const_cast<any *>(operand)); }
 
 } // namespace qx
 

@@ -51,7 +51,9 @@ IxSqlElement::type_class QxSqlLimit::getTypeClass() const { return IxSqlElement:
 
 QString QxSqlLimit::toString() const
 {
-   if (! m_pSqlGenerator) { qAssert(false); return ""; }
+    if (!m_pSqlGenerator) {
+        qAssert(false); return QLatin1String("");
+    }
    return m_pSqlGenerator->getLimit(this);
 }
 
@@ -93,35 +95,55 @@ bool QxSqlLimit::getWithTies() const
 
 QString QxSqlLimit::getStartRow_ParamKey() const
 {
-   QString sStartRow("offset_start_row");
-   sStartRow += "_" + QString::number(m_iIndex) + "_0";
-   if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark) { sStartRow = "?"; }
-   else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_at_name) { sStartRow = "@" + sStartRow; }
-   else { sStartRow = ":" + sStartRow; }
+    QString sStartRow(QStringLiteral("offset_start_row"));
+    sStartRow += "_" + QString::number(m_iIndex) + "_0";
+    if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+        == qx::QxSqlDatabase::ph_style_question_mark) {
+        sStartRow = QStringLiteral("?");
+    } else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+               == qx::QxSqlDatabase::ph_style_at_name) {
+        sStartRow = "@" + sStartRow;
+    } else {
+        sStartRow = ":" + sStartRow;
+    }
    return sStartRow;
 }
 
 QString QxSqlLimit::getRowsCount_ParamKey() const
 {
-   QString sRowsCount("limit_rows_count");
-   sRowsCount += "_" + QString::number(m_iIndex) + "_0";
-   if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark) { sRowsCount = "?"; }
-   else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_at_name) { sRowsCount = "@" + sRowsCount; }
-   else { sRowsCount = ":" + sRowsCount; }
+    QString sRowsCount(QStringLiteral("limit_rows_count"));
+    sRowsCount += "_" + QString::number(m_iIndex) + "_0";
+    if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+        == qx::QxSqlDatabase::ph_style_question_mark) {
+        sRowsCount = QStringLiteral("?");
+    } else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+               == qx::QxSqlDatabase::ph_style_at_name) {
+        sRowsCount = "@" + sRowsCount;
+    } else {
+        sRowsCount = ":" + sRowsCount;
+    }
    return sRowsCount;
 }
 
 QString QxSqlLimit::getMaxRow_ParamKey() const
 {
-   QString sMaxRow("offset_max_row");
-   sMaxRow += "_" + QString::number(m_iIndex) + "_0";
-   if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark) { sMaxRow = "?"; }
-   else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_at_name) { sMaxRow = "@" + sMaxRow; }
-   else { sMaxRow = ":" + sMaxRow; }
+    QString sMaxRow(QStringLiteral("offset_max_row"));
+    sMaxRow += "_" + QString::number(m_iIndex) + "_0";
+    if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+        == qx::QxSqlDatabase::ph_style_question_mark) {
+        sMaxRow = QStringLiteral("?");
+    } else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+               == qx::QxSqlDatabase::ph_style_at_name) {
+        sMaxRow = "@" + sMaxRow;
+    } else {
+        sMaxRow = ":" + sMaxRow;
+    }
    return sMaxRow;
 }
 
-QString QxSqlLimit::getExtraSettings() const { return ""; }
+QString QxSqlLimit::getExtraSettings() const
+{ return QLatin1String("");
+}
 
 void QxSqlLimit::setExtraSettings(const QString & s) { Q_UNUSED(s); }
 

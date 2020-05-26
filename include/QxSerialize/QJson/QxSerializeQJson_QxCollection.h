@@ -67,8 +67,10 @@ struct QxConvert_ToJson< qx::QxCollection<Key, Value> >
       for (long l = 0; l < t.count(); l++)
       {
          QJsonObject obj;
-         val = qx::cvt::to_json(t.getKeyByIndex(l), format); obj.insert("key", val);
-         val = qx::cvt::to_json(t.getByIndex(l), format); obj.insert("value", val);
+         val = qx::cvt::to_json(t.getKeyByIndex(l), format);
+         obj.insert(QStringLiteral("key"), val);
+         val = qx::cvt::to_json(t.getByIndex(l), format);
+         obj.insert(QStringLiteral("value"), val);
          arr.append(obj);
       }
 
@@ -90,8 +92,8 @@ struct QxConvert_FromJson< qx::QxCollection<Key, Value> >
       {
          val = arr.at(i); if (! val.isObject()) { continue; }
          obj = val.toObject(); Key key; Value value;
-         qx::cvt::from_json(obj.value("key"), key, format);
-         qx::cvt::from_json(obj.value("value"), value, format);
+         qx::cvt::from_json(obj.value(QStringLiteral("key")), key, format);
+         qx::cvt::from_json(obj.value(QStringLiteral("value")), value, format);
          t.insert(key, value);
       }
 

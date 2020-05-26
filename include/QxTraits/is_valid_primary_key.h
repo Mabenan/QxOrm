@@ -57,19 +57,24 @@ struct is_valid_primary_key
 
 template <>
 struct is_valid_primary_key<short>
-{ static inline bool get(const short & t) { return (t != 0); } };
+{
+    static inline bool get(short t) { return (t != 0); }
+};
 
 template <>
 struct is_valid_primary_key<int>
-{ static inline bool get(const int & t) { return (t != 0); } };
+{ static inline bool get(int & t) { return (t != 0); }
+};
 
 template <>
 struct is_valid_primary_key<long>
-{ static inline bool get(const long & t) { return (t != 0); } };
+{
+    static inline bool get(long t) { return (t != 0); }
+};
 
 template <>
 struct is_valid_primary_key<long long>
-{ static inline bool get(const long long & t) { return (t != 0); } };
+{ static inline bool get(long & t) { return (t != 0); } };
 
 template <>
 struct is_valid_primary_key<QString>

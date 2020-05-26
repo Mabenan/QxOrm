@@ -47,10 +47,10 @@ QJsonValue QxConvert_ToJson_Helper(const QColor & t, const QString & format)
    QJsonObject obj;
    QColor clr = t.toRgb();
    int iR(clr.red()), iG(clr.green()), iB(clr.blue()), iA(t.alpha());
-   obj.insert("red", qx::cvt::to_json(iR, format));
-   obj.insert("green", qx::cvt::to_json(iG, format));
-   obj.insert("blue", qx::cvt::to_json(iB, format));
-   obj.insert("alpha", qx::cvt::to_json(iA, format));
+   obj.insert(QStringLiteral("red"), qx::cvt::to_json(iR, format));
+   obj.insert(QStringLiteral("green"), qx::cvt::to_json(iG, format));
+   obj.insert(QStringLiteral("blue"), qx::cvt::to_json(iB, format));
+   obj.insert(QStringLiteral("alpha"), qx::cvt::to_json(iA, format));
    return QJsonValue(obj);
 }
 
@@ -59,10 +59,10 @@ qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, QColor & t, const QStrin
    t = QColor();
    if (! j.isObject()) { return qx_bool(true); }
    QJsonObject obj = j.toObject(); int iR(0), iG(0), iB(0), iA(0);
-   qx::cvt::from_json(obj.value("red"), iR, format);
-   qx::cvt::from_json(obj.value("green"), iG, format);
-   qx::cvt::from_json(obj.value("blue"), iB, format);
-   qx::cvt::from_json(obj.value("alpha"), iA, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("red")), iR, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("green")), iG, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("blue")), iB, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("alpha")), iA, format);
    t.setRed(iR); t.setGreen(iG);
    t.setBlue(iB); t.setAlpha(iA);
    return qx_bool(true);

@@ -77,39 +77,57 @@ bool QxSoftDelete::isEmpty() const { return (m_sTable.isEmpty() || m_sColumn.isE
 
 QString QxSoftDelete::buildSqlTablePointName(const QString & sTable /* = QString() */) const
 {
-   if (this->isEmpty()) { return ""; }
+    if (this->isEmpty()) { return QLatin1String("");
+    }
    QString sCurrTable = (sTable.isEmpty() ? m_sTable : sTable);
-   sCurrTable.replace(".", "_");
+   sCurrTable.replace(QLatin1String("."), QLatin1String("_"));
    return (sCurrTable + "." + m_sColumn);
 }
 
 QString QxSoftDelete::buildSqlQueryToFetch(const QString & sTable /* = QString() */) const
 {
    QString sCurrTable = (sTable.isEmpty() ? m_sTable : sTable);
-   sCurrTable.replace(".", "_");
-   if (this->isEmpty()) { return ""; }
-   else if (! m_sSqlQueryToFetch.isEmpty()) { return m_sSqlQueryToFetch; }
-   else if (m_eMode == QxSoftDelete::mode_flag) { return ("(" + sCurrTable + "." + m_sColumn + " IS NULL" + " OR " + sCurrTable + "." + m_sColumn + " = ''" + " OR " + sCurrTable + "." + m_sColumn + " = '0'" + ")"); }
-   else if (m_eMode == QxSoftDelete::mode_date_time) { return ("(" + sCurrTable + "." + m_sColumn + " IS NULL" + " OR " + sCurrTable + "." + m_sColumn + " = ''" + ")"); }
-   qAssert(false); return "";
+   sCurrTable.replace(QLatin1String("."), QLatin1String("_"));
+   if (this->isEmpty()) {
+       return QLatin1String("");
+   } else if (!m_sSqlQueryToFetch.isEmpty()) {
+       return m_sSqlQueryToFetch;
+   } else if (m_eMode == QxSoftDelete::mode_flag) {
+       return ("(" + sCurrTable + "." + m_sColumn + " IS NULL" + " OR " + sCurrTable + "."
+               + m_sColumn + " = ''" + " OR " + sCurrTable + "." + m_sColumn + " = '0'" + ")");
+   } else if (m_eMode == QxSoftDelete::mode_date_time) {
+       return ("(" + sCurrTable + "." + m_sColumn + " IS NULL" + " OR " + sCurrTable + "."
+               + m_sColumn + " = ''" + ")");
+   }
+   qAssert(false);
+   return QLatin1String("");
 }
 
 QString QxSoftDelete::buildSqlQueryToUpdate() const
 {
-   if (this->isEmpty()) { return ""; }
-   else if (! m_sSqlQueryToUpdate.isEmpty()) { return m_sSqlQueryToUpdate; }
-   else if (m_eMode == QxSoftDelete::mode_flag) { return (m_sColumn + " = '1'"); }
-   else if (m_eMode == QxSoftDelete::mode_date_time) { return (m_sColumn + " = '" + QDateTime::currentDateTime().toString(QX_DAO_SOFT_DELETE_QDATETIME_FORMAT) + "'"); }
-   qAssert(false); return "";
+    if (this->isEmpty()) { return QLatin1String("");
+    } else if (!m_sSqlQueryToUpdate.isEmpty()) {
+        return m_sSqlQueryToUpdate;
+    } else if (m_eMode == QxSoftDelete::mode_flag) {
+        return (m_sColumn + " = '1'");
+    } else if (m_eMode == QxSoftDelete::mode_date_time) {
+        return (m_sColumn + " = '"
+                + QDateTime::currentDateTime().toString(QStringLiteral(QX_DAO_SOFT_DELETE_QDATETIME_FORMAT)) + QStringLiteral("'"));
+    }
+    qAssert(false); return QLatin1String("");
 }
 
 QString QxSoftDelete::buildSqlQueryToCreateTable() const
 {
-   if (this->isEmpty()) { return ""; }
-   else if (! m_sSqlQueryToCreateTable.isEmpty()) { return m_sSqlQueryToCreateTable; }
-   else if (m_eMode == QxSoftDelete::mode_flag) { return (m_sColumn + " " + "TEXT"); }
-   else if (m_eMode == QxSoftDelete::mode_date_time) { return (m_sColumn + " " + "TEXT"); }
-   qAssert(false); return "";
+    if (this->isEmpty()) { return QLatin1String("");
+    } else if (!m_sSqlQueryToCreateTable.isEmpty()) {
+        return m_sSqlQueryToCreateTable;
+    } else if (m_eMode == QxSoftDelete::mode_flag) {
+        return (m_sColumn + " " + QStringLiteral("TEXT"));
+    } else if (m_eMode == QxSoftDelete::mode_date_time) {
+        return (m_sColumn + " " + QStringLiteral("TEXT"));
+    }
+    qAssert(false); return QLatin1String("");
 }
 
 } // namespace qx

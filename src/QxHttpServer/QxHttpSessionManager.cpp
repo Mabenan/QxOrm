@@ -105,7 +105,7 @@ struct QxHttpSessionManager::QxHttpSessionManagerImpl
 
 };
 
-QxHttpSessionManager::QxHttpSessionManager() : QObject(), qx::QxSingleton<QxHttpSessionManager>("qx::QxHttpSessionManager"), m_pImpl(new QxHttpSessionManagerImpl())
+QxHttpSessionManager::QxHttpSessionManager(QObject * parent) : QObject(parent), qx::QxSingleton<QxHttpSessionManager>(QStringLiteral("qx::QxHttpSessionManager")), m_pImpl(new QxHttpSessionManagerImpl())
 {
    QObject::connect((& m_pImpl->m_timer), SIGNAL(timeout()), this, SLOT(onCheckSessionTimeOut()));
    m_pImpl->m_timer.start(60000);

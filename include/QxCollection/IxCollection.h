@@ -45,31 +45,29 @@
 
 #include <QxTraits/get_class_name.h>
 
+#include <QtGlobal>
 #include <QxCommon/QxAnyCastDynamic.h>
 
 namespace qx {
 
 /*!
  * \ingroup QxCollection
- * \brief qx::IxCollection : common interface for all QxOrm containers qx::QxCollection<Key, Value>
+ * \brief qx::IxCollection : common interface for all QxOrm containers
+ * qx::QxCollection<Key, Value>
  */
-class QX_DLL_EXPORT IxCollection
-{
-
+class QX_DLL_EXPORT IxCollection {
 public:
+  IxCollection() { ; }
+  virtual ~IxCollection() = 0;
 
-   IxCollection() { ; }
-   virtual ~IxCollection() = 0;
+  virtual long _count() const = 0;
+  virtual void _clear() = 0;
+  virtual bool _remove(long index) = 0;
+  virtual qx::any _at(long index) const = 0;
 
-   virtual long _count() const = 0;
-   virtual void _clear() = 0;
-   virtual bool _remove(long index) = 0;
-   virtual qx::any _at(long index) const = 0;
-
-   template <typename T>
-   T _get(long index) const
-   { return qx::any_cast_dynamic<T>::get(_at(index)); }
-
+  template <typename T> T _get(long index) const {
+    return qx::any_cast_dynamic<T>::get(_at(index));
+  }
 };
 
 typedef std::shared_ptr<qx::IxCollection> IxCollection_ptr;

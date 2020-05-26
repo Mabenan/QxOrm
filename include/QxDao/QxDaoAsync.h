@@ -40,14 +40,15 @@
  * \file QxDaoAsync.h
  * \author Lionel Marty
  * \ingroup QxDao
- * \brief Helper class to execute SQL queries in another thread (asynchronous way) using qx::IxPersistable interface
+ * \brief Helper class to execute SQL queries in another thread (asynchronous
+ * way) using qx::IxPersistable interface
  */
 
 #ifdef _QX_NO_PRECOMPILED_HEADER
 #ifndef Q_MOC_RUN
 #include <QxPrecompiled.h> // Need to include precompiled header for the generated moc file
-#endif // Q_MOC_RUN
-#endif // _QX_NO_PRECOMPILED_HEADER
+#endif                     // Q_MOC_RUN
+#endif                     // _QX_NO_PRECOMPILED_HEADER
 
 #include <QtCore/qqueue.h>
 
@@ -64,59 +65,75 @@ namespace detail {
 
 /*!
  * \ingroup QxDao
- * \brief qx::dao::detail::QxDaoAsyncParams : all parameters for qx::QxDaoAsync class to execute queries
+ * \brief qx::dao::detail::QxDaoAsyncParams : all parameters for qx::QxDaoAsync
+ * class to execute queries
  */
-struct QxDaoAsyncParams
-{
+struct QxDaoAsyncParams {
 
-   enum dao_action { dao_none, dao_count, dao_fetch_by_id, dao_fetch_all, dao_fetch_by_query, dao_insert, 
-                     dao_update, dao_save, dao_delete_by_id, dao_delete_all, dao_delete_by_query, 
-                     dao_destroy_by_id, dao_destroy_all, dao_destroy_by_query, dao_execute_query, dao_call_query };
+  enum dao_action {
+    dao_none,
+    dao_count,
+    dao_fetch_by_id,
+    dao_fetch_all,
+    dao_fetch_by_query,
+    dao_insert,
+    dao_update,
+    dao_save,
+    dao_delete_by_id,
+    dao_delete_all,
+    dao_delete_by_query,
+    dao_destroy_by_id,
+    dao_destroy_all,
+    dao_destroy_by_query,
+    dao_execute_query,
+    dao_call_query
+  };
 
-   dao_action                    daoAction;           //!< Action to execute into the thread (asynchronous way)
-   QString                       className;           //!< Classname parameter to execute action (must implement qx::IxPersistable interface)
-   qx::QxSqlQuery                query;               //!< Query parameter to execute action
-   QSqlDatabase *                pDatabase;           //!< Database parameter to execute action
-   IxPersistable_ptr             pInstance;           //!< Current instance parameter to execute action
-   IxPersistableCollection_ptr   pListOfInstances;    //!< List of instances fetched by query
-   QStringList                   listColumns;         //!< List of columns parameter to execute action
-   QStringList                   listRelations;       //!< List of relationships parameter to execute action
-   QVariant                      id;                  //!< Current instance id parameter to execute action
-   long                          daoCount;            //!< Dao count value returned by qx::dao::count query
+  dao_action
+      daoAction;     //!< Action to execute into the thread (asynchronous way)
+  QString className; //!< Classname parameter to execute action (must implement
+                     //!< qx::IxPersistable interface)
+  qx::QxSqlQuery query;        //!< Query parameter to execute action
+  QSqlDatabase *pDatabase;     //!< Database parameter to execute action
+  IxPersistable_ptr pInstance; //!< Current instance parameter to execute action
+  IxPersistableCollection_ptr
+      pListOfInstances;    //!< List of instances fetched by query
+  QStringList listColumns; //!< List of columns parameter to execute action
+  QStringList
+      listRelations; //!< List of relationships parameter to execute action
+  QVariant id;       //!< Current instance id parameter to execute action
+  long daoCount;     //!< Dao count value returned by qx::dao::count query
 
-   QxDaoAsyncParams() : daoAction(dao_none), pDatabase(NULL), daoCount(0) { ; }
-   ~QxDaoAsyncParams() { ; }
-
+  QxDaoAsyncParams() : daoAction(dao_none), pDatabase(NULL), daoCount(0) { ; }
+  ~QxDaoAsyncParams() { ; }
 };
 
 typedef std::shared_ptr<QxDaoAsyncParams> QxDaoAsyncParams_ptr;
 
 /*!
  * \ingroup QxDao
- * \brief qx::dao::detail::QxDaoAsyncRunner : class with a slot to execute queries in another thread
+ * \brief qx::dao::detail::QxDaoAsyncRunner : class with a slot to execute
+ * queries in another thread
  */
-class QX_DLL_EXPORT QxDaoAsyncRunner : public QObject
-{
+class QX_DLL_EXPORT QxDaoAsyncRunner : public QObject {
 
-   Q_OBJECT
+  Q_OBJECT
 
 public:
-
-   QxDaoAsyncRunner();
-   virtual ~QxDaoAsyncRunner();
+  QxDaoAsyncRunner(QObject *parnet = nullptr);
+  virtual ~QxDaoAsyncRunner();
 
 protected:
-
-   QSqlError runQuery(qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
+  QSqlError runQuery(qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
 
 Q_SIGNALS:
 
-   void queryFinished(const QSqlError & daoError, qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
+  void queryFinished(const QSqlError &daoError,
+                     qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
 
 public Q_SLOTS:
 
-   void onQueryStarted(qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
-
+  void onQueryStarted(qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
 };
 
 } // namespace detail
@@ -124,12 +141,16 @@ public Q_SLOTS:
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxDaoAsync : helper class to execute SQL queries in another thread (asynchronous way) using qx::IxPersistable interface
+ * \brief qx::QxDaoAsync : helper class to execute SQL queries in another thread
+(asynchronous way) using qx::IxPersistable interface
  *
  * To use <i>qx::QxDaoAsync</i> helper class :
- * 1- be careful to work only with classes implementing <i>qx::IxPersistable</i> interface ;
- * 2- create an instance of <i>qx::QxDaoAsync</i> type (for example, a property of a QWidget derived class) ;
- * 3- connect a SLOT to the <i>qx::QxDaoAsync::queryFinished()</i> SIGNAL (for example, a SLOT of a QWidget derived class) ;
+ * 1- be careful to work only with classes implementing <i>qx::IxPersistable</i>
+interface ;
+ * 2- create an instance of <i>qx::QxDaoAsync</i> type (for example, a property
+of a QWidget derived class) ;
+ * 3- connect a SLOT to the <i>qx::QxDaoAsync::queryFinished()</i> SIGNAL (for
+example, a SLOT of a QWidget derived class) ;
  * 4- run a query using one of <i>qx::QxDaoAsync::asyncXXXX()</i> methods.
  *
  * For example, with a <i>MyWidget</i> class :
@@ -141,7 +162,8 @@ class MyWidget : public QWidget
    qx::QxDaoAsync m_daoAsync;
    //...
 Q_SLOTS:
-   void onQueryFinished(const QSqlError & daoError, qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
+   void onQueryFinished(const QSqlError & daoError,
+qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
    //...
 };
  * \endcode
@@ -150,70 +172,102 @@ Q_SLOTS:
 MyWidget::MyWidget() : QObject()
 {
    //...
-   QObject::connect((& m_daoAsync), SIGNAL(queryFinished(const QSqlError &, qx::dao::detail::QxDaoAsyncParams_ptr)), this, SLOT(onQueryFinished(const QSqlError &, qx::dao::detail::QxDaoAsyncParams_ptr)));
+   QObject::connect((& m_daoAsync), SIGNAL(queryFinished(const QSqlError &,
+qx::dao::detail::QxDaoAsyncParams_ptr)), this, SLOT(onQueryFinished(const
+QSqlError &, qx::dao::detail::QxDaoAsyncParams_ptr)));
    //...
 }
-void MyWidget::onQueryFinished(const QSqlError & daoError, qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams)
+void MyWidget::onQueryFinished(const QSqlError & daoError,
+qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams)
 {
    if (! pDaoParams) { return; }
    qx::QxSqlQuery query = pDaoParams->query;
    if (! daoError.isValid()) { ; }
-   // If the async query is associated to a simple object, just use 'pDaoParams->pInstance' method
-   qx::IxPersistable_ptr ptr = pDaoParams->pInstance;
-   // If the async query is associated to a list of objects, just use 'pDaoParams->pListOfInstances' method
-   qx::IxPersistableCollection_ptr lst = pDaoParams->pListOfInstances;
+   // If the async query is associated to a simple object, just use
+'pDaoParams->pInstance' method qx::IxPersistable_ptr ptr =
+pDaoParams->pInstance;
+   // If the async query is associated to a list of objects, just use
+'pDaoParams->pListOfInstances' method qx::IxPersistableCollection_ptr lst =
+pDaoParams->pListOfInstances;
    //...
 }
  * \endcode
  */
-class QX_DLL_EXPORT QxDaoAsync : public QThread
-{
+class QX_DLL_EXPORT QxDaoAsync : public QThread {
 
-   Q_OBJECT
+  Q_OBJECT
 
 protected:
-
-   QMutex m_mutex;                                       //!< Mutex => qx::QxDaoAsync is thread-safe
-   qx::dao::detail::QxDaoAsyncParams_ptr m_pDaoParams;   //!< Parameters to execute query
+  QMutex m_mutex; //!< Mutex => qx::QxDaoAsync is thread-safe
+  qx::dao::detail::QxDaoAsyncParams_ptr
+      m_pDaoParams; //!< Parameters to execute query
 
 public:
+  QxDaoAsync(QObject *parent = nullptr);
+  virtual ~QxDaoAsync();
 
-   QxDaoAsync();
-   virtual ~QxDaoAsync();
+  bool asyncCount(const QString &className,
+                  const qx::QxSqlQuery &query = qx::QxSqlQuery(),
+                  QSqlDatabase *pDatabase = NULL);
+  bool asyncFetchById(IxPersistable_ptr pToFetch,
+                      const QVariant &id = QVariant(),
+                      const QStringList &columns = QStringList(),
+                      const QStringList &relation = QStringList(),
+                      QSqlDatabase *pDatabase = NULL);
+  bool asyncFetchAll(const QString &className,
+                     const QStringList &columns = QStringList(),
+                     const QStringList &relation = QStringList(),
+                     QSqlDatabase *pDatabase = NULL);
+  bool asyncFetchByQuery(const QString &className, const qx::QxSqlQuery &query,
+                         const QStringList &columns = QStringList(),
+                         const QStringList &relation = QStringList(),
+                         QSqlDatabase *pDatabase = NULL);
+  bool asyncInsert(IxPersistable_ptr pToInsert,
+                   const QStringList &relation = QStringList(),
+                   QSqlDatabase *pDatabase = NULL);
+  bool asyncUpdate(IxPersistable_ptr pToUpdate,
+                   const qx::QxSqlQuery &query = qx::QxSqlQuery(),
+                   const QStringList &columns = QStringList(),
+                   const QStringList &relation = QStringList(),
+                   QSqlDatabase *pDatabase = NULL);
+  bool asyncSave(IxPersistable_ptr pToSave,
+                 const QStringList &relation = QStringList(),
+                 QSqlDatabase *pDatabase = NULL);
+  bool asyncDeleteById(IxPersistable_ptr pToDelete,
+                       const QVariant &id = QVariant(),
+                       QSqlDatabase *pDatabase = NULL);
+  bool asyncDeleteAll(const QString &className, QSqlDatabase *pDatabase = NULL);
+  bool asyncDeleteByQuery(const QString &className, const qx::QxSqlQuery &query,
+                          QSqlDatabase *pDatabase = NULL);
+  bool asyncDestroyById(IxPersistable_ptr pToDestroy,
+                        const QVariant &id = QVariant(),
+                        QSqlDatabase *pDatabase = NULL);
+  bool asyncDestroyAll(const QString &className,
+                       QSqlDatabase *pDatabase = NULL);
+  bool asyncDestroyByQuery(const QString &className,
+                           const qx::QxSqlQuery &query,
+                           QSqlDatabase *pDatabase = NULL);
+  bool asyncExecuteQuery(const QString &className, qx::QxSqlQuery &query,
+                         QSqlDatabase *pDatabase = NULL);
+  bool asyncCallQuery(qx::QxSqlQuery &query, QSqlDatabase *pDatabase = NULL);
 
-   bool asyncCount(const QString & className, const qx::QxSqlQuery & query = qx::QxSqlQuery(), QSqlDatabase * pDatabase = NULL);
-   bool asyncFetchById(IxPersistable_ptr pToFetch, const QVariant & id = QVariant(), const QStringList & columns = QStringList(), const QStringList & relation = QStringList(), QSqlDatabase * pDatabase = NULL);
-   bool asyncFetchAll(const QString & className, const QStringList & columns = QStringList(), const QStringList & relation = QStringList(), QSqlDatabase * pDatabase = NULL);
-   bool asyncFetchByQuery(const QString & className, const qx::QxSqlQuery & query, const QStringList & columns = QStringList(), const QStringList & relation = QStringList(), QSqlDatabase * pDatabase = NULL);
-   bool asyncInsert(IxPersistable_ptr pToInsert, const QStringList & relation = QStringList(), QSqlDatabase * pDatabase = NULL);
-   bool asyncUpdate(IxPersistable_ptr pToUpdate, const qx::QxSqlQuery & query = qx::QxSqlQuery(), const QStringList & columns = QStringList(), const QStringList & relation = QStringList(), QSqlDatabase * pDatabase = NULL);
-   bool asyncSave(IxPersistable_ptr pToSave, const QStringList & relation = QStringList(), QSqlDatabase * pDatabase = NULL);
-   bool asyncDeleteById(IxPersistable_ptr pToDelete, const QVariant & id = QVariant(), QSqlDatabase * pDatabase = NULL);
-   bool asyncDeleteAll(const QString & className, QSqlDatabase * pDatabase = NULL);
-   bool asyncDeleteByQuery(const QString & className, const qx::QxSqlQuery & query, QSqlDatabase * pDatabase = NULL);
-   bool asyncDestroyById(IxPersistable_ptr pToDestroy, const QVariant & id = QVariant(), QSqlDatabase * pDatabase = NULL);
-   bool asyncDestroyAll(const QString & className, QSqlDatabase * pDatabase = NULL);
-   bool asyncDestroyByQuery(const QString & className, const qx::QxSqlQuery & query, QSqlDatabase * pDatabase = NULL);
-   bool asyncExecuteQuery(const QString & className, qx::QxSqlQuery & query, QSqlDatabase * pDatabase = NULL);
-   bool asyncCallQuery(qx::QxSqlQuery & query, QSqlDatabase * pDatabase = NULL);
-
-   bool isQueryRunning() const { return (m_pDaoParams.get() != NULL); }
+  bool isQueryRunning() const { return (m_pDaoParams.get() != NULL); }
 
 protected:
+  virtual void run();
 
-   virtual void run();
-
-   void startQuery();
+  void startQuery();
 
 Q_SIGNALS:
 
-   void queryStarted(qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
-   void queryFinished(const QSqlError & daoError, qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
+  void queryStarted(qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
+  void queryFinished(const QSqlError &daoError,
+                     qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
 
 private Q_SLOTS:
 
-   void onQueryFinished(const QSqlError & daoError, qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
-
+  void onQueryFinished(const QSqlError &daoError,
+                       qx::dao::detail::QxDaoAsyncParams_ptr pDaoParams);
 };
 
 typedef std::shared_ptr<QxDaoAsync> QxDaoAsync_ptr;

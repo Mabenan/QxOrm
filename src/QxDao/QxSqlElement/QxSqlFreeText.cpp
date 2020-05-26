@@ -56,7 +56,8 @@ void QxSqlFreeText::resolve(QSqlQuery & query) const
    if (m_lstValues.count() <= 0) { return; }
    qx::QxSqlDatabase::ph_style phStyle = qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle();
    bool bQuestionMark = (phStyle == qx::QxSqlDatabase::ph_style_question_mark);
-   QString toFind = ((phStyle == qx::QxSqlDatabase::ph_style_2_point_name) ? QString(":") : QString("@"));
+   QString toFind = ((phStyle == qx::QxSqlDatabase::ph_style_2_point_name) ? QStringLiteral(":")
+                                                                           : QStringLiteral("@"));
    QString txt = m_sText.trimmed();
    int posBegin = -1;
    int posEnd = -1;
@@ -67,11 +68,11 @@ void QxSqlFreeText::resolve(QSqlQuery & query) const
       if (bQuestionMark) { query.addBindValue(val); }
       else
       {
-         posBegin = txt.indexOf(toFind);
-         posEnd = txt.indexOf(" ", (posBegin + 1));
-         if ((posEnd == -1) && (i == (m_lstValues.count() - 1))) { posEnd = txt.size(); }
+          posBegin = txt.indexOf(toFind); posEnd = txt.indexOf(QLatin1String(" "), (posBegin + 1));
+          if ((posEnd == -1) && (i == (m_lstValues.count() - 1))) {
+              posEnd = txt.size(); }
          if ((posBegin == -1) || (posEnd == -1) || (posEnd <= posBegin)) { qAssert(false); break; }
-         QString key = txt.mid(posBegin, (posEnd - posBegin)).replace(")", "");
+         QString key = txt.mid(posBegin, (posEnd - posBegin)).replace(QLatin1String(")"), QLatin1String(""));
          txt = txt.right(txt.size() - posEnd).trimmed();
          query.bindValue(key, val);
       }

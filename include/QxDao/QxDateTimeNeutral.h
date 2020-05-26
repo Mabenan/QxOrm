@@ -40,16 +40,17 @@
  * \file QxDateTimeNeutral.h
  * \author Lionel Marty
  * \ingroup QxDao
- * \brief Helper class to store a date-time value into database under neutral format (YYYYMMDDHHMMSS) => cross database compatibility
+ * \brief Helper class to store a date-time value into database under neutral
+ * format (YYYYMMDDHHMMSS) => cross database compatibility
  */
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/serialization.hpp>
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-#include <QtCore/qdatetime.h>
 #include <QtCore/qdatastream.h>
+#include <QtCore/qdatetime.h>
 
 #include <QxSerialize/Qt/QxSerialize_QString.h>
 
@@ -59,68 +60,91 @@ namespace qx {
 class QxDateTimeNeutral;
 } // namespace qx
 
-QX_DLL_EXPORT QDataStream & operator<< (QDataStream & stream, const qx::QxDateTimeNeutral & t) QX_USED;
-QX_DLL_EXPORT QDataStream & operator>> (QDataStream & stream, qx::QxDateTimeNeutral & t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator<<(QDataStream &stream,
+                                      const qx::QxDateTimeNeutral &t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator>>(QDataStream &stream,
+                                      qx::QxDateTimeNeutral &t) QX_USED;
 
 namespace qx {
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxDateTimeNeutral : helper class to store a date-time value into database under neutral format (YYYYMMDDHHMMSS) => cross database compatibility
+ * \brief qx::QxDateTimeNeutral : helper class to store a date-time value into
+ * database under neutral format (YYYYMMDDHHMMSS) => cross database
+ * compatibility
  */
-class QxDateTimeNeutral
-{
+class QxDateTimeNeutral {
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-   friend class boost::serialization::access;
+  friend class boost::serialization::access;
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-   friend QX_DLL_EXPORT QDataStream & ::operator<< (QDataStream & stream, const qx::QxDateTimeNeutral & t);
-   friend QX_DLL_EXPORT QDataStream & ::operator>> (QDataStream & stream, qx::QxDateTimeNeutral & t);
+  friend QX_DLL_EXPORT
+      QDataStream & ::operator<<(QDataStream &stream,
+                                 const qx::QxDateTimeNeutral &t);
+  friend QX_DLL_EXPORT QDataStream & ::operator>>(QDataStream &stream,
+                                                  qx::QxDateTimeNeutral &t);
 
 private:
-
-   QDateTime m_dt;      //!< Data value under QDateTime format from Qt library
-   QString m_neutral;   //!< Data value under neutral format 'yyyyMMddhhmmss'
+  QDateTime m_dt;    //!< Data value under QDateTime format from Qt library
+  QString m_neutral; //!< Data value under neutral format 'yyyyMMddhhmmss'
 
 public:
+  QxDateTimeNeutral() { ; }
+  explicit QxDateTimeNeutral(const QDateTime &dt) : m_dt(dt) { update(); }
+  explicit QxDateTimeNeutral(const QString &neutral) : m_neutral(neutral) {
+    update();
+  }
+  virtual ~QxDateTimeNeutral() { ; }
 
-   QxDateTimeNeutral() { ; }
-   explicit QxDateTimeNeutral(const QDateTime & dt) : m_dt(dt) { update(); }
-   explicit QxDateTimeNeutral(const QString & neutral) : m_neutral(neutral) { update(); }
-   virtual ~QxDateTimeNeutral() { ; }
+  inline QDateTime toDateTime() const { return m_dt; }
+  inline QString toNeutral() const { return m_neutral; }
+  inline bool isValid() const { return m_dt.isValid(); }
 
-   inline QDateTime toDateTime() const    { return m_dt; }
-   inline QString toNeutral() const       { return m_neutral; }
-   inline bool isValid() const            { return m_dt.isValid(); }
+  inline void setDateTime(const QDateTime &dt) {
+    m_neutral = QLatin1String("");
+    m_dt = dt;
+    update();
+  }
+  inline void setNeutral(const QString &neutral) {
+    m_dt = QDateTime();
+    m_neutral = neutral;
+    update();
+  }
 
-   inline void setDateTime(const QDateTime & dt)      { m_neutral = ""; m_dt = dt; update(); }
-   inline void setNeutral(const QString & neutral)    { m_dt = QDateTime(); m_neutral = neutral; update(); }
-
-   static QxDateTimeNeutral fromDateTime(const QDateTime & dt)    { return QxDateTimeNeutral(dt); }
-   static QxDateTimeNeutral fromNeutral(const QString & neutral)  { return QxDateTimeNeutral(neutral); }
+  static QxDateTimeNeutral fromDateTime(const QDateTime &dt) {
+    return QxDateTimeNeutral(dt);
+  }
+  static QxDateTimeNeutral fromNeutral(const QString &neutral) {
+    return QxDateTimeNeutral(neutral);
+  }
 
 private:
+  static inline const char *format() { return "yyyyMMddhhmmss"; }
 
-   static inline const char * format() { return "yyyyMMddhhmmss"; }
-
-   void update()
-   {
-      if (m_neutral.isEmpty() && ! m_dt.isValid()) { return; }
-      else if (m_dt.isValid()) { m_neutral = m_dt.toString(format()); }
-      else { qAssert(m_neutral.size() == QString(format()).size()); m_dt = QDateTime::fromString(m_neutral, format()); qAssert(m_dt.isValid()); }
-   }
+  void update() {
+    if (m_neutral.isEmpty() && !m_dt.isValid()) {
+      return;
+    } else if (m_dt.isValid()) {
+      m_neutral = m_dt.toString(format());
+    } else {
+      qAssert(m_neutral.size() == QString(format()).size());
+      m_dt = QDateTime::fromString(m_neutral, format());
+      qAssert(m_dt.isValid());
+    }
+  }
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-   template <class Archive>
-   void serialize(Archive & ar, const unsigned int file_version)
-   {
-      Q_UNUSED(file_version);
-      ar & boost::serialization::make_nvp("dt_neutral", m_neutral);
-      if (Archive::is_loading::value) { m_dt = QDateTime(); update(); }
-   }
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int file_version) {
+    Q_UNUSED(file_version);
+    ar &boost::serialization::make_nvp("dt_neutral", m_neutral);
+    if (Archive::is_loading::value) {
+      m_dt = QDateTime();
+      update();
+    }
+  }
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
-
 };
 
 } // namespace qx

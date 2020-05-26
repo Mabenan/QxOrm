@@ -243,7 +243,7 @@ void QxSqlQuery::clear() {
   m_iSqlElementIndex = 0;
   m_iParenthesisCount = 0;
   m_vResponse = QVariant();
-  m_sType = "";
+  m_sType = QLatin1String("");
   m_lstJoinQueryUser.clear();
   m_lstJoinQueryToResolve.clear();
 }
@@ -388,15 +388,15 @@ QString QxSqlQuery::getJoinQueryHash() {
 }
 
 void QxSqlQuery::dumpBoundValues(const QSqlQuery &query) {
-  QString sBoundValues = "";
-  QMap<QString, QVariant> lstBoundValues = query.boundValues();
-  if (lstBoundValues.count() <= 0) {
-    return;
+    QString sBoundValues = QLatin1String("");
+    QMap<QString, QVariant> lstBoundValues = query.boundValues();
+    if (lstBoundValues.count() <= 0) {
+        return;
   }
 
   if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() ==
       qx::QxSqlDatabase::ph_style_question_mark) {
-    QList<QVariant> lst = lstBoundValues.values();
+      QVector<QVariant> lst = lstBoundValues.values().toVector();
     for (int i = 0; i < lst.size(); ++i) {
       sBoundValues += "\n  - position '" + QString::number(i) +
                       "' : " + lst.at(i).toString();
@@ -507,7 +507,7 @@ void QxSqlQuery::dumpSqlResult() {
   if (!m_pSqlResult) {
     return;
   }
-  QString sql(this->query()), sColumns("#"), sOutput;
+  QString sql(this->query()),sColumns(QStringLiteral( "#")), sOutput;
   qDebug("[QxOrm] start dump sql result : '%s'", qPrintable(sql));
   QVector<QString> lstColumns = this->getSqlResultAllColumns();
   for (long i = 0; i < lstColumns.count(); i++) {

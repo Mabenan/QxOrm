@@ -43,8 +43,8 @@
  * \brief Define how to join 2 tables into SQL query (LEFT OUTER JOIN, INNER JOIN, etc...)
  */
 
-#define QX_LEFT_OUTER_JOIN    QString("->")
-#define QX_INNER_JOIN         QString(">>")
+#define QX_LEFT_OUTER_JOIN    QString(QStringLiteral("->"))
+#define QX_INNER_JOIN         QString(QStringLiteral(">>"))
 
 namespace qx {
 namespace dao {

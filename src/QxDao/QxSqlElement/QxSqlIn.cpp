@@ -68,12 +68,13 @@ QString QxSqlIn::toString() const
    for (int i = 0; i < m_lstValues.count(); i++)
    {
       if ((m_type == _in_select) || (m_type == _not_in_select)) { sReturn += m_lstValues.at(i).toString(); continue; }
-      QString sCurrKey = (bQuestionMark ? QString("?") : (sKey + QString("_") + QString::number(i)));
-      sReturn += ((i == 0) ? QString("") : QString(", "));
+      QString sCurrKey = (bQuestionMark ? QStringLiteral("?")
+                                        : (sKey + QStringLiteral("_") + QString::number(i)));
+      sReturn += (i ? QLatin1String("") : QStringLiteral(", "));
       sReturn += sCurrKey;
    }
 
-   sReturn += QString(")");
+   sReturn += QStringLiteral(")");
    return sReturn;
 }
 
@@ -86,9 +87,10 @@ void QxSqlIn::resolve(QSqlQuery & query) const
 
    for (int i = 0; i < m_lstValues.count(); i++)
    {
-      QString sCurrKey = (bQuestionMark ? QString("?") : (sKey + QString("_") + QString::number(i)));
-      QVariant vValue(m_lstValues.at(i));
-      if (bQuestionMark) { query.addBindValue(vValue); }
+       QString sCurrKey = (bQuestionMark ? QStringLiteral("?") : (sKey + QStringLiteral("_") + QString::number(i)));
+       QVariant vValue(m_lstValues.at(i));
+       if (bQuestionMark) {
+           query.addBindValue(vValue); }
       else { query.bindValue(sCurrKey, vValue); }
    }
 }

@@ -284,7 +284,8 @@ struct QxDao_FetchAll_WithRelation
    static inline QSqlError fetchAll(const QString & relation, const qx::QxSqlQuery & query, T & t, QSqlDatabase * pDatabase)
    {
       QStringList lst;
-      if (! relation.isEmpty()) { lst = relation.split("|"); }
+      if (!relation.isEmpty()) { lst = relation.split(QStringLiteral("|"));
+      }
       return QxDao_FetchAll_WithRelation<T>::fetchAll(lst, query, t, pDatabase);
    }
 

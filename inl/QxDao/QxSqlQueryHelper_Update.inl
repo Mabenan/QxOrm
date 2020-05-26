@@ -54,21 +54,29 @@ struct QxSqlQueryHelper_Update
 
    static void sql(QString & sql, qx::IxSqlQueryBuilder & builder, const QStringList & columns)
    {
-      if ((columns.count() <= 0) || (columns.at(0) == "*")) { QxSqlQueryHelper_Update<T>::sql(sql, builder); return; }
+       if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+           QxSqlQueryHelper_Update<T>::sql(sql, builder);
+           return;
+       }
       static_assert(qx::trait::is_qx_registered<T>::value, "qx::trait::is_qx_registered<T>::value");
       qx::IxSqlQueryBuilder::sql_Update(sql, builder, columns);
    }
 
    static void resolveInput(T & t, QSqlQuery & query, qx::IxSqlQueryBuilder & builder, const QStringList & columns)
    {
-      if ((columns.count() <= 0) || (columns.at(0) == "*")) { QxSqlQueryHelper_Update<T>::resolveInput(t, query, builder); return; }
+       if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+           QxSqlQueryHelper_Update<T>::resolveInput(t, query, builder);
+           return;
+       }
       static_assert(qx::trait::is_qx_registered<T>::value, "qx::trait::is_qx_registered<T>::value");
       qx::IxSqlQueryBuilder::resolveInput_Update((& t), query, builder, columns);
    }
 
    static void resolveOutput(T & t, QSqlQuery & query, qx::IxSqlQueryBuilder & builder, const QStringList & columns)
-   { if ((columns.count() <= 0) || (columns.at(0) == "*")) { QxSqlQueryHelper_Update<T>::resolveOutput(t, query, builder); return; } }
-
+   { if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+            QxSqlQueryHelper_Update<T>::resolveOutput(t, query, builder);
+            return; }
+   }
 };
 
 } // namespace detail

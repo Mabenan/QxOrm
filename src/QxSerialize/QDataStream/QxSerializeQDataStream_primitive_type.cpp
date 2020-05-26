@@ -35,11 +35,11 @@
 
 #include <QxMemLeak/mem_leak.h>
 
-QDataStream & operator<< (QDataStream & stream, const long & t)
+QDataStream & operator<< (QDataStream & stream, long t)
 {
-   qint64 tmp = static_cast<qint64>(t);
-   stream << tmp;
-   return stream;
+    qint64 tmp = static_cast<qint64>(t);
+    stream << tmp;
+    return stream;
 }
 
 QDataStream & operator>> (QDataStream & stream, long & t)

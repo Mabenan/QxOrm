@@ -45,10 +45,16 @@ namespace detail {
 QJsonValue QxConvert_ToJson_Helper(const qx::QxInvalidValue & t, const QString & format)
 {
    QJsonObject obj;
-   obj.insert("message", t.m_sMessage);
-   if (! t.m_sPropertyName.isEmpty()) { obj.insert("property_name", t.m_sPropertyName); }
-   if (! t.m_sPath.isEmpty()) { obj.insert("path", t.m_sPath); }
-   if ((t.m_lstPropertyBag) && (t.m_lstPropertyBag->count() > 0)) { obj.insert("property_bag", qx::cvt::to_json(t.m_lstPropertyBag, format)); }
+   obj.insert(QStringLiteral("message"), t.m_sMessage);
+   if (!t.m_sPropertyName.isEmpty()) {
+       obj.insert(QStringLiteral("property_name"), t.m_sPropertyName);
+   }
+   if (!t.m_sPath.isEmpty()) {
+       obj.insert(QStringLiteral("path" ), t.m_sPath);
+   }
+   if ((t.m_lstPropertyBag) && (t.m_lstPropertyBag->count() > 0)) {
+       obj.insert(QStringLiteral("property_bag"), qx::cvt::to_json(t.m_lstPropertyBag, format));
+   }
    return obj;
 }
 
@@ -67,10 +73,10 @@ qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, qx::QxInvalidValue & t, 
    else if (j.isObject())
    {
       QJsonObject obj = j.toObject();
-      t.m_sMessage = obj.value("message").toString();
-      t.m_sPropertyName = obj.value("property_name").toString();
-      t.m_sPath = obj.value("path").toString();
-      qx::cvt::from_json(obj.value("property_bag"), t.m_lstPropertyBag, format);
+      t.m_sMessage = obj.value(QStringLiteral("message")).toString();
+      t.m_sPropertyName = obj.value(QStringLiteral("property_name")).toString();
+      t.m_sPath = obj.value(QStringLiteral("path")).toString();
+      qx::cvt::from_json(obj.value(QStringLiteral("property_bag")), t.m_lstPropertyBag, format);
    }
 
    return qx_bool(true);

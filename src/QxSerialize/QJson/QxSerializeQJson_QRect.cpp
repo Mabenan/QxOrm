@@ -41,7 +41,7 @@ namespace qx {
 namespace cvt {
 namespace detail {
 
-QJsonValue QxConvert_ToJson_Helper(const QRect & t, const QString & format)
+QJsonValue QxConvert_ToJson_Helper(QRect t, const QString &format)
 {
    Q_UNUSED(format);
    QJsonArray arr;

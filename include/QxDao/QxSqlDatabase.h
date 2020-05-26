@@ -143,7 +143,9 @@ public:
    void setVerifyOffsetRelation(bool b, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);
    void setAddAutoIncrementIdToUpdateQuery(bool b, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);
    void setForceParentIdToAllChildren(bool b, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);
-   void setFctDatabaseOpen(type_fct_db_open fct, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);
+   void setFctDatabaseOpen(const type_fct_db_open &fct,
+                           bool bJustForCurrentThread = false,
+                           QSqlDatabase *pJustForThisDatabase = NULL);
    void setAddSqlSquareBracketsForTableName(bool b, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);
    void setAddSqlSquareBracketsForColumnName(bool b, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);
    void setFormatSqlQueryBeforeLogging(bool b, bool bJustForCurrentThread = false, QSqlDatabase * pJustForThisDatabase = NULL);

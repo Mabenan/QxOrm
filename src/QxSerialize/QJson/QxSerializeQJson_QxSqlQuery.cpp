@@ -61,39 +61,46 @@ QJsonValue QxConvert_ToJson_Helper(const qx::QxSqlQuery & t, const QString & for
       lstResultValues = t.m_pSqlResult->values;
    }
 
-   obj.insert("query", qx::cvt::to_json(t.m_sQuery));
-   obj.insert("list_values", qx::cvt::to_json(t.m_lstValue, format));
-   obj.insert("sql_element_index", QJsonValue(t.m_iSqlElementIndex));
-   obj.insert("parenthesis_count", QJsonValue(t.m_iParenthesisCount));
-   obj.insert("distinct", QJsonValue(t.m_bDistinct));
-   obj.insert("result_position_by_key", qx::cvt::to_json(lstResultPosByKey, format));
-   obj.insert("result_values", qx::cvt::to_json(lstResultValues, format));
-   obj.insert("response", QJsonValue(t.m_vResponse.toString()));
-   obj.insert("type", QJsonValue(t.m_sType));
-   obj.insert("list_join_query_user", qx::cvt::to_json(t.m_lstJoinQueryUser, format));
-   obj.insert("list_join_query_resolve", qx::cvt::to_json(t.m_lstJoinQueryToResolve, format));
+   obj.insert(QStringLiteral("query"), qx::cvt::to_json(t.m_sQuery));
+   obj.insert(QStringLiteral("list_values"), qx::cvt::to_json(t.m_lstValue, format));
+   obj.insert(QStringLiteral("sql_element_index"), QJsonValue(t.m_iSqlElementIndex));
+   obj.insert(QStringLiteral("parenthesis_count"), QJsonValue(t.m_iParenthesisCount));
+   obj.insert(QStringLiteral("distinct"), QJsonValue(t.m_bDistinct));
+   obj.insert(QStringLiteral("result_position_by_key"), qx::cvt::to_json(lstResultPosByKey, format));
+   obj.insert(QStringLiteral("result_values"), qx::cvt::to_json(lstResultValues, format));
+   obj.insert(QStringLiteral("response"), QJsonValue(t.m_vResponse.toString()));
+   obj.insert(QStringLiteral("type"), QJsonValue(t.m_sType));
+   obj.insert(QStringLiteral("list_join_query_user"),
+              qx::cvt::to_json(t.m_lstJoinQueryUser, format));
+   obj.insert(QStringLiteral("list_join_query_resolve"),
+                  qx::cvt::to_json(t.m_lstJoinQueryToResolve, format));
 
-   if (! t.m_pSqlElementTemp)
-   {
-      obj.insert("sql_element_temp_type", QJsonValue(static_cast<int>(eNoSqlType)));
-   }
-   else
-   {
-      qx::dao::detail::IxSqlElement::type_class eTypeSqlElement = t.m_pSqlElementTemp->getTypeClass();
-      obj.insert("sql_element_temp_type", QJsonValue(static_cast<int>(eTypeSqlElement)));
-      obj.insert("sql_element_temp", qx::cvt::to_json((* t.m_pSqlElementTemp), format));
+   if (!t.m_pSqlElementTemp) {
+       obj.insert(QStringLiteral("sql_element_temp_type"), QJsonValue(static_cast<int>(eNoSqlType)));
+   } else {
+       qx::dao::detail::IxSqlElement::type_class eTypeSqlElement
+           = t.m_pSqlElementTemp->getTypeClass();
+               obj.insert(QStringLiteral("sql_element_temp_type"), QJsonValue(static_cast<int>(eTypeSqlElement)));
+               obj.insert(QStringLiteral("sql_element_temp"), qx::cvt::to_json((*t.m_pSqlElementTemp), format));
    }
 
    Q_FOREACH(qx::dao::detail::IxSqlElement_ptr pSqlElement, t.m_lstSqlElement)
    {
       QJsonObject item;
-      if (! pSqlElement) { item.insert("sql_element_type", QJsonValue(static_cast<int>(eNoSqlType))); arr.append(QJsonValue(item)); continue; }
-      qx::dao::detail::IxSqlElement::type_class eTypeSqlElement = pSqlElement->getTypeClass();
-      item.insert("sql_element_type", QJsonValue(static_cast<int>(eTypeSqlElement)));
-      item.insert("sql_element", qx::cvt::to_json((* pSqlElement), format));
+      if (!pSqlElement) {
+          item.insert(QStringLiteral("sql_element_type"), QJsonValue(static_cast<int>(eNoSqlType)));
+          arr.append(QJsonValue(item));
+          continue;
+      }
+      qx::dao::detail::IxSqlElement::type_class eTypeSqlElement
+          = pSqlElement->getTypeClass(); item.insert(QStringLiteral("sql_element_type"),
+                                                        QJsonValue(
+                                                            static_cast<int>(eTypeSqlElement)));
+                                           item.insert(QStringLiteral("sql_element"),
+                               qx::cvt::to_json((*pSqlElement), format));
       arr.append(QJsonValue(item));
    }
-   obj.insert("sql_element_list", QJsonValue(arr));
+   obj.insert(QStringLiteral("sql_element_list"), QJsonValue(arr));
 
    return QJsonValue(obj);
 }
@@ -106,50 +113,63 @@ qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, qx::QxSqlQuery & t, cons
    QHash<QString, int> lstResultPosByKey;
    QVector< QVector<QVariant> > lstResultValues;
 
-   if (obj.contains("sql"))
-   {
-      QJsonValue jsonSql = obj.value("sql");
-      if (jsonSql.isString()) { t.m_sQuery.clear(); t.m_sQuery << jsonSql.toString(); }
-   }
-   else { qx::cvt::from_json(obj.value("query"), t.m_sQuery); }
-
-   if (obj.contains("params"))
-   {
-      QJsonArray arrParams = obj.value("params").toArray();
-      for (int i = 0; i < arrParams.count(); i++)
-      {
-         QJsonValue objParam = arrParams.at(i); if (! objParam.isObject()) { continue; }
-         QJsonObject jsonParam = objParam.toObject();
-         QSql::ParamType jsonParamType = QSql::In;
-         if (jsonParam.contains("type"))
-         {
-            QString paramType = jsonParam.value("type").toString();
-            if (paramType == "in") { jsonParamType = QSql::In; }
-            else if (paramType == "out") { jsonParamType = QSql::Out; }
-            else if (paramType == "in_out") { jsonParamType = QSql::InOut; }
-            else if (paramType == "binary") { jsonParamType = QSql::Binary; }
-         }
-         QString jsonParamKey; QVariant jsonParamValue;
-         qx::cvt::from_json(jsonParam.value("key"), jsonParamKey);
-         qx::cvt::from_json(jsonParam.value("value"), jsonParamValue);
-         if (jsonParamKey.isEmpty()) { t.bind(jsonParamValue, jsonParamType); }
-         else { t.bind(jsonParamKey, jsonParamValue, jsonParamType); }
-      }
-   }
-   else
-   {
-      qx::cvt::from_json(obj.value("list_values"), t.m_lstValue, format);
+   if (obj.contains(QStringLiteral("sql"))) {
+       QJsonValue jsonSql = obj.value(QStringLiteral("sql"));
+       if (jsonSql.isString()) {
+           t.m_sQuery.clear();
+           t.m_sQuery << jsonSql.toString();
+       }
+   } else {
+       qx::cvt::from_json(obj.value(QStringLiteral("query")),t.m_sQuery);
    }
 
-   t.m_iSqlElementIndex = qRound(obj.value("sql_element_index").toDouble());
-   t.m_iParenthesisCount = qRound(obj.value("parenthesis_count").toDouble());
-   t.m_bDistinct = obj.value("distinct").toBool();
-   qx::cvt::from_json(obj.value("result_position_by_key"), lstResultPosByKey, format);
-   qx::cvt::from_json(obj.value("result_values"), lstResultValues, format);
-   t.m_vResponse = obj.value("response").toVariant();
-   t.m_sType = obj.value("type").toString();
-   qx::cvt::from_json(obj.value("list_join_query_user"), t.m_lstJoinQueryUser, format);
-   qx::cvt::from_json(obj.value("list_join_query_resolve"), t.m_lstJoinQueryToResolve, format);
+   if (obj.contains(QStringLiteral("params"))) {
+       QJsonArray arrParams = obj.value(QStringLiteral("params")).toArray();
+       for (int i = 0; i < arrParams.count(); i++) {
+           QJsonValue objParam = arrParams.at(i);
+           if (!objParam.isObject()) {
+               continue;
+           }
+           QJsonObject jsonParam = objParam.toObject();
+           QSql::ParamType jsonParamType = QSql::In;
+           if (jsonParam.contains(QStringLiteral("type"))) {
+               QString paramType = jsonParam.value(QStringLiteral("type")).toString();
+               if (paramType == QLatin1String("in")) {
+                   jsonParamType = QSql::In;
+               } else if (paramType == QLatin1String("out")) {
+                   jsonParamType = QSql::Out;
+               } else if (paramType == QLatin1String("in_out")) {
+                   jsonParamType = QSql::InOut;
+               } else if (paramType == QLatin1String("binary")) {
+                   jsonParamType = QSql::Binary;
+               }
+           }
+           QString jsonParamKey;
+           QVariant jsonParamValue;
+           qx::cvt::from_json(jsonParam.value(QStringLiteral("key")), jsonParamKey);
+           qx::cvt::from_json(jsonParam.value(QStringLiteral("value")), jsonParamValue);
+           if (jsonParamKey.isEmpty()) { t.bind(jsonParamValue, jsonParamType); }
+           else { t.bind(jsonParamKey, jsonParamValue, jsonParamType); }
+       }
+   } else {
+       qx::cvt::from_json(obj.value(QStringLiteral("list_values")), t.m_lstValue, format);
+   }
+
+   t.m_iSqlElementIndex = qRound(obj.value(QStringLiteral("sql_element_index")).toDouble());
+   t.m_iParenthesisCount = qRound(obj.value(QStringLiteral("parenthesis_count")).toDouble());
+   t.m_bDistinct = obj.value(QStringLiteral("distinct")).toBool();
+   qx::cvt::from_json(obj.value(QStringLiteral("result_position_by_key")),
+                      lstResultPosByKey,
+                      format);
+                      qx::cvt::from_json(obj.value(QStringLiteral("result_values")), lstResultValues, format);
+   t.m_vResponse = obj.value(QStringLiteral("response")).toVariant();
+   t.m_sType = obj.value(QStringLiteral("type")).toString();
+   qx::cvt::from_json(obj.value(QStringLiteral("list_join_query_user")),
+                      t.m_lstJoinQueryUser,
+                      format);
+                      qx::cvt::from_json(obj.value(QStringLiteral("list_join_query_resolve")),
+                      t.m_lstJoinQueryToResolve,
+                      format);
 
    t.m_pSqlResult.reset();
    if ((lstResultPosByKey.count() > 0) || (lstResultValues.count() > 0))
@@ -161,26 +181,33 @@ qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, qx::QxSqlQuery & t, cons
 
    t.m_pSqlElementTemp.reset();
    qx::dao::detail::IxSqlElement::type_class eTypeSqlElement = qx::dao::detail::IxSqlElement::_no_type;
-   eTypeSqlElement = static_cast<qx::dao::detail::IxSqlElement::type_class>(qRound(obj.value("sql_element_temp_type").toDouble()));
+   eTypeSqlElement = static_cast<qx::dao::detail::IxSqlElement::type_class>(
+       qRound(obj.value(QStringLiteral("sql_element_temp_type")).toDouble()));
    if (eTypeSqlElement != qx::dao::detail::IxSqlElement::_no_type)
    {
       t.m_pSqlElementTemp = qx::dao::detail::create_sql_element(eTypeSqlElement); qAssert(t.m_pSqlElementTemp);
-      if (t.m_pSqlElementTemp) { qx::cvt::from_json(obj.value("sql_element_temp"), (* t.m_pSqlElementTemp), format); }
+      if (t.m_pSqlElementTemp) {
+          qx::cvt::from_json(obj.value(QStringLiteral("sql_element_temp")),
+                             (*t.m_pSqlElementTemp),
+                             format);
+      }
    }
 
    t.m_lstSqlElement.clear();
-   QJsonArray arr = obj.value("sql_element_list").toArray();
+   QJsonArray arr = obj.value(QStringLiteral("sql_element_list")).toArray();
    for (int i = 0; i < arr.count(); i++)
    {
       QJsonValue val = arr.at(i); if (! val.isObject()) { continue; }
       QJsonObject item = val.toObject();
       qx::dao::detail::IxSqlElement_ptr pSqlElement;
       eTypeSqlElement = qx::dao::detail::IxSqlElement::_no_type;
-      eTypeSqlElement = static_cast<qx::dao::detail::IxSqlElement::type_class>(qRound(item.value("sql_element_type").toDouble()));
+      eTypeSqlElement = static_cast<qx::dao::detail::IxSqlElement::type_class>(
+          qRound(item.value(QStringLiteral("sql_element_type")).toDouble()));
       if (eTypeSqlElement != qx::dao::detail::IxSqlElement::_no_type)
       {
          pSqlElement = qx::dao::detail::create_sql_element(eTypeSqlElement); qAssert(pSqlElement);
-         if (pSqlElement) { qx::cvt::from_json(item.value("sql_element"), (* pSqlElement), format); }
+         if (pSqlElement) { qx::cvt::from_json(item.value(QStringLiteral("sql_element")), (* pSqlElement), format);
+         }
       }
       t.m_lstSqlElement.append(pSqlElement);
    }

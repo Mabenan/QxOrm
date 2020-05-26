@@ -59,23 +59,35 @@ qx_bool QxSerializeJsonRegistered_initHierarchy_WithFilter(IxClass * pClass, con
 QJsonValue QxSerializeJsonRegistered_Helper::save(IxClass * pClass, const void * pOwner, const QString & format)
 {
    if (! pClass || ! pOwner) { qAssert(false); return QJsonValue(); }
-   bool bOnlyId = ((! format.isEmpty()) && ((format == QX_JSON_SERIALIZE_ONLY_ID) || (format == "mongodb:only_id") || (format == "mongodb:relation_id")));
+   bool bOnlyId = ((!format.isEmpty())
+                   && ((format == QLatin1String(QX_JSON_SERIALIZE_ONLY_ID))
+                       || (format == QLatin1String("mongodb:only_id"))
+                           || (format == QLatin1String("mongodb:relation_id"))));
    bool bCheckInstance = qx::serialization::helper::QxSerializeCheckInstance::contains(pOwner, pClass);
    QJsonObject obj;
 
    if (bCheckInstance || bOnlyId)
    {
       qx::IxDataMember * pId = pClass->getId(true); if (! pId) { return QJsonValue(); }
-      QString key = ((format == "mongodb:only_id") ? QString("_id") : pId->getKey());
+      QString key = ((format == QLatin1String("mongodb:only_id")) ? QStringLiteral("_id")
+                     : pId->getKey());
       QJsonValue val = pId->toJson(pOwner, format);
-      if (format == "mongodb:relation_id") { return val; }
-      obj.insert(key, val); return QJsonValue(obj);
+if (format ==
+          QLatin1String("mongodb:relation_id"))
+      {
+          return val;
+      }
+      obj.insert(key, val);
+      return QJsonValue(obj);
    }
 
-   bool bMongoDB = format.startsWith("mongodb");
-   bool bWithFilter = format.startsWith("filter:");
+   bool bMongoDB = format.startsWith(QLatin1String("mongodb"));
+   bool bWithFilter = format.startsWith(QLatin1String("filter:"));
    qx_bool bHierarchyOk = (bWithFilter ? QxSerializeJsonRegistered_initHierarchy_WithFilter(pClass, pOwner, format) : qx_bool(true));
-   if (! bHierarchyOk) { obj.insert("error", bHierarchyOk.getDesc()); return QJsonValue(obj); }
+   if (!bHierarchyOk) {
+       obj.insert(QStringLiteral("error" ), bHierarchyOk.getDesc());
+       return QJsonValue(obj);
+   }
    qx::serialization::helper::QxSerializeCheckInstance checker(pOwner, pClass);
    Q_UNUSED(checker);
 
@@ -100,8 +112,8 @@ qx_bool QxSerializeJsonRegistered_Helper::load(const QJsonValue & j, IxClass * p
       return pId->fromJson(pOwner, j, format);
    }
 
-   bool bMongoDB = format.startsWith("mongodb");
-   bool bWithFilter = format.startsWith("filter:");
+   bool bMongoDB = format.startsWith(QLatin1String("mongodb"));
+   bool bWithFilter = format.startsWith(QLatin1String("filter:"));
    QJsonObject obj = j.toObject();
 
    do
@@ -120,7 +132,8 @@ qx_bool QxSerializeJsonRegistered_initHierarchy_WithFilter(IxClass * pClass, con
 {
    qx_bool bHierarchyOk(true); Q_UNUSED(pOwner);
    if (! qx::serialization::helper::QxSerializeCheckInstance::isRoot()) { return bHierarchyOk; }
-   std::shared_ptr<qx::QxSqlRelationLinked> pRelationLinked = qx::QxSqlRelationLinked::getHierarchy(pClass, format.right(format.size() - 7).split("|"), bHierarchyOk);
+   std::shared_ptr<qx::QxSqlRelationLinked> pRelationLinked = qx::QxSqlRelationLinked::getHierarchy(
+       pClass, format.right(format.size() - 7).split(QStringLiteral("|")), bHierarchyOk);
    if (! bHierarchyOk || ! pRelationLinked) { return qx_bool(false, bHierarchyOk.getDesc()); }
 
    QString empty;
@@ -145,8 +158,9 @@ void QxSerializeJsonRegistered_saveHelper(QJsonObject & obj, IxClass * pClass, c
 void QxSerializeJsonRegistered_saveHelper_MongoDB(QJsonObject & obj, IxClass * pClass, const void * pOwner, const QString & format)
 {
    qx::IxDataMemberX * pDataMemberX = (pClass ? pClass->getDataMemberX() : NULL); if (! pDataMemberX) { return; }
-   bool bMongoDBColumns = (format.contains(":columns{") && format.contains("}"));
-   bool bMongoDBChild = format.startsWith("mongodb:child");
+   bool bMongoDBColumns = (format.contains(QLatin1String(":columns{"))
+                           && format.contains(QLatin1String("}")));
+   bool bMongoDBChild = format.startsWith(QLatin1String("mongodb:child"));
 
    for (long l = 0; l < pDataMemberX->count(); l++)
    {
@@ -156,8 +170,10 @@ void QxSerializeJsonRegistered_saveHelper_MongoDB(QJsonObject & obj, IxClass * p
       qx::IxSqlRelation * pRelation = pDataMember->getSqlRelation();
       qx::IxSqlRelation::relation_type eRelationType = (pRelation ? pRelation->getRelationType() : qx::IxSqlRelation::no_relation);
       if ((eRelationType == qx::IxSqlRelation::one_to_many) || (eRelationType == qx::IxSqlRelation::many_to_many)) { continue; }
-      QString key = ((! bMongoDBChild && pDataMember->getIsPrimaryKey()) ? QString("_id") : pDataMember->getKey());
-      QString formatTmp = (pRelation ? QString("mongodb:relation_id") : (QString("mongodb:child:") + format));
+      QString key = ((!bMongoDBChild && pDataMember->getIsPrimaryKey()) ? QStringLiteral("_id")
+                                                                  : pDataMember->getKey());
+      QString formatTmp = (pRelation ? QStringLiteral("mongodb:relation_id")
+                                     : (QStringLiteral("mongodb:child:") + format));
       if (pDataMember->getIsPrimaryKey()) { QVariant id = pDataMember->toVariant(pOwner); if (! qx::trait::is_valid_primary_key(id)) { continue; } }
       QJsonValue val = pDataMember->toJson(pOwner, formatTmp);
       obj.insert(key, val);
@@ -254,17 +270,21 @@ void QxSerializeJsonRegistered_loadHelper(const QJsonObject & obj, IxClass * pCl
 void QxSerializeJsonRegistered_loadHelper_MongoDB(const QJsonObject & obj, IxClass * pClass, void * pOwner, const QString & format)
 {
    qx::IxDataMemberX * pDataMemberX = (pClass ? pClass->getDataMemberX() : NULL); if (! pDataMemberX) { return; }
-   bool bMongoDBColumns = (format.contains(":columns{") && format.contains("}"));
-   bool bMongoDBChild = format.startsWith("mongodb:child");
+   bool bMongoDBColumns = (format.contains(QLatin1String(":columns{"))
+                                        && format.contains(QLatin1String("}")));
+   bool bMongoDBChild = format.startsWith(QLatin1String("mongodb:child"));
 
    for (long l = 0; l < pDataMemberX->count(); l++)
    {
       qx::IxDataMember * pDataMember = pDataMemberX->get(l);
       if (! pDataMember || ! pDataMember->getSerialize() || ! pDataMember->getDao()) { continue; }
       if (bMongoDBColumns && ! pDataMember->getIsPrimaryKey() && ! format.contains("," + pDataMember->getKey() + ",")) { continue; }
-      QString key = ((! bMongoDBChild && pDataMember->getIsPrimaryKey()) ? QString("_id") : pDataMember->getKey());
-      key = ((bMongoDBChild && pDataMember->getIsPrimaryKey() && (! obj.contains(key))) ? QString("_id") : key);
-      if (obj.contains(key)) { pDataMember->fromJson(pOwner, obj.value(key), (QString("mongodb:child:") + format)); }
+      QString key = ((!bMongoDBChild && pDataMember->getIsPrimaryKey()) ? QStringLiteral("_id")
+                                                                        : pDataMember->getKey());
+      key = ((bMongoDBChild && pDataMember->getIsPrimaryKey() && (!obj.contains(key)))
+                 ? QStringLiteral("_id")
+                 : key);
+      if (obj.contains(key)) { pDataMember->fromJson(pOwner, obj.value(key), (QStringLiteral("mongodb:child:") + format)); }
    }
 }
 

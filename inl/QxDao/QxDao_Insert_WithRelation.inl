@@ -171,7 +171,8 @@ struct QxDao_Insert_WithRelation
    static inline QSqlError insert(const QString & relation, T & t, QSqlDatabase * pDatabase)
    {
       QStringList lst;
-      if (! relation.isEmpty()) { lst = relation.split("|"); }
+      if (!relation.isEmpty()) { lst = relation.split(QStringLiteral("|"));
+      }
       return QxDao_Insert_WithRelation<T>::insert(lst, t, pDatabase);
    }
 

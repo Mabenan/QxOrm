@@ -215,19 +215,27 @@ void QxThread::doProcess(QTcpSocket & socket)
    QObject::connect(m_pTransaction.get(), SIGNAL(onCustomRequestHandler()), this, SLOT(onCustomRequestHandler()), Qt::DirectConnection);
 
    qx_bool bReadOk = m_pTransaction->readSocketServer(socket);
-   if (! bReadOk) { Q_EMIT error(QString("[QxOrm] unable to read request from socket : '") + bReadOk.getDesc() + QString("'"), QxTransaction_ptr()); return; }
+   if (!bReadOk) {
+       Q_EMIT error(QStringLiteral("[QxOrm] unable to read request from socket : '")
+                        + bReadOk.getDesc() + QStringLiteral("'"),
+                    QxTransaction_ptr());
+       return;
+   }
    if (hasBeenStopped() || m_bIsDisconnected) { return; }
    socket.readAll();
 
    Q_EMIT transactionStarted(m_pTransaction);
    try { m_pTransaction->executeServer(); }
    catch (const qx::exception & x) { qx_bool xb = x.toQxBool(); m_pTransaction->setMessageReturn(xb); }
-   catch (const std::exception & e) { m_pTransaction->setMessageReturn(qx_bool(QX_ERROR_UNKNOWN, e.what())); }
-   catch (...) { m_pTransaction->setMessageReturn(qx_bool(QX_ERROR_UNKNOWN, "unknown error")); }
+   catch (const std::exception & e) { m_pTransaction->setMessageReturn(qx_bool(QX_ERROR_UNKNOWN, e.what()));
+   } catch (...) {
+       m_pTransaction->setMessageReturn(qx_bool(QX_ERROR_UNKNOWN, QStringLiteral("unknown error")));
+   }
    if (hasBeenStopped() || m_bIsDisconnected) { return; }
 
    qx_bool bWriteOk = m_pTransaction->writeSocketServer(socket);
-   if (! bWriteOk) { Q_EMIT error(QString("[QxOrm] unable to write reply to socket : '") + bWriteOk.getDesc() + QString("'"), m_pTransaction); }
+   if (!bWriteOk) { Q_EMIT  error(QStringLiteral("[QxOrm] unable to write reply to socket : '") + bWriteOk.getDesc() + QStringLiteral("'"), m_pTransaction);
+   }
 
    long lCurrRetry = 0;
    while ((socket.bytesToWrite() > 0) && ((lMaxWait == -1) || (lCurrRetry < lMaxWait)) && (! hasBeenStopped()) && (! m_bIsDisconnected))

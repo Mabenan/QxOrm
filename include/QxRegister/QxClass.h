@@ -94,7 +94,7 @@ protected:
 
 protected:
 
-   QxClass() : IxClass(), QxSingleton< QxClass<T> >(QString("qx::QxClass_") + qx::trait::get_class_name<T>::get_xml_tag()) { init(); }
+   QxClass() : IxClass(), QxSingleton< QxClass<T> >(QStringLiteral("qx::QxClass_") + qx::trait::get_class_name<T>::get_xml_tag()) { init(); }
    virtual ~QxClass() { ; }
 
 public:

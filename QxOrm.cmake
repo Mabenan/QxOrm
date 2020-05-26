@@ -38,6 +38,8 @@
 if(NOT QXORM_CMAKE_CONFIG_FILE_INCLUDED)
 set(QXORM_CMAKE_CONFIG_FILE_INCLUDED TRUE)
 
+add_definitions(-Wfatal-errors)
+
 ###########################################
 # QxOrm library requires a C++11 compiler #
 ###########################################

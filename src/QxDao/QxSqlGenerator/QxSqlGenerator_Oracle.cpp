@@ -58,9 +58,16 @@ bool QxSqlGenerator_Oracle::getManageLastInsertId() const { return m_bManageLast
 
 void QxSqlGenerator_Oracle::setManageLastInsertId(bool b) { m_bManageLastInsertId = b; }
 
-QString QxSqlGenerator_Oracle::getTableAliasSep() const { return " "; }
+QString QxSqlGenerator_Oracle::getTableAliasSep() const
+{
+    return QStringLiteral(" ");
+}
 
-QString QxSqlGenerator_Oracle::getLimit(const QxSqlLimit * pLimit) const { Q_UNUSED(pLimit); return ""; }
+QString QxSqlGenerator_Oracle::getLimit(const QxSqlLimit *pLimit) const
+{
+    Q_UNUSED(pLimit);
+    return QLatin1String("");
+}
 
 void QxSqlGenerator_Oracle::resolveLimit(QSqlQuery & query, const QxSqlLimit * pLimit) const
 {
@@ -85,9 +92,9 @@ void QxSqlGenerator_Oracle::postProcess(QString & sql, const QxSqlLimit * pLimit
    if (m_bOldLimitSyntax)
    {
       QString sqlPaging;
-      QString sReplace = "%SQL_QUERY%";
-      sqlPaging += "SELECT * FROM ";
-      sqlPaging += "   ( SELECT a.*, ROWNUM rnum FROM ";
+      QString sReplace = QStringLiteral("%SQL_QUERY%");
+      sqlPaging += QLatin1String("SELECT * FROM ");
+      sqlPaging += QLatin1String("   ( SELECT a.*, ROWNUM rnum FROM ");
       sqlPaging += "      ( " + sReplace + " ) a ";
       sqlPaging += "     WHERE ROWNUM <= " + sMaxRow + " ) ";
       sqlPaging += "WHERE rnum >= " + sMinRow;
@@ -116,7 +123,7 @@ void QxSqlGenerator_Oracle::checkSqlInsert(IxDao_Helper * pDaoHelper, QString & 
    qx::IxDataMember * pId = pDaoHelper->getDataId();
    if (! pId->getAutoIncrement()) { return; }
    if (pId->getNameCount() > 1) { qAssert(false); return; }
-   QString sqlToAdd = " RETURNING ID INTO :ID; END;";
+   QString sqlToAdd = QStringLiteral(" RETURNING ID INTO :ID; END;");
    if (sql.right(sqlToAdd.size()) == sqlToAdd) { return; }
    sql = "BEGIN " + sql + sqlToAdd;
    pDaoHelper->builder().setSqlQuery(sql);
@@ -130,7 +137,7 @@ void QxSqlGenerator_Oracle::onBeforeInsert(IxDao_Helper * pDaoHelper, void * pOw
    qx::IxDataMember * pId = pDaoHelper->getDataId();
    if (! pId->getAutoIncrement()) { return; }
    if (pId->getNameCount() > 1) { qAssert(false); return; }
-   pDaoHelper->query().bindValue(":ID", 0, QSql::InOut);
+   pDaoHelper->query().bindValue(QStringLiteral(":ID"), 0, QSql::InOut);
 }
 
 void QxSqlGenerator_Oracle::onAfterInsert(IxDao_Helper * pDaoHelper, void * pOwner) const
@@ -141,7 +148,7 @@ void QxSqlGenerator_Oracle::onAfterInsert(IxDao_Helper * pDaoHelper, void * pOwn
    qx::IxDataMember * pId = pDaoHelper->getDataId();
    if (! pId->getAutoIncrement()) { return; }
    if (pId->getNameCount() > 1) { qAssert(false); return; }
-   QVariant vId = pDaoHelper->query().boundValue(":ID");
+   QVariant vId = pDaoHelper->query().boundValue(QStringLiteral(":ID"));
    pId->fromVariant(pOwner, vId, -1, qx::cvt::context::e_database);
 }
 
@@ -150,31 +157,31 @@ void QxSqlGenerator_Oracle::initSqlTypeByClassName() const
    QHash<QString, QString> * lstSqlType = qx::QxClassX::getAllSqlTypeByClassName();
    if (! lstSqlType) { qAssert(false); return; }
 
-   lstSqlType->insert("bool", "SMALLINT");
-   lstSqlType->insert("qx_bool", "VARCHAR2(4000)");
-   lstSqlType->insert("short", "SMALLINT");
-   lstSqlType->insert("int", "INTEGER");
-   lstSqlType->insert("long", "INTEGER");
-   lstSqlType->insert("long long", "INTEGER");
-   lstSqlType->insert("float", "FLOAT");
-   lstSqlType->insert("double", "FLOAT");
-   lstSqlType->insert("long double", "FLOAT");
-   lstSqlType->insert("unsigned short", "SMALLINT");
-   lstSqlType->insert("unsigned int", "INTEGER");
-   lstSqlType->insert("unsigned long", "INTEGER");
-   lstSqlType->insert("unsigned long long", "INTEGER");
-   lstSqlType->insert("std::string", "VARCHAR2(4000)");
-   lstSqlType->insert("std::wstring", "VARCHAR2(4000)");
-   lstSqlType->insert("QString", "VARCHAR2(4000)");
-   lstSqlType->insert("QVariant", "CLOB");
-   lstSqlType->insert("QUuid", "VARCHAR2(255)");
-   lstSqlType->insert("QDate", "DATE");
-   lstSqlType->insert("QTime", "DATE");
-   lstSqlType->insert("QDateTime", "TIMESTAMP");
-   lstSqlType->insert("QByteArray", "BLOB");
-   lstSqlType->insert("qx::QxDateNeutral", "VARCHAR2(8)");
-   lstSqlType->insert("qx::QxTimeNeutral", "VARCHAR2(6)");
-   lstSqlType->insert("qx::QxDateTimeNeutral", "VARCHAR2(14)");
+   lstSqlType->insert(QStringLiteral("bool"), QStringLiteral("SMALLINT"));
+   lstSqlType->insert(QStringLiteral("qx_bool"), QStringLiteral("VARCHAR2(4000)"));
+   lstSqlType->insert(QStringLiteral("short"), QStringLiteral("SMALLINT"));
+   lstSqlType->insert(QStringLiteral("int"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("long"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("long long"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("float"), QStringLiteral("FLOAT"));
+   lstSqlType->insert(QStringLiteral("double"), QStringLiteral("FLOAT"));
+   lstSqlType->insert(QStringLiteral("long double"), QStringLiteral("FLOAT"));
+   lstSqlType->insert(QStringLiteral("unsigned short"), QStringLiteral("SMALLINT"));
+   lstSqlType->insert(QStringLiteral("unsigned int"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("unsigned long"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("unsigned long long"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("std::string"), QStringLiteral("VARCHAR2(4000)"));
+   lstSqlType->insert(QStringLiteral("std::wstring"), QStringLiteral("VARCHAR2(4000)"));
+   lstSqlType->insert(QStringLiteral("QString"), QStringLiteral("VARCHAR2(4000)"));
+   lstSqlType->insert(QStringLiteral("QVariant"), QStringLiteral("CLOB"));
+   lstSqlType->insert(QStringLiteral("QUuid"), QStringLiteral("VARCHAR2(255)"));
+   lstSqlType->insert(QStringLiteral("QDate"), QStringLiteral("DATE"));
+   lstSqlType->insert(QStringLiteral("QTime"), QStringLiteral("DATE"));
+   lstSqlType->insert(QStringLiteral("QDateTime"), QStringLiteral("TIMESTAMP"));
+   lstSqlType->insert(QStringLiteral("QByteArray"), QStringLiteral("BLOB"));
+   lstSqlType->insert(QStringLiteral("qx::QxDateNeutral"), QStringLiteral("VARCHAR2(8)"));
+   lstSqlType->insert(QStringLiteral("qx::QxTimeNeutral"), QStringLiteral("VARCHAR2(6)"));
+   lstSqlType->insert(QStringLiteral("qx::QxDateTimeNeutral"), QStringLiteral("VARCHAR2(14)"));
 }
 
 } // namespace detail

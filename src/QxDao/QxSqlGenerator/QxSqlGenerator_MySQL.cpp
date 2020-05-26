@@ -45,38 +45,41 @@ QxSqlGenerator_MySQL::QxSqlGenerator_MySQL() : QxSqlGenerator_Standard() { this-
 
 QxSqlGenerator_MySQL::~QxSqlGenerator_MySQL() { ; }
 
-QString QxSqlGenerator_MySQL::getAutoIncrement() const { return "AUTO_INCREMENT"; }
+QString QxSqlGenerator_MySQL::getAutoIncrement() const
+{
+    return QStringLiteral("AUTO_INCREMENT");
+}
 
 void QxSqlGenerator_MySQL::initSqlTypeByClassName() const
 {
    QHash<QString, QString> * lstSqlType = qx::QxClassX::getAllSqlTypeByClassName();
    if (! lstSqlType) { qAssert(false); return; }
 
-   lstSqlType->insert("bool", "SMALLINT");
-   lstSqlType->insert("qx_bool", "TEXT");
-   lstSqlType->insert("short", "SMALLINT");
-   lstSqlType->insert("int", "INTEGER");
-   lstSqlType->insert("long", "INTEGER");
-   lstSqlType->insert("long long", "BIGINT");
-   lstSqlType->insert("float", "FLOAT");
-   lstSqlType->insert("double", "DOUBLE");
-   lstSqlType->insert("long double", "DOUBLE");
-   lstSqlType->insert("unsigned short", "SMALLINT");
-   lstSqlType->insert("unsigned int", "INTEGER");
-   lstSqlType->insert("unsigned long", "INTEGER");
-   lstSqlType->insert("unsigned long long", "BIGINT");
-   lstSqlType->insert("std::string", "TEXT");
-   lstSqlType->insert("std::wstring", "TEXT");
-   lstSqlType->insert("QString", "TEXT");
-   lstSqlType->insert("QVariant", "TEXT");
-   lstSqlType->insert("QUuid", "TEXT");
-   lstSqlType->insert("QDate", "DATE");
-   lstSqlType->insert("QTime", "TIME");
-   lstSqlType->insert("QDateTime", "TIMESTAMP");
-   lstSqlType->insert("QByteArray", "LONGBLOB");
-   lstSqlType->insert("qx::QxDateNeutral", "TEXT");
-   lstSqlType->insert("qx::QxTimeNeutral", "TEXT");
-   lstSqlType->insert("qx::QxDateTimeNeutral", "TEXT");
+   lstSqlType->insert(QStringLiteral("bool"), QStringLiteral("SMALLINT"));
+   lstSqlType->insert(QStringLiteral("qx_bool"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("short"), QStringLiteral("SMALLINT"));
+   lstSqlType->insert(QStringLiteral("int"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("long"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("long long"), QStringLiteral("BIGINT"));
+   lstSqlType->insert(QStringLiteral("float"), QStringLiteral("FLOAT"));
+   lstSqlType->insert(QStringLiteral("double"), QStringLiteral("DOUBLE"));
+   lstSqlType->insert(QStringLiteral("long double"), QStringLiteral("DOUBLE"));
+   lstSqlType->insert(QStringLiteral("unsigned short"), QStringLiteral("SMALLINT"));
+   lstSqlType->insert(QStringLiteral("unsigned int"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("unsigned long"), QStringLiteral("INTEGER"));
+   lstSqlType->insert(QStringLiteral("unsigned long long"), QStringLiteral("BIGINT"));
+   lstSqlType->insert(QStringLiteral("std::string"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("std::wstring"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("QString"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("QVariant"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("QUuid"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("QDate"), QStringLiteral("DATE"));
+   lstSqlType->insert(QStringLiteral("QTime"), QStringLiteral("TIME"));
+   lstSqlType->insert(QStringLiteral("QDateTime"), QStringLiteral("TIMESTAMP"));
+   lstSqlType->insert(QStringLiteral("QByteArray"), QStringLiteral("LONGBLOB"));
+   lstSqlType->insert(QStringLiteral("qx::QxDateNeutral"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("qx::QxTimeNeutral"), QStringLiteral("TEXT"));
+   lstSqlType->insert(QStringLiteral("qx::QxDateTimeNeutral"), QStringLiteral("TEXT"));
 }
 
 } // namespace detail

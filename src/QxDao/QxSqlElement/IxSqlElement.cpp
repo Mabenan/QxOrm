@@ -90,10 +90,16 @@ void IxSqlElement::updateKeys()
    for (int i = 0; i < m_lstColumns.count(); i++)
    {
       QString sColumn = m_lstColumns.at(i);
-      QString sKey = sColumn.replace(".", "_") + "_" + QString::number(m_iIndex) + "_" + QString::number(i);
-      if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark) { sKey = "?"; }
-      else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_at_name) { sKey = QString("@") + sKey; }
-      else { sKey = QString(":") + sKey; }
+      QString sKey = sColumn.replace(QLatin1String("."), QLatin1String("_")) + "_"
+                     + QString::number(m_iIndex) + "_" + QString::number(i);
+      if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+          == qx::QxSqlDatabase::ph_style_question_mark) { sKey = QStringLiteral("?");
+      } else if (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle()
+                 == qx::QxSqlDatabase::ph_style_at_name) {
+          sKey = QStringLiteral("@key");
+      } else {
+          sKey = QString()+ sKey;
+      }
       m_lstKeys.append(sKey);
    }
 }

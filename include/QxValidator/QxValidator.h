@@ -82,8 +82,14 @@ public:
    virtual ~QxValidator() { ; }
 
    void setFunction(type_fct_custom_validator_member fct)               { m_fctCustomValidator_Member = fct; }
-   void setFunction(type_fct_custom_validator_variant fct)              { m_fctCustomValidator_Variant = fct; }
-   void setFunction(type_fct_custom_validator_variant_validator fct)    { m_fctCustomValidator_VariantValidator = fct; }
+   void setFunction(const type_fct_custom_validator_variant &fct)
+   {
+       m_fctCustomValidator_Variant = fct;
+   }
+   void setFunction(const type_fct_custom_validator_variant_validator &fct)
+   {
+       m_fctCustomValidator_VariantValidator = fct;
+   }
 
    virtual void validate(void * pOwner, QxInvalidValueX & lstInvalidValues) const
    {

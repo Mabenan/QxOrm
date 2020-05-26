@@ -86,7 +86,7 @@ protected:
 
 public:
 
-   QxThreadPool() : QThread(), m_bIsStopped(false) { ; }
+   QxThreadPool(QObject *parent = nullptr) : QThread(parent), m_bIsStopped(false) { ; }
    virtual ~QxThreadPool() { if (isRunning()) { qDebug("[QxOrm] qx::service::QxThreadPool thread is running : %s", "quit and wait"); quit(); wait(); } }
 
    bool isStopped() const;

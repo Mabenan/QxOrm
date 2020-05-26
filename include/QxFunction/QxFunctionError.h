@@ -40,18 +40,24 @@
  * \file QxFunctionError.h
  * \author Lionel Marty
  * \ingroup QxFunction
- * \brief Define all messages when an error occured using QxFunction module of QxOrm library
+ * \brief Define all messages when an error occured using QxFunction module of
+ * QxOrm library
  */
 
-#define QX_FUNCTION_ERR_NUMBER_PARAMS              "Incorrect parameters count"
-#define QX_FUNCTION_ERR_INVALID_PARAM              "Invalid parameter at position 'XXX'"
-#define QX_FUNCTION_ERR_INVALID_FCT                "Invalid function"
-#define QX_FUNCTION_ERR_EMPTY_FCT                  "Empty function"
-#define QX_FUNCTION_ERR_INVALID_MEMBER_FCT         "Invalid member function"
-#define QX_FUNCTION_ERR_EMPTY_MEMBER_FCT           "Empty member function"
-#define QX_FUNCTION_ERR_INVALID_OWNER              "Invalid owner"
-#define QX_FUNCTION_ERR_NULL_OWNER                 "NULL owner"
-#define QX_FUNCTION_ERR_INVALID_INVOKE_CALL        "Invalid 'invoke()' call"
-#define QX_FUNCTION_ERR_UNKNOWN_ERROR              "Unknown error calling function"
+#define QX_FUNCTION_ERR_NUMBER_PARAMS                                          \
+  QStringLiteral("Incorrect parameters count")
+#define QX_FUNCTION_ERR_INVALID_PARAM                                          \
+  QStringLiteral("Invalid parameter at position 'XXX'")
+#define QX_FUNCTION_ERR_INVALID_FCT QStringLiteral("Invalid function")
+#define QX_FUNCTION_ERR_EMPTY_FCT QStringLiteral("Empty function")
+#define QX_FUNCTION_ERR_INVALID_MEMBER_FCT                                     \
+  QStringLiteral("Invalid member function")
+#define QX_FUNCTION_ERR_EMPTY_MEMBER_FCT QStringLiteral("Empty member function")
+#define QX_FUNCTION_ERR_INVALID_OWNER QStringLiteral("Invalid owner")
+#define QX_FUNCTION_ERR_NULL_OWNER QStringLiteral("NULL owner")
+#define QX_FUNCTION_ERR_INVALID_INVOKE_CALL                                    \
+  QStringLiteral("Invalid 'invoke()' call")
+#define QX_FUNCTION_ERR_UNKNOWN_ERROR                                          \
+  QStringLiteral("Unknown error calling function")
 
 #endif // _QX_FUNCTION_ERROR_H_

@@ -53,7 +53,11 @@ void QxServer::incomingConnection(int socketDescriptor)
    QMutexLocker locker(& m_mutex);
    QxThread * pThread = getAvailable();
    if (m_pThreadPool && m_pThreadPool->isStopped()) { return; }
-   if (! pThread) { if (m_pThreadPool) { m_pThreadPool->raiseError("[QxOrm] no service available : cannot accept incoming connection (increase thread count value)", QxTransaction_ptr()); } return; }
+   if (!pThread) {
+       if (m_pThreadPool) { m_pThreadPool->raiseError(QStringLiteral("[QxOrm] no service available : cannot accept incoming connection (increase thread count value)"), QxTransaction_ptr());
+       }
+       return;
+   }
    pThread->execute(socketDescriptor);
 }
 

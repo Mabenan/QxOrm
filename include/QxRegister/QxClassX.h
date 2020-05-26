@@ -125,8 +125,14 @@ public:
 
    static type_fct_save_qvariant_usertype getFctSaveQVariantUserType()           { return QxClassX::getSingleton()->m_fctSaveQVariantUserType; }
    static type_fct_load_qvariant_usertype getFctLoadQVariantUserType()           { return QxClassX::getSingleton()->m_fctLoadQVariantUserType; }
-   static void setFctSaveQVariantUserType(type_fct_save_qvariant_usertype fct)   { QxClassX::getSingleton()->m_fctSaveQVariantUserType = fct; }
-   static void setFctLoadQVariantUserType(type_fct_load_qvariant_usertype fct)   { QxClassX::getSingleton()->m_fctLoadQVariantUserType = fct; }
+   static void setFctSaveQVariantUserType(const type_fct_save_qvariant_usertype &fct)
+   {
+       QxClassX::getSingleton()->m_fctSaveQVariantUserType = fct;
+   }
+   static void setFctLoadQVariantUserType(const type_fct_load_qvariant_usertype &fct)
+   {
+       QxClassX::getSingleton()->m_fctLoadQVariantUserType = fct;
+   }
 
    template <class U>
    static inline qx_bool invoke(const QString & sClassKey, const QString & sFctKey, U & pOwner, const QString & params = QString(), qx::any * ret = NULL)

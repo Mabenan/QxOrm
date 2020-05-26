@@ -60,7 +60,7 @@ class QxThread;
  */
 class QX_DLL_EXPORT QxServer : public QTcpServer
 {
-
+Q_OBJECT
 protected:
 
    QxThreadPool * m_pThreadPool;       //!< Parent thread pool to prevent from incoming connection

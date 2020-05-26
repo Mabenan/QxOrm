@@ -46,11 +46,11 @@ namespace detail {
 QJsonValue QxConvert_ToJson_Helper(const qx::dao::detail::IxSqlElement & t, const QString & format)
 {
    QJsonObject obj;
-   obj.insert("index", QJsonValue(t.m_iIndex));
-   obj.insert("list_columns", qx::cvt::to_json(t.m_lstColumns, format));
-   obj.insert("list_keys", qx::cvt::to_json(t.m_lstKeys, format));
-   obj.insert("list_values", qx::cvt::to_json(t.m_lstValues, format));
-   obj.insert("extra_settings", QJsonValue(t.getExtraSettings()));
+   obj.insert(QStringLiteral("index"), QJsonValue(t.m_iIndex));
+   obj.insert(QStringLiteral("list_columns"), qx::cvt::to_json(t.m_lstColumns, format));
+   obj.insert(QStringLiteral("list_keys"), qx::cvt::to_json(t.m_lstKeys, format));
+   obj.insert(QStringLiteral("list_values"), qx::cvt::to_json(t.m_lstValues, format));
+   obj.insert(QStringLiteral("extra_settings"), QJsonValue(t.getExtraSettings()));
    return QJsonValue(obj);
 }
 
@@ -58,11 +58,11 @@ qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, qx::dao::detail::IxSqlEl
 {
    if (! j.isObject()) { return qx_bool(true); }
    QJsonObject obj = j.toObject();
-   t.m_iIndex = qRound(obj.value("index").toDouble());
-   qx::cvt::from_json(obj.value("list_columns"), t.m_lstColumns, format);
-   qx::cvt::from_json(obj.value("list_keys"), t.m_lstKeys, format);
-   qx::cvt::from_json(obj.value("list_values"), t.m_lstValues, format);
-   t.setExtraSettings(obj.value("extra_settings").toString());
+   t.m_iIndex = qRound(obj.value(QStringLiteral("index")).toDouble());
+   qx::cvt::from_json(obj.value(QStringLiteral("list_columns")), t.m_lstColumns, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("list_keys")), t.m_lstKeys, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("list_values")), t.m_lstValues, format);
+   t.setExtraSettings(obj.value(QStringLiteral("extra_settings")).toString());
    return qx_bool(true);
 }
 

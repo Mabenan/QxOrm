@@ -118,7 +118,10 @@ struct QxHttpServerDispatcher
    QxHttpServerDispatcher() { ; }
    ~QxHttpServerDispatcher() { ; }
 
-   void dispatch(const QString & command, const QString & path, QxHttpServer::type_fct_custom_request_handler fct, long position);
+   void dispatch(const QString &command,
+                 const QString &path,
+                 const QxHttpServer::type_fct_custom_request_handler &fct,
+                 long position);
    std::shared_ptr<QxHttpServerDispatchItem> find(qx::QxHttpRequest & request) const;
 
 };
@@ -174,7 +177,7 @@ void QxHttpServer::stopServer()
    Q_EMIT serverStatusChanged(false);
 }
 
-void QxHttpServer::setCustomRequestHandler(QxHttpServer::type_fct_custom_request_handler fct)
+void QxHttpServer::setCustomRequestHandler(const QxHttpServer::type_fct_custom_request_handler &fct)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    if (! fct) { m_pImpl->m_fctCustomRequestHandler.reset(); return; }
@@ -182,14 +185,17 @@ void QxHttpServer::setCustomRequestHandler(QxHttpServer::type_fct_custom_request
    (* m_pImpl->m_fctCustomRequestHandler) = fct;
 }
 
-QxHttpServer & QxHttpServer::dispatch(const QString & command, const QString & path, QxHttpServer::type_fct_custom_request_handler fct, long position /* = -1 */)
+QxHttpServer &QxHttpServer::dispatch(const QString &command,
+                                     const QString &path,
+                                     const QxHttpServer::type_fct_custom_request_handler &fct,
+                                     long position /* = -1 */)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    m_pImpl->m_pDispatcher->dispatch(command.toUpper(), path, fct, position);
    return (* this);
 }
 
-void QxHttpServer::beforeDispatching(QxHttpServer::type_fct_custom_request_handler fct)
+void QxHttpServer::beforeDispatching(const QxHttpServer::type_fct_custom_request_handler &fct)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    if (! fct) { m_pImpl->m_fctBeforeDispatching.reset(); return; }
@@ -197,7 +203,7 @@ void QxHttpServer::beforeDispatching(QxHttpServer::type_fct_custom_request_handl
    (* m_pImpl->m_fctBeforeDispatching) = fct;
 }
 
-void QxHttpServer::afterDispatching(QxHttpServer::type_fct_custom_request_handler fct)
+void QxHttpServer::afterDispatching(const QxHttpServer::type_fct_custom_request_handler &fct)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    if (! fct) { m_pImpl->m_fctAfterDispatching.reset(); return; }
@@ -231,15 +237,16 @@ void QxHttpServer::onServerIsRunning(bool bIsRunning, qx::service::QxServer * pS
    if (bIsRunning)
    {
       qx::service::QxConnect * serverSettings = qx::service::QxConnect::getSingleton();
-      QString msg = "HTTP server is running (";
+      QString msg = QStringLiteral("HTTP server is running (");
       msg += "port: " + QString::number(serverSettings->getPort());
       msg += ", threads: " + QString::number(serverSettings->getThreadCount());
 #ifndef QT_NO_SSL
-      msg += ", SSL: " + (serverSettings->getSSLEnabled() ? QString("enabled") : QString("disabled"));
+      msg += ", SSL: "
+             + (serverSettings->getSSLEnabled() ? QStringLiteral("enabled") : QStringLiteral("disabled"));
 #else // QT_NO_SSL
       msg += ", SSL: disabled";
 #endif // QT_NO_SSL
-      msg += ")";
+      msg += QLatin1String(")");
       qDebug("[QxOrm] %s", qPrintable(msg));
    }
    else { qDebug("[QxOrm] %s", "HTTP server has been stopped"); }
@@ -287,8 +294,11 @@ void QxHttpServer::onCustomRequestHandler(qx::service::QxTransaction_ptr transac
    {
       try { (* fctBeforeDispatching)(request, response); }
       catch (const qx::exception & x) { qx_bool xb = x.toQxBool(); httpTransaction->setMessageReturn(xb); }
-      catch (const std::exception & e) { httpTransaction->setMessageReturn(qx_bool(500, e.what())); }
-      catch (...) { httpTransaction->setMessageReturn(qx_bool(500, "[QxOrm] Unknown server error (before dispatching)")); }
+      catch (const std::exception & e) { httpTransaction->setMessageReturn(qx_bool(500, e.what()));
+      } catch (...) {
+          httpTransaction->setMessageReturn(
+              qx_bool(500, QStringLiteral("[QxOrm] Unknown server error (before dispatching)")));
+      }
    }
 
    // Get dispatcher item callback (thread-safe)
@@ -306,27 +316,36 @@ void QxHttpServer::onCustomRequestHandler(qx::service::QxTransaction_ptr transac
       else { httpTransaction->setMessageReturn(qx_bool(501, "[QxOrm] Not implemented : no route found for URL (" + request.command() + " - " + request.url().path() + ") : you must provide a request handler (callback) using qx::QxHttpServer::dispatch() or qx::QxHttpServer::setCustomRequestHandler() method")); }
    }
    catch (const qx::exception & x) { qx_bool xb = x.toQxBool(); httpTransaction->setMessageReturn(xb); }
-   catch (const std::exception & e) { httpTransaction->setMessageReturn(qx_bool(500, e.what())); }
-   catch (...) { httpTransaction->setMessageReturn(qx_bool(500, "[QxOrm] Unknown server error")); }
+   catch (const std::exception & e) { httpTransaction->setMessageReturn(qx_bool(500, e.what()));
+   } catch (...) {
+       httpTransaction->setMessageReturn(qx_bool(500, QStringLiteral("[QxOrm] Unknown server error")));
+   }
 
    // Execute after dispatching callback
    if (fctAfterDispatching && (* fctAfterDispatching))
    {
       try { (* fctAfterDispatching)(request, response); }
       catch (const qx::exception & x) { qx_bool xb = x.toQxBool(); httpTransaction->setMessageReturn(xb); }
-      catch (const std::exception & e) { httpTransaction->setMessageReturn(qx_bool(500, e.what())); }
-      catch (...) { httpTransaction->setMessageReturn(qx_bool(500, "[QxOrm] Unknown server error (after dispatching)")); }
+      catch (const std::exception & e) { httpTransaction->setMessageReturn(qx_bool(500, e.what()));
+      } catch (...) {
+          httpTransaction->setMessageReturn(qx_bool(500, QStringLiteral("[QxOrm] Unknown server error (after dispatching)")));
+      }
    }
 }
 
-void QxHttpServerDispatcher::dispatch(const QString & command, const QString & path, QxHttpServer::type_fct_custom_request_handler fct, long position)
+void QxHttpServerDispatcher::dispatch(const QString &command,
+                                      const QString &path,
+                                      const QxHttpServer::type_fct_custom_request_handler     &fct,
+                                      long position)
 {
    QString key = command + "|" + path;
    if (m_lstDispatchItems.exist(key)) { m_lstDispatchItems.removeByKey(key); }
    if ((! fct) || (path.isEmpty()) || (command.isEmpty())) { return; }
 
    std::shared_ptr<QxHttpServerDispatchItem> item = std::make_shared<QxHttpServerDispatchItem>();
-   item->m_command = command; item->m_path = ((path == "/") ? QString("/*") : path); item->m_fct = fct;
+   item->m_command = command;
+   item->m_path = ((path== QLatin1String("/")) ? QStringLiteral("/*") : path);
+   item->m_fct = fct;
    if (! item->parse()) { qAssert(false); return; }
    if (item->m_segments.count() <= 0) { return; }
    if (position < 0) { m_lstDispatchItems.insert(key, item); }
@@ -339,18 +358,24 @@ std::shared_ptr<QxHttpServerDispatchItem> QxHttpServerDispatcher::find(qx::QxHtt
    if (m_lstDispatchItems.count() <= 0) { return std::shared_ptr<QxHttpServerDispatchItem>(); }
    QString requestCommand = request.command().toUpper();
    unsigned int requestCommandHash = qHash(requestCommand);
-   QString requestPath = request.url().path(); if (requestPath == "/") { requestPath = "/*"; }
-   QStringList requestSegments = requestPath.split("/", QString::SkipEmptyParts);
+   QString requestPath = request.url().path();
+   if (requestPath == QLatin1String("/")) {
+       requestPath = QStringLiteral("/*");
+   }
+   QStringList requestSegments = requestPath.split(QStringLiteral("/"), QString::SkipEmptyParts);
    QList<unsigned int> requestSegmentsHash; requestSegmentsHash.reserve(requestSegments.count());
-   Q_FOREACH(QString data, requestSegments) { requestSegmentsHash.append(qHash(data)); }
-   if (requestSegments.count() <= 0) { return std::shared_ptr<QxHttpServerDispatchItem>(); }
+   Q_FOREACH(QString data, requestSegments) {
+        requestSegmentsHash.append(qHash(data)); }
+   if (requestSegments.count() <= 0) {
+        return std::shared_ptr<QxHttpServerDispatchItem>(); }
 
    // Iterate over all dispatcher items
    qx::QxCollectionIterator<QString, std::shared_ptr<QxHttpServerDispatchItem> > itr(m_lstDispatchItems);
    while (itr.next())
    {
       // Check dispatcher item command and segments count
-      const std::shared_ptr<QxHttpServerDispatchItem> & item = itr.value(); if (! item) { qAssert(false); continue; }
+      const std::shared_ptr<QxHttpServerDispatchItem> & item = itr.value(); if (! item) { qAssert(false); continue;
+      }
       if ((item->m_commandHash != requestCommandHash) && (! item->m_commandWildcard)) { continue; }
       if (item->m_segments.count() > requestSegments.count()) { continue; }
       if (! item->m_fct) { continue; }
@@ -383,8 +408,8 @@ bool QxHttpServerDispatchItem::parse()
 {
    m_segments.clear();
    m_commandHash = qHash(m_command);
-   m_commandWildcard = (m_command == "*");
-   QStringList segments = m_path.split("/", QString::SkipEmptyParts);
+   m_commandWildcard = (m_command == QLatin1String("*"));
+   QStringList segments = m_path.split(QStringLiteral("/"), QString::SkipEmptyParts);
    Q_FOREACH(QString data, segments)
    {
       data = data.trimmed(); if (data.isEmpty()) { continue; }
@@ -398,37 +423,30 @@ bool QxHttpServerDispatchItem::parse()
 bool QxHttpServerDispatchSegment::parse()
 {
    if (m_path.isEmpty()) { return true; }
-   if (m_path.startsWith("<") && m_path.endsWith(">"))
-   {
-      QString path = m_path;
-      path.remove(0, 1); path.chop(1);
-      int pos = path.indexOf(":");
-      if (pos >= 0)
-      {
-         m_varName = path.left(pos).trimmed();
-         m_varType = path.mid(pos + 1).trimmed();
-         m_type = QxHttpServerDispatchSegment::_variable_and_type;
-         if (m_varType.startsWith("{") && m_varType.endsWith("}"))
-         {
-            m_varType.remove(0, 1); m_varType.chop(1);
-            m_regExp.setPattern(m_varType);
-            m_type = QxHttpServerDispatchSegment::_variable_and_regexp;
-         }
-      }
-      else
-      {
-         m_varName = path.trimmed();
-         m_type = QxHttpServerDispatchSegment::_variable;
-      }
-   }
-   else if (m_path == "*")
-   {
-      m_type = QxHttpServerDispatchSegment::_wildcard;
-   }
-   else
-   {
-      m_type = QxHttpServerDispatchSegment::_static;
-      m_pathHash = qHash(m_path);
+   if (m_path.startsWith(QLatin1String("<")) && m_path.endsWith(QLatin1String(">"))) {
+       QString path = m_path;
+       path.remove(0, 1);
+       path.chop(1);
+       int pos = path.indexOf(QLatin1String(":"));
+       if (pos >= 0) {
+           m_varName = path.left(pos).trimmed();
+           m_varType = path.mid(pos + 1).trimmed();
+           m_type = QxHttpServerDispatchSegment::_variable_and_type;
+           if (m_varType.startsWith(QLatin1String("{")) && m_varType.endsWith(QLatin1String("}"))) {
+               m_varType.remove(0, 1);
+               m_varType.chop(1);
+               m_regExp.setPattern(m_varType);
+               m_type = QxHttpServerDispatchSegment::_variable_and_regexp;
+           }
+       } else {
+           m_varName = path.trimmed();
+           m_type = QxHttpServerDispatchSegment::_variable;
+       }
+   } else if (m_path == QLatin1String("*")) {
+       m_type = QxHttpServerDispatchSegment::_wildcard;
+   } else {
+       m_type = QxHttpServerDispatchSegment::_static;
+       m_pathHash = qHash(m_path);
    }
    return true;
 }
@@ -448,9 +466,16 @@ bool QxHttpServerDispatchSegment::check(const QString & path, unsigned int hash)
          break;
       case QxHttpServerDispatchSegment::_variable_and_type:
          qAssert(! m_varName.isEmpty() && ! m_varType.isEmpty());
-         if ((m_varType == "int") || (m_varType == "long")) { qlonglong val = path.toLongLong(& result, 10); Q_UNUSED(val); }
-         if ((m_varType == "float") || (m_varType == "double")) { double val = path.toDouble(& result); Q_UNUSED(val); }
-         else if (m_varType == "string") { result = (! path.isEmpty()); }
+         if ((m_varType == QLatin1String("int")) || (m_varType == QLatin1String("long"))) {
+             qlonglong val = path.toLongLong(&result, 10);
+             Q_UNUSED(val);
+         }
+         if ((m_varType == QLatin1String("float")) || (m_varType == QLatin1String("double"))) {
+             double val = path.toDouble(&result);
+             Q_UNUSED(val);
+         } else if (m_varType == QLatin1String("string")) {
+             result = (!path.isEmpty());
+         }
          break;
       case QxHttpServerDispatchSegment::_variable_and_regexp:
          qAssert(! m_varName.isEmpty() && ! m_varType.isEmpty());
@@ -487,7 +512,7 @@ void QxHttpServer::buildResponseStaticFile(qx::QxHttpRequest & request, qx::QxHt
 {
    // Check HTTP method GET
    QByteArray requestPath = request.url().path().toLatin1();
-   if (request.command() != "GET")
+   if (request.command() !=QLatin1String( "GET"))
    {
       response.status() = 400;
       response.data() = "Unknown command '" + request.command().toLatin1() + "' to get server static file '" + requestPath + "'";

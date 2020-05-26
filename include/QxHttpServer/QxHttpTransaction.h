@@ -78,7 +78,7 @@ private:
 
 public:
 
-   QxHttpTransaction();
+   QxHttpTransaction(QObject * parent = nullptr);
    virtual ~QxHttpTransaction();
 
    qx::QxHttpRequest & request();

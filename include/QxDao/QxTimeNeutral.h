@@ -40,16 +40,17 @@
  * \file QxTimeNeutral.h
  * \author Lionel Marty
  * \ingroup QxDao
- * \brief Helper class to store a time value into database under neutral format (HHMMSS) => cross database compatibility
+ * \brief Helper class to store a time value into database under neutral format
+ * (HHMMSS) => cross database compatibility
  */
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/serialization.hpp>
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-#include <QtCore/qdatetime.h>
 #include <QtCore/qdatastream.h>
+#include <QtCore/qdatetime.h>
 
 #include <QxSerialize/Qt/QxSerialize_QString.h>
 
@@ -59,68 +60,87 @@ namespace qx {
 class QxTimeNeutral;
 } // namespace qx
 
-QX_DLL_EXPORT QDataStream & operator<< (QDataStream & stream, const qx::QxTimeNeutral & t) QX_USED;
-QX_DLL_EXPORT QDataStream & operator>> (QDataStream & stream, qx::QxTimeNeutral & t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator<<(QDataStream &stream,
+                                      const qx::QxTimeNeutral &t) QX_USED;
+QX_DLL_EXPORT QDataStream &operator>>(QDataStream &stream,
+                                      qx::QxTimeNeutral &t) QX_USED;
 
 namespace qx {
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxTimeNeutral : helper class to store a time value into database under neutral format (HHMMSS) => cross database compatibility
+ * \brief qx::QxTimeNeutral : helper class to store a time value into database
+ * under neutral format (HHMMSS) => cross database compatibility
  */
-class QxTimeNeutral
-{
+class QxTimeNeutral {
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-   friend class boost::serialization::access;
+  friend class boost::serialization::access;
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-   friend QX_DLL_EXPORT QDataStream & ::operator<< (QDataStream & stream, const qx::QxTimeNeutral & t);
-   friend QX_DLL_EXPORT QDataStream & ::operator>> (QDataStream & stream, qx::QxTimeNeutral & t);
+  friend QX_DLL_EXPORT QDataStream & ::operator<<(QDataStream &stream,
+                                                  const qx::QxTimeNeutral &t);
+  friend QX_DLL_EXPORT QDataStream & ::operator>>(QDataStream &stream,
+                                                  qx::QxTimeNeutral &t);
 
 private:
-
-   QTime m_time;        //!< Data value under QTime format from Qt library
-   QString m_neutral;   //!< Data value under neutral format 'hhmmss'
+  QTime m_time;      //!< Data value under QTime format from Qt library
+  QString m_neutral; //!< Data value under neutral format 'hhmmss'
 
 public:
+  QxTimeNeutral() { ; }
+  explicit QxTimeNeutral(QTime time) : m_time(time) { update(); }
+  explicit QxTimeNeutral(const QString &neutral) : m_neutral(neutral) {
+    update();
+  }
+  virtual ~QxTimeNeutral() { ; }
 
-   QxTimeNeutral() { ; }
-   explicit QxTimeNeutral(const QTime & time) : m_time(time) { update(); }
-   explicit QxTimeNeutral(const QString & neutral) : m_neutral(neutral) { update(); }
-   virtual ~QxTimeNeutral() { ; }
+  inline QTime toTime() const { return m_time; }
+  inline QString toNeutral() const { return m_neutral; }
+  inline bool isValid() const { return m_time.isValid(); }
 
-   inline QTime toTime() const         { return m_time; }
-   inline QString toNeutral() const    { return m_neutral; }
-   inline bool isValid() const         { return m_time.isValid(); }
+  inline void setTime(QTime time) {
+    m_neutral = QLatin1String("");
+    m_time = time;
+    update();
+  }
+  inline void setNeutral(const QString &neutral) {
+    m_time = QTime();
+    m_neutral = neutral;
+    update();
+  }
 
-   inline void setTime(const QTime & time)            { m_neutral = ""; m_time = time; update(); }
-   inline void setNeutral(const QString & neutral)    { m_time = QTime(); m_neutral = neutral; update(); }
-
-   static QxTimeNeutral fromTime(const QTime & time)           { return QxTimeNeutral(time); }
-   static QxTimeNeutral fromNeutral(const QString & neutral)   { return QxTimeNeutral(neutral); }
+  static QxTimeNeutral fromTime(QTime time) { return QxTimeNeutral(time); }
+  static QxTimeNeutral fromNeutral(const QString &neutral) {
+    return QxTimeNeutral(neutral);
+  }
 
 private:
+  static inline const char *format() { return "hhmmss"; }
 
-   static inline const char * format() { return "hhmmss"; }
-
-   void update()
-   {
-      if (m_neutral.isEmpty() && ! m_time.isValid()) { return; }
-      else if (m_time.isValid()) { m_neutral = m_time.toString(format()); }
-      else { qAssert(m_neutral.size() == QString(format()).size()); m_time = QTime::fromString(m_neutral, format()); qAssert(m_time.isValid()); }
-   }
+  void update() {
+    if (m_neutral.isEmpty() && !m_time.isValid()) {
+      return;
+    } else if (m_time.isValid()) {
+      m_neutral = m_time.toString(format());
+    } else {
+      qAssert(m_neutral.size() == QString(format()).size());
+      m_time = QTime::fromString(m_neutral, format());
+      qAssert(m_time.isValid());
+    }
+  }
 
 #ifdef _QX_ENABLE_BOOST_SERIALIZATION
-   template <class Archive>
-   void serialize(Archive & ar, const unsigned int file_version)
-   {
-      Q_UNUSED(file_version);
-      ar & boost::serialization::make_nvp("time_neutral", m_neutral);
-      if (Archive::is_loading::value) { m_time = QTime(); update(); }
-   }
+  template <class Archive>
+  void serialize(Archive &ar, const unsigned int file_version) {
+    Q_UNUSED(file_version);
+    ar &boost::serialization::make_nvp("time_neutral", m_neutral);
+    if (Archive::is_loading::value) {
+      m_time = QTime();
+      update();
+    }
+  }
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
-
 };
 
 } // namespace qx

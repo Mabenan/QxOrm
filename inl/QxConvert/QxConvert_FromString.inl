@@ -47,15 +47,35 @@ static inline qx_bool fromString(const QString & s, QUuid & t, const QString & f
 
 template <> struct QxConvert_FromString< QDate > {
 static inline qx_bool fromString(const QString & s, QDate & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(index); Q_UNUSED(ctx); t = QDate::fromString(s, (format.isEmpty() ? QString(QX_STR_CVT_QDATE_FORMAT) : format)); return t.isValid(); } };
+{
+    Q_UNUSED(index);
+    Q_UNUSED(ctx);
+    t = QDate::fromString(s, (format.isEmpty() ? QStringLiteral(QX_STR_CVT_QDATE_FORMAT) : format));
+    return t.isValid();
+}
+};
 
 template <> struct QxConvert_FromString< QTime > {
 static inline qx_bool fromString(const QString & s, QTime & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(index); Q_UNUSED(ctx); t = QTime::fromString(s, (format.isEmpty() ? QString(QX_STR_CVT_QTIME_FORMAT) : format)); return t.isValid(); } };
+{
+    Q_UNUSED(index);
+    Q_UNUSED(ctx);
+    t = QTime::fromString(s, (s.isEmpty() ? QStringLiteral(QX_STR_CVT_QTIME_FORMAT) : format));
+    return t.isValid();
+}
+};
 
 template <> struct QxConvert_FromString< QDateTime > {
 static inline qx_bool fromString(const QString & s, QDateTime & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(index); Q_UNUSED(ctx); t = QDateTime::fromString(s, (format.isEmpty() ? QString(QX_STR_CVT_QDATETIME_FORMAT) : format)); return t.isValid(); } };
+{
+    Q_UNUSED(index);
+    Q_UNUSED(ctx);
+    t = QDateTime::fromString(s,
+                              (s.isEmpty() ? QStringLiteral(QX_STR_CVT_QDATETIME_FORMAT)
+                                                       : format));
+    return t.isValid();
+}
+};
 
 template <> struct QxConvert_FromString< QByteArray > {
 static inline qx_bool fromString(const QString & s, QByteArray & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
@@ -66,10 +86,10 @@ struct QxConvert_FromString< QVariant >
 {
    static inline qx_bool fromString(const QString & s, QVariant & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
    {
-      Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx);
+       Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx);
 
 #ifndef _QX_NO_JSON
-      if (s.startsWith("$$JSON$$"))
+                     if (s.startsWith(QLatin1String("$$JSON$$")))
       {
          QJsonParseError err;
          QString stream = s.right(s.size() - 16); // $$JSON$$0000XX$$
@@ -93,7 +113,14 @@ static inline qx_bool fromString(const QString & s, qx_bool & t, const QString &
 
 template <> struct QxConvert_FromString< bool > {
 static inline qx_bool fromString(const QString & s, bool & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); t = (((s == "0") || s.trimmed().isEmpty()) ? false : true); return qx_bool(true); } };
+{
+    Q_UNUSED(format);
+    Q_UNUSED(index);
+ Q_UNUSED(ctx);
+ t = (((s == QLatin1String("0")) || s.trimmed().isEmpty()) ? false : true);
+ return qx_bool(true);
+}
+};
 
 template <> struct QxConvert_FromString< char > {
 static inline qx_bool fromString(const QString & s, char & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)

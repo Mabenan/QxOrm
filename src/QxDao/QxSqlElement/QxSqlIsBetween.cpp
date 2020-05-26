@@ -55,7 +55,9 @@ QString QxSqlIsBetween::toString() const
    QString sReturn, sColumn(m_lstColumns.at(0)), sKey(m_lstKeys.at(0));
    qAssert(! sColumn.isEmpty() && ! sKey.isEmpty());
    bool bQuestionMark = (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark);
-   QString sKey1(bQuestionMark ? QString("?") : (sKey + "_1")), sKey2(bQuestionMark ? QString("?") : (sKey + "_2"));
+   QString sKey1(bQuestionMark ? QStringLiteral("?") : (sKey + "_1")),
+       sKey2(bQuestionMark ? QStringLiteral("?")
+             : (sKey + "_2"));
 
    switch (m_type)
    {
@@ -71,7 +73,8 @@ void QxSqlIsBetween::resolve(QSqlQuery & query) const
 {
    qAssert((m_lstKeys.count() == 1) && (m_lstValues.count() == 2));
    bool bQuestionMark = (qx::QxSqlDatabase::getSingleton()->getSqlPlaceHolderStyle() == qx::QxSqlDatabase::ph_style_question_mark);
-   QString sKey1(bQuestionMark ? QString("?") : (m_lstKeys.at(0) + "_1")), sKey2(bQuestionMark ? QString("?") : (m_lstKeys.at(0) + "_2"));
+   QString sKey1(bQuestionMark ? QStringLiteral("?") : (m_lstKeys.at(0) + "_1")),
+       sKey2(bQuestionMark ? QStringLiteral("?") : (m_lstKeys.at(0) + "_2"));
    QVariant vValue1(m_lstValues.at(0)), vValue2(m_lstValues.at(1));
 
    if (bQuestionMark) { query.addBindValue(vValue1); query.addBindValue(vValue2); }

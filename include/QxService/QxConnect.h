@@ -125,11 +125,11 @@ public:
 
 #ifndef QT_NO_SSL
    void setSSLEnabled(bool b);
-   void setSSLConfiguration(QSslConfiguration cfg);
-   void setSSLCACertificates(QList<QSslCertificate> lst);
-   void setSSLLocalCertificate(QSslCertificate cert);
-   void setSSLPrivateKey(QSslKey key);
-   void setSSLIgnoreErrors(QList<QSslError> lst);
+   void setSSLConfiguration(const QSslConfiguration &cfg);
+   void setSSLCACertificates(const QList<QSslCertificate> &lst);
+   void setSSLLocalCertificate(const QSslCertificate &cert);
+   void setSSLPrivateKey(const QSslKey &key);
+   void setSSLIgnoreErrors(const QList<QSslError> &lst);
    void setSSLProtocol(QSsl::SslProtocol e);
    void setSSLPeerVerifyName(const QString & s);
    void setSSLPeerVerifyMode(QSslSocket::PeerVerifyMode e);

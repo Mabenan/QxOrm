@@ -71,7 +71,9 @@ struct QxHttpResponse::QxHttpResponseImpl
    qx_bool writeChunked(const QByteArray & data)
    {
       if (data.isEmpty()) { return qx_bool(true); }
-      if (! m_transaction) { qAssert(false); return qx_bool(false, "No HTTP transaction associated to the response"); }
+      if (!m_transaction) {
+          qAssert(false); return qx_bool(false, QStringLiteral("No HTTP transaction associated to the response"));
+      }
       qx_bool bWriteChunked = m_transaction->writeChunked(data);
       if (bWriteChunked) { m_isChunked = true; }
       return bWriteChunked;
@@ -108,11 +110,11 @@ struct QxHttpResponse::QxHttpResponseImpl
          case 12: month = QByteArrayLiteral("Dec"); break;
          default: qAssert(false); break;
       }
-      QByteArray day_ = QString("%1").arg(dt.date().day(), 2, 10, QChar('0')).toLatin1();
-      QByteArray year = QString("%1").arg(dt.date().year(), 4, 10, QChar('0')).toLatin1();
-      QByteArray hour = QString("%1").arg(dt.time().hour(), 2, 10, QChar('0')).toLatin1();
-      QByteArray minute = QString("%1").arg(dt.time().minute(), 2, 10, QChar('0')).toLatin1();
-      QByteArray second = QString("%1").arg(dt.time().second(), 2, 10, QChar('0')).toLatin1();
+      QByteArray day_ = QStringLiteral("%1").arg(dt.date().day(), 2, 10, QChar('0')).toLatin1();
+      QByteArray year = QStringLiteral("%1").arg(dt.date().year(), 4, 10, QChar('0')).toLatin1();
+      QByteArray hour = QStringLiteral("%1").arg(dt.time().hour(), 2, 10, QChar('0')).toLatin1();
+      QByteArray minute = QStringLiteral("%1").arg(dt.time().minute(), 2, 10, QChar('0')).toLatin1();
+      QByteArray second = QStringLiteral("%1").arg(dt.time().second(), 2, 10, QChar('0')).toLatin1();
       return (day + ", " + day_ + " " + month + " " + year + " " + hour + ":" + minute + ":" + second + " GMT");
    }
 

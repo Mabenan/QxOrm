@@ -43,7 +43,7 @@ QxSimpleCrypt::QxSimpleCrypt():
    m_protectionMode(ProtectionChecksum),
    m_lastError(ErrorNoError)
 {
-   qsrand(uint((qint64)(QDateTime::currentDateTime().toTime_t()) & 0xFFFF));
+    qsrand(uint((qint64)(QDateTime::currentDateTimeUtc().toTime_t()) & 0xFFFF));
 }
 
 QxSimpleCrypt::QxSimpleCrypt(quint64 key):
@@ -52,7 +52,7 @@ QxSimpleCrypt::QxSimpleCrypt(quint64 key):
    m_protectionMode(ProtectionChecksum),
    m_lastError(ErrorNoError)
 {
-   qsrand(uint((qint64)(QDateTime::currentDateTime().toTime_t()) & 0xFFFF));
+   qsrand(uint((qint64)(QDateTime::currentDateTimeUtc().toTime_t())) & 0xFFFF);
    splitKey();
 }
 
@@ -64,15 +64,15 @@ void QxSimpleCrypt::setKey(quint64 key)
 
 void QxSimpleCrypt::splitKey()
 {
-   m_keyParts.clear();
-   m_keyParts.resize(8);
-   for (int i=0;i<8;i++) {
-     quint64 part = m_key;
-     for (int j=i; j>0; j--)
-         part = part >> 8;
-     part = part & 0xff;
-     m_keyParts[i] = static_cast<char>(part);
-   }
+    m_keyParts.clear();
+    m_keyParts.resize(8);
+    for (int i = 0; i < 8; i++) {
+        quint64 part = m_key;
+        for (int j = i; j > 0; j--)
+            part = part >> 8;
+        part = part & 0xff;
+        m_keyParts[i] = static_cast<char>(part);
+    }
 }
 
 QByteArray QxSimpleCrypt::encryptToByteArray(const QString& plaintext)
@@ -81,7 +81,7 @@ QByteArray QxSimpleCrypt::encryptToByteArray(const QString& plaintext)
    return encryptToByteArray(plaintextArray);
 }
 
-QByteArray QxSimpleCrypt::encryptToByteArray(QByteArray plaintext)
+QByteArray QxSimpleCrypt::encryptToByteArray(const QByteArray &plaintext)
 {
    if (m_keyParts.isEmpty()) {
      qWarning() << "No key set.";
@@ -105,14 +105,14 @@ QByteArray QxSimpleCrypt::encryptToByteArray(QByteArray plaintext)
 
    QByteArray integrityProtection;
    if (m_protectionMode == ProtectionChecksum) {
-     flags |= CryptoFlagChecksum;
-     QDataStream s(&integrityProtection, QIODevice::WriteOnly);
-     s << qChecksum(ba.constData(), ba.length());
+       flags |= CryptoFlagChecksum;
+       QDataStream s(&integrityProtection, QIODevice::WriteOnly);
+       s << qChecksum(ba.constData(), ba.length());
    } else if (m_protectionMode == ProtectionHash) {
-     flags |= CryptoFlagHash;
-     QCryptographicHash hash(QCryptographicHash::Sha1);
-     hash.addData(ba);
-     integrityProtection += hash.result();
+       flags |= CryptoFlagHash;
+       QCryptographicHash hash(QCryptographicHash::Sha1);
+       hash.addData(ba);
+       integrityProtection += hash.result();
    }
 
    //prepend a random char to the string
@@ -146,7 +146,7 @@ QString QxSimpleCrypt::encryptToString(const QString& plaintext)
    return cypherString;
 }
 
-QString QxSimpleCrypt::encryptToString(QByteArray plaintext)
+QString QxSimpleCrypt::encryptToString(const QByteArray &plaintext)
 {
    QByteArray cypher = encryptToByteArray(plaintext);
    QString cypherString = QString::fromLatin1(cypher.toBase64());
@@ -161,7 +161,7 @@ QString QxSimpleCrypt::decryptToString(const QString &cyphertext)
    return plaintext;
 }
 
-QString QxSimpleCrypt::decryptToString(QByteArray cypher)
+QString QxSimpleCrypt::decryptToString(const QByteArray &cypher)
 {
    QByteArray ba = decryptToByteArray(cypher);
    QString plaintext = QString::fromUtf8(ba, ba.size());
@@ -175,7 +175,7 @@ QByteArray QxSimpleCrypt::decryptToByteArray(const QString& cyphertext)
    return ba;
 }
 
-QByteArray QxSimpleCrypt::decryptToByteArray(QByteArray cypher)
+QByteArray QxSimpleCrypt::decryptToByteArray(const QByteArray &cypher)
 {
    if (m_keyParts.isEmpty()) {
      qWarning() << "No key set.";

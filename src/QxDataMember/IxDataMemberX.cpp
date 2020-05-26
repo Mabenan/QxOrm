@@ -61,11 +61,16 @@ IxClass * IxDataMemberX::getClass() const { return m_pImpl->m_pClass; }
 
 void IxDataMemberX::setClass(IxClass * p) { m_pImpl->m_pClass = p; }
 
-QString IxDataMemberX::getName() const { return (m_pImpl->m_pClass ? m_pImpl->m_pClass->getName() : ""); }
+QString IxDataMemberX::getName() const
+{
+    return (m_pImpl->m_pClass ? m_pImpl->m_pClass->getName() : QLatin1String(""));
+}
 
 const char * IxDataMemberX::getNamePtr() const { return (m_pImpl->m_pClass ? m_pImpl->m_pClass->getNamePtr() : NULL); }
 
-QString IxDataMemberX::getDescription() const { return (m_pImpl->m_pClass ? m_pImpl->m_pClass->getDescription() : ""); }
+QString IxDataMemberX::getDescription() const
+{ return (m_pImpl->m_pClass ? m_pImpl->m_pClass->getDescription(): QLatin1String(""));
+}
 
 long IxDataMemberX::getVersion() const { return (m_pImpl->m_pClass ? m_pImpl->m_pClass->getVersion() : -1); }
 

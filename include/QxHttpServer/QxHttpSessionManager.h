@@ -79,7 +79,7 @@ private:
    struct QxHttpSessionManagerImpl;
    std::unique_ptr<QxHttpSessionManagerImpl> m_pImpl; //!< Private implementation idiom
 
-   QxHttpSessionManager();
+   QxHttpSessionManager(QObject * parent = nullptr);
    virtual ~QxHttpSessionManager();
 
 public:

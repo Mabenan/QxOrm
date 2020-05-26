@@ -31,9 +31,9 @@
 
 #include <QxPrecompiled.h>
 
+#include <QxValidator/IxValidator.h>
 #include <QxValidator/QxInvalidValue.h>
 #include <QxValidator/QxInvalidValueX.h>
-#include <QxValidator/IxValidator.h>
 
 #include <QxDataMember/IxDataMember.h>
 
@@ -48,34 +48,33 @@ QxInvalidValue::QxInvalidValue() : QxPropertyBag(), m_pValidator(NULL) { ; }
 
 QxInvalidValue::~QxInvalidValue() { ; }
 
-const IxValidator * QxInvalidValue::getValidator() const { return m_pValidator; }
+const IxValidator *QxInvalidValue::getValidator() const { return m_pValidator; }
 
-void QxInvalidValue::setValidator(const IxValidator * p) { m_pValidator = p; }
+void QxInvalidValue::setValidator(const IxValidator *p) { m_pValidator = p; }
 
-QString QxInvalidValue::getFullName() const
-{
-   QString sResult = m_sPath;
-   sResult += ((! m_sPath.isEmpty() && ! m_sPropertyName.isEmpty()) ? QString(".") : QString(""));
-   sResult += m_sPropertyName;
-   return sResult;
+QString QxInvalidValue::getFullName() const {
+  QString sResult = m_sPath;
+  sResult +=
+      ((!m_sPath.isEmpty() && !m_sPropertyName.isEmpty()) ? QStringLiteral(".")
+                                                          : QLatin1String(""));
+  sResult += m_sPropertyName;
+  return sResult;
 }
 
 } // namespace qx
 
-QDataStream & operator<< (QDataStream & stream, const qx::QxInvalidValue & t)
-{
-   stream << t.m_sMessage;
-   stream << t.m_sPropertyName;
-   stream << t.m_sPath;
-   stream << t.m_lstPropertyBag;
-   return stream;
+QDataStream &operator<<(QDataStream &stream, const qx::QxInvalidValue &t) {
+  stream << t.m_sMessage;
+  stream << t.m_sPropertyName;
+  stream << t.m_sPath;
+  stream << t.m_lstPropertyBag;
+  return stream;
 }
 
-QDataStream & operator>> (QDataStream & stream, qx::QxInvalidValue & t)
-{
-   stream >> t.m_sMessage;
-   stream >> t.m_sPropertyName;
-   stream >> t.m_sPath;
-   stream >> t.m_lstPropertyBag;
-   return stream;
+QDataStream &operator>>(QDataStream &stream, qx::QxInvalidValue &t) {
+  stream >> t.m_sMessage;
+  stream >> t.m_sPropertyName;
+  stream >> t.m_sPath;
+  stream >> t.m_lstPropertyBag;
+  return stream;
 }

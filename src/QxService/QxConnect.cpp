@@ -143,9 +143,15 @@ struct QxConnect::QxConnectImpl
 
 };
 
-QxConnect::QxConnect() : qx::QxSingleton<QxConnect>("qx::service::QxConnect"), m_pImpl(new QxConnectImpl()) { ; }
+QxConnect::QxConnect()
+    : qx::QxSingleton<QxConnect>(QStringLiteral("qx::service::QxConnect"))
+    , m_pImpl(new QxConnectImpl())
+{
+    ;
+}
 
-QxConnect::~QxConnect() { ; }
+QxConnect::~QxConnect() {
+    ; }
 
 QString QxConnect::getIp()
 {
@@ -348,31 +354,31 @@ void QxConnect::setSSLEnabled(bool b)
    m_pImpl->m_sslEnabled = b;
 }
 
-void QxConnect::setSSLConfiguration(QSslConfiguration cfg)
+void QxConnect::setSSLConfiguration(const QSslConfiguration &cfg)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    m_pImpl->m_sslConfig = cfg;
 }
 
-void QxConnect::setSSLCACertificates(QList<QSslCertificate> lst)
+void QxConnect::setSSLCACertificates(const QList<QSslCertificate> &lst)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    m_pImpl->m_sslCACertificates = lst;
 }
 
-void QxConnect::setSSLLocalCertificate(QSslCertificate cert)
+void QxConnect::setSSLLocalCertificate(const QSslCertificate &cert)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    m_pImpl->m_sslLocalCertificate = cert;
 }
 
-void QxConnect::setSSLPrivateKey(QSslKey key)
+void QxConnect::setSSLPrivateKey(const QSslKey &key)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    m_pImpl->m_sslPrivateKey = key;
 }
 
-void QxConnect::setSSLIgnoreErrors(QList<QSslError> lst)
+void QxConnect::setSSLIgnoreErrors(const QList<QSslError> &lst)
 {
    QMutexLocker locker(& m_pImpl->m_mutex);
    m_pImpl->m_sslIgnoreErrors = lst;

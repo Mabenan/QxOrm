@@ -40,7 +40,8 @@
  * \file QxSqlQueryBuilder.h
  * \author Lionel Marty
  * \ingroup QxDao
- * \brief Concrete SQL query builder by class with a cache mechanism to backup and restore queries already built by the program
+ * \brief Concrete SQL query builder by class with a cache mechanism to backup
+ * and restore queries already built by the program
  */
 
 #include <QxDao/IxSqlQueryBuilder.h>
@@ -48,473 +49,525 @@
 
 #include <QxRegister/QxClass.h>
 
+#include <QxTraits/is_qx_registered.h>
 #include <QxTraits/remove_attr.h>
 #include <QxTraits/remove_smart_ptr.h>
-#include <QxTraits/is_qx_registered.h>
 
-#define QX_SQL_ERR_NO_DATA_MEMBER_REGISTERED    "'QxSqlQueryBuilder<T>' error : 'qx::register_class()' not called or no data member registered"
-#define QX_SQL_ERR_NO_ID_REGISTERED             "'QxSqlQueryBuilder<T>' error : no id registered"
+#define QX_SQL_ERR_NO_DATA_MEMBER_REGISTERED                                   \
+  "'QxSqlQueryBuilder<T>' error : 'qx::register_class()' not called or no "    \
+  "data member registered"
+#define QX_SQL_ERR_NO_ID_REGISTERED                                            \
+  "'QxSqlQueryBuilder<T>' error : no id registered"
 
-#define QX_SQL_BUILDER_INIT_FCT(oper) \
-qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql); \
-QString joinQueryHash = (this->getDaoHelper() ? this->getDaoHelper()->qxQuery().getJoinQueryHash() : QString()); \
-QString key = QxClass<type_sql>::getSingleton()->getKey() + joinQueryHash + oper; \
-if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) { return (* this); } \
-QString sql; Q_UNUSED(sql);
+#define QX_SQL_BUILDER_INIT_FCT(oper)                                          \
+  qx::dao::detail::IxDao_Timer timer(                                          \
+      this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql);   \
+  QString joinQueryHash =                                                      \
+      (this->getDaoHelper()                                                    \
+           ? this->getDaoHelper()->qxQuery().getJoinQueryHash()                \
+           : QString());                                                       \
+  QString key =                                                                \
+      QxClass<type_sql>::getSingleton()->getKey() + joinQueryHash + oper;      \
+  if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) {                \
+    return (*this);                                                            \
+  }                                                                            \
+  QString sql;                                                                 \
+  Q_UNUSED(sql);
 
-#define QX_SQL_BUILDER_INIT_FCT_WITH_RELATION(oper) \
-qx::dao::detail::IxDao_Timer timer(this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql); \
-QString joinQueryHash = (this->getDaoHelper() ? this->getDaoHelper()->qxQuery().getJoinQueryHash() : QString()); \
-QString key = QxClass<type_sql>::getSingleton()->getKey() + joinQueryHash + this->getHashRelation() + oper; \
-if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) { this->findSqlAlias(key); return (* this); } \
-QString sql; Q_UNUSED(sql);
+#define QX_SQL_BUILDER_INIT_FCT_WITH_RELATION(oper)                            \
+  qx::dao::detail::IxDao_Timer timer(                                          \
+      this->getDaoHelper(), qx::dao::detail::IxDao_Helper::timer_build_sql);   \
+  QString joinQueryHash =                                                      \
+      (this->getDaoHelper()                                                    \
+           ? this->getDaoHelper()->qxQuery().getJoinQueryHash()                \
+           : QString());                                                       \
+  QString key = QxClass<type_sql>::getSingleton()->getKey() + joinQueryHash +  \
+                this->getHashRelation() + oper;                                \
+  if ((joinQueryHash.isEmpty()) && (this->findSqlQuery(key))) {                \
+    this->findSqlAlias(key);                                                   \
+    return (*this);                                                            \
+  }                                                                            \
+  QString sql;                                                                 \
+  Q_UNUSED(sql);
 
 namespace qx {
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder<T> : concrete SQL query builder for class T with a cache mechanism to backup and restore queries already built by the program
+ * \brief qx::QxSqlQueryBuilder<T> : concrete SQL query builder for class T with
+ * a cache mechanism to backup and restore queries already built by the program
  */
-template <class T>
-class QxSqlQueryBuilder : public IxSqlQueryBuilder
-{
+template <class T> class QxSqlQueryBuilder : public IxSqlQueryBuilder {
 
 private:
-
-   typedef typename qx::trait::remove_attr<T>::type type_sql_tmp_1;
-   typedef typename qx::trait::remove_smart_ptr<type_sql_tmp_1>::type type_sql_tmp_2;
-
-public:
-
-   typedef typename qx::QxSqlQueryBuilder<T>::type_sql_tmp_2 type_sql;
+  typedef typename qx::trait::remove_attr<T>::type type_sql_tmp_1;
+  typedef
+      typename qx::trait::remove_smart_ptr<type_sql_tmp_1>::type type_sql_tmp_2;
 
 public:
+  typedef typename qx::QxSqlQueryBuilder<T>::type_sql_tmp_2 type_sql;
 
-   QxSqlQueryBuilder() : IxSqlQueryBuilder() { ; }
-   virtual ~QxSqlQueryBuilder() { static_assert(qx::trait::is_qx_registered<type_sql>::value, "qx::trait::is_qx_registered<type_sql>::value"); }
+public:
+  QxSqlQueryBuilder() : IxSqlQueryBuilder() { ; }
+  virtual ~QxSqlQueryBuilder() {
+    static_assert(qx::trait::is_qx_registered<type_sql>::value,
+                  "qx::trait::is_qx_registered<type_sql>::value");
+  }
 
-   virtual void init()
-   {
-      if (isInitDone()) { return; }
-      setDataMemberX(QxClass<type_sql>::getSingleton()->dataMemberX());
-      setSoftDelete(QxClass<type_sql>::getSingleton()->getSoftDelete());
-      IxSqlQueryBuilder::init();
-   }
-
+  virtual void init() {
+    if (isInitDone()) {
+      return;
+    }
+    setDataMemberX(QxClass<type_sql>::getSingleton()->dataMemberX());
+    setSoftDelete(QxClass<type_sql>::getSingleton()->getSoftDelete());
+    IxSqlQueryBuilder::init();
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_Count<T> : concrete SQL query builder for class T to build a COUNT SQL query
+ * \brief qx::QxSqlQueryBuilder_Count<T> : concrete SQL query builder for class
+ * T to build a COUNT SQL query
  */
-template <class T>
-class QxSqlQueryBuilder_Count : public QxSqlQueryBuilder<T>
-{
+template <class T> class QxSqlQueryBuilder_Count : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_Count() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_Count() { ; }
 
-   QxSqlQueryBuilder_Count() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_Count() { ; }
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("Count")
+    sql = "SELECT COUNT(*) FROM " +
+          qx::IxDataMember::getSqlFromTable(this->table());
+    if (!this->softDelete().isEmpty()) {
+      sql += " WHERE " + this->softDelete().buildSqlQueryToFetch();
+    }
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
+};
 
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("Count")
-      sql = "SELECT COUNT(*) FROM " + qx::IxDataMember::getSqlFromTable(this->table());
-      if (! this->softDelete().isEmpty()) { sql += " WHERE " + this->softDelete().buildSqlQueryToFetch(); }
+/*!
+ * \ingroup QxDao
+ * \brief qx::QxSqlQueryBuilder_Exist<T> : concrete SQL query builder for class
+ * T to build an EXIST SQL query
+ */
+template <class T> class QxSqlQueryBuilder_Exist : public QxSqlQueryBuilder<T> {
+
+public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+
+  QxSqlQueryBuilder_Exist() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_Exist() { ; }
+
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("Exist")
+    if (!this->getDataId()) {
+      qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED);
+      qAssert(false);
+      return (*this);
+    }
+    qx::dao::detail::QxSqlQueryHelper_Exist<type_sql>::sql(sql, (*this));
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
+};
+
+/*!
+ * \ingroup QxDao
+ * \brief qx::QxSqlQueryBuilder_FetchAll<T> : concrete SQL query builder for
+ * class T to build a FETCH ALL SQL query
+ */
+template <class T>
+class QxSqlQueryBuilder_FetchAll : public QxSqlQueryBuilder<T> {
+
+public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+
+  QxSqlQueryBuilder_FetchAll() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_FetchAll() { ; }
+
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(pRelationX);
+
+    if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+      QX_SQL_BUILDER_INIT_FCT("FetchAll")
+      qx::dao::detail::QxSqlQueryHelper_FetchAll<type_sql>::sql(sql, (*this));
       this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
-};
-
-/*!
- * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_Exist<T> : concrete SQL query builder for class T to build an EXIST SQL query
- */
-template <class T>
-class QxSqlQueryBuilder_Exist : public QxSqlQueryBuilder<T>
-{
-
-public:
-
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
-
-   QxSqlQueryBuilder_Exist() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_Exist() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("Exist")
-      if (! this->getDataId()) { qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED); qAssert(false); return (* this); }
-      qx::dao::detail::QxSqlQueryHelper_Exist<type_sql>::sql(sql, (* this));
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
-};
-
-/*!
- * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_FetchAll<T> : concrete SQL query builder for class T to build a FETCH ALL SQL query
- */
-template <class T>
-class QxSqlQueryBuilder_FetchAll : public QxSqlQueryBuilder<T>
-{
-
-public:
-
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
-
-   QxSqlQueryBuilder_FetchAll() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_FetchAll() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(pRelationX);
-
-      if ((columns.count() <= 0) || (columns.at(0) == "*"))
-      {
-         QX_SQL_BUILDER_INIT_FCT("FetchAll")
-         qx::dao::detail::QxSqlQueryHelper_FetchAll<type_sql>::sql(sql, (* this));
-         this->setSqlQuery(sql, key);
+    } else {
+      QString sql;
+      if (!this->verifyColumns(columns)) {
+        return (*this);
       }
-      else
-      {
-         QString sql;
-         if (! this->verifyColumns(columns)) { return (* this); }
-         qx::dao::detail::QxSqlQueryHelper_FetchAll<type_sql>::sql(sql, (* this), columns);
-         this->setSqlQuery(sql);
+      qx::dao::detail::QxSqlQueryHelper_FetchAll<type_sql>::sql(sql, (*this),
+                                                                columns);
+      this->setSqlQuery(sql);
+    }
+
+    return (*this);
+  }
+};
+
+/*!
+ * \ingroup QxDao
+ * \brief qx::QxSqlQueryBuilder_FetchById<T> : concrete SQL query builder for
+ * class T to build a FETCH BY ID SQL query
+ */
+template <class T>
+class QxSqlQueryBuilder_FetchById : public QxSqlQueryBuilder<T> {
+
+public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+
+  QxSqlQueryBuilder_FetchById() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_FetchById() { ; }
+
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(pRelationX);
+    if (!this->getDataId()) {
+      qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED);
+      qAssert(false);
+      return (*this);
+    }
+    QxSqlQueryBuilder_FetchAll<type_sql> builder;
+    builder.clone(*this);
+
+    if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+      QX_SQL_BUILDER_INIT_FCT("FetchById")
+      qx::dao::detail::QxSqlQueryHelper_FetchById<type_sql>::sql(sql, builder);
+      this->setSqlQuery(sql, key);
+    } else {
+      QString sql;
+      if (!this->verifyColumns(columns)) {
+        return (*this);
       }
+      qx::dao::detail::QxSqlQueryHelper_FetchById<type_sql>::sql(sql, builder,
+                                                                 columns);
+      this->setSqlQuery(sql);
+    }
 
-      return (* this);
-   }
-
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_FetchById<T> : concrete SQL query builder for class T to build a FETCH BY ID SQL query
+ * \brief qx::QxSqlQueryBuilder_Insert<T> : concrete SQL query builder for class
+ * T to build an INSERT SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_FetchById : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_Insert : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_Insert() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_Insert() { ; }
 
-   QxSqlQueryBuilder_FetchById() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_FetchById() { ; }
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("Insert")
+    qx::dao::detail::QxSqlQueryHelper_Insert<type_sql>::sql(sql, (*this));
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
+};
 
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(pRelationX);
-      if (! this->getDataId()) { qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED); qAssert(false); return (* this); }
-      QxSqlQueryBuilder_FetchAll<type_sql> builder; builder.clone(* this);
+/*!
+ * \ingroup QxDao
+ * \brief qx::QxSqlQueryBuilder_Update<T> : concrete SQL query builder for class
+ * T to build an UPDATE SQL query
+ */
+template <class T>
+class QxSqlQueryBuilder_Update : public QxSqlQueryBuilder<T> {
 
-      if ((columns.count() <= 0) || (columns.at(0) == "*"))
-      {
-         QX_SQL_BUILDER_INIT_FCT("FetchById")
-         qx::dao::detail::QxSqlQueryHelper_FetchById<type_sql>::sql(sql, builder);
-         this->setSqlQuery(sql, key);
+public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+
+  QxSqlQueryBuilder_Update() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_Update() { ; }
+
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(pRelationX);
+    if (!this->getDataId()) {
+      qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED);
+      qAssert(false);
+      return (*this);
+    }
+
+    if ((columns.count() <= 0) || (columns.at(0) == QLatin1String("*"))) {
+      QX_SQL_BUILDER_INIT_FCT("Update")
+      qx::dao::detail::QxSqlQueryHelper_Update<type_sql>::sql(sql, (*this));
+      this->setSqlQuery(sql, key);
+    } else {
+      QString sql;
+      if (!this->verifyColumns(columns)) {
+        return (*this);
       }
-      else
-      {
-         QString sql;
-         if (! this->verifyColumns(columns)) { return (* this); }
-         qx::dao::detail::QxSqlQueryHelper_FetchById<type_sql>::sql(sql, builder, columns);
-         this->setSqlQuery(sql);
-      }
+      qx::dao::detail::QxSqlQueryHelper_Update<type_sql>::sql(sql, (*this),
+                                                              columns);
+      this->setSqlQuery(sql);
+    }
 
-      return (* this);
-   }
-
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_Insert<T> : concrete SQL query builder for class T to build an INSERT SQL query
+ * \brief qx::QxSqlQueryBuilder_DeleteAll<T> : concrete SQL query builder for
+ * class T to build a DELETE ALL SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_Insert : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_DeleteAll : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_DeleteAll() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_DeleteAll() { ; }
 
-   QxSqlQueryBuilder_Insert() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_Insert() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("Insert")
-      qx::dao::detail::QxSqlQueryHelper_Insert<type_sql>::sql(sql, (* this));
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("DeleteAll")
+    sql = "DELETE FROM " + this->table();
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_Update<T> : concrete SQL query builder for class T to build an UPDATE SQL query
+ * \brief qx::QxSqlQueryBuilder_SoftDeleteAll<T> : concrete SQL query builder
+ * for class T to build a SOFT DELETE ALL SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_Update : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_SoftDeleteAll : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_SoftDeleteAll() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_SoftDeleteAll() { ; }
 
-   QxSqlQueryBuilder_Update() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_Update() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(pRelationX);
-      if (! this->getDataId()) { qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED); qAssert(false); return (* this); }
-
-      if ((columns.count() <= 0) || (columns.at(0) == "*"))
-      {
-         QX_SQL_BUILDER_INIT_FCT("Update")
-         qx::dao::detail::QxSqlQueryHelper_Update<type_sql>::sql(sql, (* this));
-         this->setSqlQuery(sql, key);
-      }
-      else
-      {
-         QString sql;
-         if (! this->verifyColumns(columns)) { return (* this); }
-         qx::dao::detail::QxSqlQueryHelper_Update<type_sql>::sql(sql, (* this), columns);
-         this->setSqlQuery(sql);
-      }
-
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("SoftDeleteAll")
+    if (!this->softDelete().isEmpty()) {
+      sql = "UPDATE " + this->table() + " SET " +
+            this->softDelete().buildSqlQueryToUpdate();
+    } else {
+      qAssert(false);
+    }
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_DeleteAll<T> : concrete SQL query builder for class T to build a DELETE ALL SQL query
+ * \brief qx::QxSqlQueryBuilder_DeleteById<T> : concrete SQL query builder for
+ * class T to build a DELETE BY ID SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_DeleteAll : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_DeleteById : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_DeleteById() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_DeleteById() { ; }
 
-   QxSqlQueryBuilder_DeleteAll() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_DeleteAll() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("DeleteAll")
-      sql = "DELETE FROM " + this->table();
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("DeleteById")
+    if (!this->getDataId()) {
+      qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED);
+      qAssert(false);
+      return (*this);
+    }
+    qx::dao::detail::QxSqlQueryHelper_DeleteById<type_sql>::sql(sql, (*this),
+                                                                false);
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_SoftDeleteAll<T> : concrete SQL query builder for class T to build a SOFT DELETE ALL SQL query
+ * \brief qx::QxSqlQueryBuilder_SoftDeleteById<T> : concrete SQL query builder
+ * for class T to build a SOFT DELETE BY ID SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_SoftDeleteAll : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_SoftDeleteById : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_SoftDeleteById() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_SoftDeleteById() { ; }
 
-   QxSqlQueryBuilder_SoftDeleteAll() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_SoftDeleteAll() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("SoftDeleteAll")
-      if (! this->softDelete().isEmpty()) { sql = "UPDATE " + this->table() + " SET " + this->softDelete().buildSqlQueryToUpdate(); }
-      else { qAssert(false); }
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("SoftDeleteById")
+    if (!this->getDataId()) {
+      qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED);
+      qAssert(false);
+      return (*this);
+    }
+    if (this->softDelete().isEmpty()) {
+      qAssert(false);
+      return (*this);
+    }
+    qx::dao::detail::QxSqlQueryHelper_DeleteById<type_sql>::sql(sql, (*this),
+                                                                true);
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_DeleteById<T> : concrete SQL query builder for class T to build a DELETE BY ID SQL query
+ * \brief qx::QxSqlQueryBuilder_CreateTable<T> : concrete SQL query builder for
+ * class T to build a CREATE TABLE SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_DeleteById : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_CreateTable : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_CreateTable() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_CreateTable() { ; }
 
-   QxSqlQueryBuilder_DeleteById() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_DeleteById() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("DeleteById")
-      if (! this->getDataId()) { qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED); qAssert(false); return (* this); }
-      qx::dao::detail::QxSqlQueryHelper_DeleteById<type_sql>::sql(sql, (* this), false);
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    Q_UNUSED(pRelationX);
+    QX_SQL_BUILDER_INIT_FCT("CreateTable")
+    qx::dao::detail::QxSqlQueryHelper_CreateTable<type_sql>::sql(sql, (*this));
+    this->setSqlQuery(sql, key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_SoftDeleteById<T> : concrete SQL query builder for class T to build a SOFT DELETE BY ID SQL query
+ * \brief qx::QxSqlQueryBuilder_Count_WithRelation<T> : concrete SQL query
+ * builder for class T to build a COUNT WITH RELATION SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_SoftDeleteById : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_Count_WithRelation : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_Count_WithRelation() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_Count_WithRelation() { ; }
 
-   QxSqlQueryBuilder_SoftDeleteById() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_SoftDeleteById() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("SoftDeleteById")
-      if (! this->getDataId()) { qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED); qAssert(false); return (* this); }
-      if (this->softDelete().isEmpty()) { qAssert(false); return (* this); }
-      qx::dao::detail::QxSqlQueryHelper_DeleteById<type_sql>::sql(sql, (* this), true);
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    QX_SQL_BUILDER_INIT_FCT_WITH_RELATION("Count_WithRelation")
+    IxSqlQueryBuilder::sql_Count_WithRelation(pRelationX, sql, (*this));
+    this->setSqlQuery(sql, key);
+    this->insertSqlAlias(key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_CreateTable<T> : concrete SQL query builder for class T to build a CREATE TABLE SQL query
+ * \brief qx::QxSqlQueryBuilder_FetchAll_WithRelation<T> : concrete SQL query
+ * builder for class T to build a FETCH ALL WITH RELATION SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_CreateTable : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_FetchAll_WithRelation : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_FetchAll_WithRelation() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_FetchAll_WithRelation() { ; }
 
-   QxSqlQueryBuilder_CreateTable() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_CreateTable() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns); Q_UNUSED(pRelationX);
-      QX_SQL_BUILDER_INIT_FCT("CreateTable")
-      qx::dao::detail::QxSqlQueryHelper_CreateTable<type_sql>::sql(sql, (* this));
-      this->setSqlQuery(sql, key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    QX_SQL_BUILDER_INIT_FCT_WITH_RELATION("FetchAll_WithRelation")
+    qx::dao::detail::QxSqlQueryHelper_FetchAll_WithRelation<type_sql>::sql(
+        pRelationX, sql, (*this));
+    this->setSqlQuery(sql, key);
+    this->insertSqlAlias(key);
+    return (*this);
+  }
 };
 
 /*!
  * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_Count_WithRelation<T> : concrete SQL query builder for class T to build a COUNT WITH RELATION SQL query
+ * \brief qx::QxSqlQueryBuilder_FetchById_WithRelation<T> : concrete SQL query
+ * builder for class T to build a FETCH BY ID WITH RELATION SQL query
  */
 template <class T>
-class QxSqlQueryBuilder_Count_WithRelation : public QxSqlQueryBuilder<T>
-{
+class QxSqlQueryBuilder_FetchById_WithRelation : public QxSqlQueryBuilder<T> {
 
 public:
+  typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
 
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
+  QxSqlQueryBuilder_FetchById_WithRelation() : QxSqlQueryBuilder<T>() { ; }
+  virtual ~QxSqlQueryBuilder_FetchById_WithRelation() { ; }
 
-   QxSqlQueryBuilder_Count_WithRelation() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_Count_WithRelation() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns);
-      QX_SQL_BUILDER_INIT_FCT_WITH_RELATION("Count_WithRelation")
-      IxSqlQueryBuilder::sql_Count_WithRelation(pRelationX, sql, (* this));
-      this->setSqlQuery(sql, key);
-      this->insertSqlAlias(key);
-      return (* this);
-   }
-
-};
-
-/*!
- * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_FetchAll_WithRelation<T> : concrete SQL query builder for class T to build a FETCH ALL WITH RELATION SQL query
- */
-template <class T>
-class QxSqlQueryBuilder_FetchAll_WithRelation : public QxSqlQueryBuilder<T>
-{
-
-public:
-
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
-
-   QxSqlQueryBuilder_FetchAll_WithRelation() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_FetchAll_WithRelation() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns);
-      QX_SQL_BUILDER_INIT_FCT_WITH_RELATION("FetchAll_WithRelation")
-      qx::dao::detail::QxSqlQueryHelper_FetchAll_WithRelation<type_sql>::sql(pRelationX, sql, (* this));
-      this->setSqlQuery(sql, key);
-      this->insertSqlAlias(key);
-      return (* this);
-   }
-
-};
-
-/*!
- * \ingroup QxDao
- * \brief qx::QxSqlQueryBuilder_FetchById_WithRelation<T> : concrete SQL query builder for class T to build a FETCH BY ID WITH RELATION SQL query
- */
-template <class T>
-class QxSqlQueryBuilder_FetchById_WithRelation : public QxSqlQueryBuilder<T>
-{
-
-public:
-
-   typedef typename QxSqlQueryBuilder<T>::type_sql type_sql;
-
-   QxSqlQueryBuilder_FetchById_WithRelation() : QxSqlQueryBuilder<T>() { ; }
-   virtual ~QxSqlQueryBuilder_FetchById_WithRelation() { ; }
-
-   virtual IxSqlQueryBuilder & buildSql(const QStringList & columns = QStringList(), QxSqlRelationLinked * pRelationX = NULL)
-   {
-      Q_UNUSED(columns);
-      QX_SQL_BUILDER_INIT_FCT_WITH_RELATION("FetchById_WithRelation")
-      if (! this->getDataId()) { qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED); qAssert(false); return (* this); }
-      QxSqlQueryBuilder_FetchAll_WithRelation<type_sql> builder; builder.clone(* this);
-      qx::dao::detail::QxSqlQueryHelper_FetchById_WithRelation<type_sql>::sql(pRelationX, sql, builder);
-      this->setSqlQuery(sql, key);
-      this->insertSqlAlias(key);
-      return (* this);
-   }
-
+  virtual IxSqlQueryBuilder &
+  buildSql(const QStringList &columns = QStringList(),
+           QxSqlRelationLinked *pRelationX = NULL) {
+    Q_UNUSED(columns);
+    QX_SQL_BUILDER_INIT_FCT_WITH_RELATION("FetchById_WithRelation")
+    if (!this->getDataId()) {
+      qDebug("[QxOrm] %s", QX_SQL_ERR_NO_ID_REGISTERED);
+      qAssert(false);
+      return (*this);
+    }
+    QxSqlQueryBuilder_FetchAll_WithRelation<type_sql> builder;
+    builder.clone(*this);
+    qx::dao::detail::QxSqlQueryHelper_FetchById_WithRelation<type_sql>::sql(
+        pRelationX, sql, builder);
+    this->setSqlQuery(sql, key);
+    this->insertSqlAlias(key);
+    return (*this);
+  }
 };
 
 } // namespace qx

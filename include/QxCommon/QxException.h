@@ -43,8 +43,8 @@
  * \brief Exception with error code and error description
  */
 
-#include <iostream>
 #include <exception>
+#include <iostream>
 
 #include <QxCommon/QxBool.h>
 
@@ -54,31 +54,33 @@ namespace qx {
  * \ingroup QxCommon
  * \brief qx::exception : exception with error code and error description
  */
-class exception : public std::exception
-{
+class exception : public std::exception {
 
 private:
-
-   long m_code;      //!< Error code
-   QString m_desc;   //!< Error description
-   QString m_what;   //!< Formatted error : code + "^" + description
+  long m_code;    //!< Error code
+  QString m_desc; //!< Error description
+  QString m_what; //!< Formatted error : code + "^" + description
 
 public:
+  exception(const QString &desc) : std::exception(), m_code(0), m_desc(desc) {
+    updateWhat();
+  }
+  exception(long code, const QString &desc)
+      : std::exception(), m_code(code), m_desc(desc) {
+    updateWhat();
+  }
+  virtual ~exception() throw() { ; }
 
-   exception(const QString & desc) : std::exception(), m_code(0), m_desc(desc) { updateWhat(); }
-   exception(long code, const QString & desc) : std::exception(), m_code(code), m_desc(desc) { updateWhat(); }
-   virtual ~exception() throw() { ; }
+  virtual const char *what() const throw() { return qPrintable(m_what); }
 
-   virtual const char * what() const throw() { return qPrintable(m_what); }
-
-   long getCode() const             { return m_code; }
-   QString getDescription() const   { return m_desc; }
-   qx_bool toQxBool() const         { return qx_bool(m_code, m_desc); }
+  long getCode() const { return m_code; }
+  QString getDescription() const { return m_desc; }
+  qx_bool toQxBool() const { return qx_bool(m_code, m_desc); }
 
 private:
-
-   void updateWhat() { m_what = (QString::number(m_code) + QString("^") + m_desc); }
-
+  void updateWhat() {
+    m_what = (QString::number(m_code) + (QString)QStringLiteral("^") + m_desc);
+  }
 };
 
 } // namespace qx

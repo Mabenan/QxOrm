@@ -102,8 +102,8 @@
                 QX_REGISTER_CLASS_NAME_SEP_SUP_XML_TAG);                       \
     tmp.replace(QX_REGISTER_CLASS_NAME_SEP_NXT,                                \
                 QX_REGISTER_CLASS_NAME_SEP_NXT_XML_TAG);                       \
-    tmp.replace(QStringLiteral("::"), QStringLiteral("."));                    \
-    tmp.replace(QStringLiteral(" "), QStringLiteral(""));                      \
+    tmp.replace(QLatin1String("::"), QLatin1String("."));                      \
+    tmp.replace(QLatin1String(" "), QLatin1String(""));                        \
     result_xml = tmp.toLatin1().constData();                                   \
     return result_xml.toLatin1().constData();                                  \
   }

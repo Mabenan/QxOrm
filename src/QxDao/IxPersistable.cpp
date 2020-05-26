@@ -50,9 +50,22 @@ std::shared_ptr<qx::IxPersistableCollection> IxPersistable::qxFetchAll(const QSt
 {
    if (! QxClassX::implementIxPersistable(className)) { qAssert(false); return std::shared_ptr<qx::IxPersistableCollection>(); }
    qx::IxPersistable_ptr ptr = qx::IxPersistable_ptr(static_cast<qx::IxPersistable *>(qx::create_void_ptr(className)));
-   if (! ptr) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxPersistable::qxFetchAll() : 'invalid classname, unable to create a new instance'", "", QSqlError::UnknownError)); }
+   if (!ptr) {
+       throw qx::dao::sql_error(QSqlError(
+           "[QxOrm] qx::IxPersistable::qxFetchAll() : 'invalid "
+           "classname, " "unable to create a new instance'", QLatin1String(""),
+               QSqlError::UnknownError));
+   }
    std::shared_ptr<qx::IxPersistableCollection> lst = ptr->qxNewPersistableCollection(bAsList);
-   if (! lst) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxPersistable::qxFetchAll() : 'unable to create a new persistable collection'", "", QSqlError::UnknownError)); }
+   if (!lst) {
+       throw qx::dao::sql_error(
+           QSqlError(
+               "[QxOrm] qx:QStringLiteral(:IxPersistable::qxFetchAll() " ": 'unable to create a "
+                                                                          "new persistable "
+                                                                          "collection'",
+           QLatin1String(""),
+               QSqlError::UnknownError));
+   }
    QSqlError daoError = lst->qxFetchAll(NULL, columns, relation, pDatabase);
    if (daoError.isValid()) { throw qx::dao::sql_error(daoError); }
    return lst;
@@ -62,9 +75,20 @@ std::shared_ptr<qx::IxPersistableCollection> IxPersistable::qxFetchByQuery(const
 {
    if (! QxClassX::implementIxPersistable(className)) { qAssert(false); return std::shared_ptr<qx::IxPersistableCollection>(); }
    qx::IxPersistable_ptr ptr = qx::IxPersistable_ptr(static_cast<qx::IxPersistable *>(qx::create_void_ptr(className)));
-   if (! ptr) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxPersistable::qxFetchByQuery() : 'invalid classname, unable to create a new instance'", "", QSqlError::UnknownError)); }
+   if (!ptr) {
+       throw qx::dao::sql_error(QSqlError(
+           "[QxOrm] qx::IxPersistable::qxFetchByQuery() : 'invalid "
+                              "classname, unable to create a new instance'",  QLatin1String(""),
+               QSqlError::UnknownError));
+   }
    std::shared_ptr<qx::IxPersistableCollection> lst = ptr->qxNewPersistableCollection(bAsList);
-   if (! lst) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxPersistable::qxFetchByQuery() : 'unable to create a new persistable collection'", "", QSqlError::UnknownError)); }
+   if (!lst) {
+       throw qx::dao::sql_error(QSqlError(
+                                    "[QxOrm] qx::IxPersistable::qxFetchByQuery() : "
+                                    "'unable to " "create a new persistable collection'",
+                               QLatin1String(""),
+                                QSqlError::UnknownError));
+   }
    QSqlError daoError = lst->qxFetchByQuery(query, NULL, columns, relation, pDatabase);
    if (daoError.isValid()) { throw qx::dao::sql_error(daoError); }
    return lst;
@@ -74,9 +98,20 @@ std::shared_ptr<qx::IxPersistableCollection> IxPersistable::qxExecuteQuery(const
 {
    if (! QxClassX::implementIxPersistable(className)) { qAssert(false); return std::shared_ptr<qx::IxPersistableCollection>(); }
    qx::IxPersistable_ptr ptr = qx::IxPersistable_ptr(static_cast<qx::IxPersistable *>(qx::create_void_ptr(className)));
-   if (! ptr) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxPersistable::qxExecuteQuery() : 'invalid classname, unable to create a new instance'", "", QSqlError::UnknownError)); }
+   if (!ptr) {
+       throw qx::dao::sql_error(QSqlError(
+           "[QxOrm] qx::IxPersistable::qxExecuteQuery() : 'invalid "
+                              "classname, unable to create a new instance'", QLatin1String(""),
+               QSqlError::UnknownError));
+   }
    std::shared_ptr<qx::IxPersistableCollection> lst = ptr->qxNewPersistableCollection(bAsList);
-   if (! lst) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxPersistable::qxExecuteQuery() : 'unable to create a new persistable collection'", "", QSqlError::UnknownError)); }
+   if (!lst) {
+       throw qx::dao::sql_error(QSqlError(
+                                    "[QxOrm] qx::IxPersistable::qxExecuteQuery() : "
+                                    "'unable to " "create a new persistable collection'",
+                                QLatin1String(""),
+                                QSqlError::UnknownError));
+   }
    QSqlError daoError = lst->qxExecuteQuery(query, NULL, pDatabase);
    if (daoError.isValid()) { throw qx::dao::sql_error(daoError); }
    return lst;

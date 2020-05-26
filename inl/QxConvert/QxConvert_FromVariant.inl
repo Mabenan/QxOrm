@@ -113,7 +113,9 @@ struct QxConvert_FromVariant< QVariant >
    static inline qx_bool fromVariant(const QVariant & v, QVariant & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
    {
       if (ctx != qx::cvt::context::e_database) { t = v; return qx_bool(true); }
-      QString s = v.toString(); if (! s.startsWith("$$JSON$$")) { t = v; return qx_bool(true); }
+      QString s = v.toString(); if (! s.startsWith(QLatin1String("$$JSON$$"))) {
+            t = v;
+            return qx_bool(true); }
       return qx::cvt::detail::QxConvert_FromString< QVariant >::fromString(s, t, format, index, ctx);
    }
 };

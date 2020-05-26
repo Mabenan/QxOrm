@@ -58,7 +58,7 @@ namespace service {
  */
 class QxClientAsync : public QThread
 {
-
+Q_OBJECT
 protected:
 
    IxService_ptr m_pService;     //!< Service to execute in thread
@@ -66,7 +66,7 @@ protected:
 
 public:
 
-   QxClientAsync() : QThread() { ; }
+   QxClientAsync(QObject * parent = nullptr) : QThread(parent) { ; }
    virtual ~QxClientAsync() { if (isRunning()) { qDebug("[QxOrm] qx::service::QxClientAsync thread is running : %s", "wait thread finished"); wait(); } }
 
    IxService_ptr getService() const                                  { return m_pService; }

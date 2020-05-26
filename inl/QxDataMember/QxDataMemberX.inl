@@ -188,40 +188,63 @@ inline void QxDataMemberX<T>::fromArchive(T * pOwner, Archive & ar, const unsign
 
 #endif // _QX_ENABLE_BOOST_SERIALIZATION
 
-template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-QxDataMemberX<qx::trait::no_base_class_defined>::QxDataMemberX() : IxDataMemberX(), QxSingleton< QxDataMemberX<qx::trait::no_base_class_defined> >("qx::QxDataMemberX_no_base_class_defined") { ; }
+template<>
+QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE QxDataMemberX<qx::trait::no_base_class_defined>::QxDataMemberX()
+    : IxDataMemberX()
+    , QxSingleton<QxDataMemberX<qx::trait::no_base_class_defined>>(
+          QStringLiteral("qx::QxDataMemberX_no_base_class_defined"))
+{
+    ;
+}
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-QxDataMemberX<QObject>::QxDataMemberX() : IxDataMemberX(), QxSingleton< QxDataMemberX<QObject> >("qx::QxDataMemberX_QObject") { ; }
+QxDataMemberX<QObject>::QxDataMemberX() : IxDataMemberX(), QxSingleton< QxDataMemberX<QObject> >(QStringLiteral("qx::QxDataMemberX_QObject")) {
+    ; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-long QxDataMemberX<qx::trait::no_base_class_defined>::count_WithDaoStrategy_Helper() const { return 0; }
+long QxDataMemberX<qx::trait::no_base_class_defined>::count_WithDaoStrategy_Helper() const {
+    return 0; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-bool QxDataMemberX<qx::trait::no_base_class_defined>::exist_WithDaoStrategy_Helper(const QString & sKey) const { Q_UNUSED(sKey); return false; }
+bool QxDataMemberX<qx::trait::no_base_class_defined>::exist_WithDaoStrategy_Helper(const QString & sKey) const {
+    Q_UNUSED(sKey);
+    return false; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-IxDataMember * QxDataMemberX<qx::trait::no_base_class_defined>::get_WithDaoStrategy_Helper(long lIndex) const { Q_UNUSED(lIndex); return NULL; }
+IxDataMember * QxDataMemberX<qx::trait::no_base_class_defined>::get_WithDaoStrategy_Helper(long lIndex) const {
+    Q_UNUSED(lIndex);
+    return NULL; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-IxDataMember * QxDataMemberX<qx::trait::no_base_class_defined>::get_WithDaoStrategy_Helper(const QString & sKey) const { Q_UNUSED(sKey); return NULL; }
+IxDataMember * QxDataMemberX<qx::trait::no_base_class_defined>::get_WithDaoStrategy_Helper(const QString & sKey) const {
+    Q_UNUSED(sKey);
+    return NULL; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-IxDataMember * QxDataMemberX<qx::trait::no_base_class_defined>::getId_WithDaoStrategy_Helper() const { return NULL; }
+IxDataMember * QxDataMemberX<qx::trait::no_base_class_defined>::getId_WithDaoStrategy_Helper() const {
+    return NULL; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-long QxDataMemberX<QObject>::count_WithDaoStrategy_Helper() const { return 0; }
+long QxDataMemberX<QObject>::count_WithDaoStrategy_Helper() const {
+    return 0; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-bool QxDataMemberX<QObject>::exist_WithDaoStrategy_Helper(const QString & sKey) const { Q_UNUSED(sKey); return false; }
+bool QxDataMemberX<QObject>::exist_WithDaoStrategy_Helper(const QString & sKey) const {
+    Q_UNUSED(sKey);
+    return false; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-IxDataMember * QxDataMemberX<QObject>::get_WithDaoStrategy_Helper(long lIndex) const { Q_UNUSED(lIndex); return NULL; }
+IxDataMember * QxDataMemberX<QObject>::get_WithDaoStrategy_Helper(long lIndex) const {
+    Q_UNUSED(lIndex);
+    return NULL; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-IxDataMember * QxDataMemberX<QObject>::get_WithDaoStrategy_Helper(const QString & sKey) const { Q_UNUSED(sKey); return NULL; }
+IxDataMember * QxDataMemberX<QObject>::get_WithDaoStrategy_Helper(const QString & sKey) const {
+    Q_UNUSED(sKey);
+    return NULL; }
 
 template <> QX_GCC_WORKAROUND_TEMPLATE_SPEC_INLINE
-IxDataMember * QxDataMemberX<QObject>::getId_WithDaoStrategy_Helper() const { return NULL; }
+IxDataMember * QxDataMemberX<QObject>::getId_WithDaoStrategy_Helper() const {
+    return NULL; }
 
 } // namespace qx

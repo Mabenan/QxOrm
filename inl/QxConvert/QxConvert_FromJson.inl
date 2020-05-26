@@ -178,9 +178,9 @@ static inline qx_bool fromJson(const QJsonValue & j, qx_bool & t, const QString 
    if (j.isObject())
    {
       QJsonObject obj = j.toObject();
-      t.setValue(obj["value"].toBool());
-      t.setCode(static_cast<long>(qRound64(obj["code"].toDouble())));
-      t.setDesc(obj["desc"].toString());
+      t.setValue(obj[QStringLiteral("value")].toBool());
+      t.setCode(static_cast<long>(qRound64(obj[QStringLiteral("code")].toDouble())));
+      t.setDesc(obj[QStringLiteral("desc")].toString());
    }
    return qx_bool(true);
 } };

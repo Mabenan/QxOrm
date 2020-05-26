@@ -56,13 +56,13 @@ namespace qx {
 namespace cvt {
 namespace detail {
 
-QX_DLL_EXPORT QJsonValue QxConvert_ToJson_Helper(const QRect & t, const QString & format) QX_USED;
+QX_DLL_EXPORT QJsonValue QxConvert_ToJson_Helper(QRect t, const QString & format) QX_USED;
 QX_DLL_EXPORT qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, QRect & t, const QString & format) QX_USED;
 
 template <>
 struct QxConvert_ToJson< QRect >
 {
-   static inline QJsonValue toJson(const QRect & t, const QString & format)
+   static inline QJsonValue toJson(QRect t, const QString & format)
    { return QxConvert_ToJson_Helper(t, format); }
 };
 

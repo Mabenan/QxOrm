@@ -47,9 +47,12 @@ namespace detail {
 QJsonValue QxConvert_ToJson_Helper(const QBrush & t, const QString & format)
 {
    QJsonObject obj;
-   int iStyle = static_cast<int>(t.style());    obj.insert("style", qx::cvt::to_json(iStyle, format));
-   QColor color(t.color());                     obj.insert("color", qx::cvt::to_json(color, format));
-   QPixmap texture(t.texture());                obj.insert("texture", qx::cvt::to_json(texture, format));
+   int iStyle = static_cast<int>(t.style());
+   obj.insert(QStringLiteral("style"), qx::cvt::to_json(iStyle, format));
+   QColor color(t.color());
+   obj.insert(QStringLiteral("color"), qx::cvt::to_json(color, format));
+   QPixmap texture(t.texture());
+   obj.insert(QStringLiteral("texture"), qx::cvt::to_json(texture, format));
    return QJsonValue(obj);
 }
 
@@ -58,9 +61,9 @@ qx_bool QxConvert_FromJson_Helper(const QJsonValue & j, QBrush & t, const QStrin
    t = QBrush();
    if (! j.isObject()) { return qx_bool(true); }
    QJsonObject obj = j.toObject(); int iStyle = 0; QColor color; QPixmap texture;
-   qx::cvt::from_json(obj.value("style"), iStyle, format);
-   qx::cvt::from_json(obj.value("color"), color, format);
-   qx::cvt::from_json(obj.value("texture"), texture, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("style")), iStyle, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("color")), color, format);
+   qx::cvt::from_json(obj.value(QStringLiteral("texture")), texture, format);
    t.setStyle(static_cast<Qt::BrushStyle>(iStyle));
    ((iStyle == Qt::TexturePattern) ? t.setTexture(texture) : t.setColor(color));
    return qx_bool(true);

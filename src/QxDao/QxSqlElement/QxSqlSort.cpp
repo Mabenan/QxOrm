@@ -54,23 +54,34 @@ QString QxSqlSort::toString() const
 
    switch (m_type)
    {
-      case _order_asc:     sReturn = "ORDER BY ";     break;
-      case _order_desc:    sReturn = "ORDER BY ";     break;
-      case _group_by:      sReturn = "GROUP BY ";     break;
-      default:             qAssert(false);
+   case _order_asc:
+       sReturn = QStringLiteral("ORDER BY "); break;
+   case _order_desc:
+       sReturn = QStringLiteral("ORDER BY ");
+       break;
+   case _group_by:
+       sReturn = QStringLiteral("GROUP BY ");
+       break;
+   default:
+       qAssert(false);
    }
 
    for (int i = 0; i < m_lstColumns.count(); i++)
    {
-      sReturn += ((i == 0) ? QString("") : QString(", "));
-      QString sColumn = m_lstColumns.at(i);
-      qAssert(! sColumn.isEmpty());
+       sReturn += ((i == 0) ? QLatin1String("") :QStringLiteral(", "));
+       QString sColumn = m_lstColumns.at(i);
+       qAssert(!sColumn.isEmpty());
 
-      switch (m_type)
-      {
-         case _order_asc:     sReturn += sColumn + " ASC";     break;
-         case _order_desc:    sReturn += sColumn + " DESC";    break;
-         case _group_by:      sReturn += sColumn;              break;
+       switch (m_type) {
+       case _order_asc:
+           sReturn += sColumn + " ASC";
+           break;
+       case _order_desc:
+           sReturn += sColumn + " DESC";
+           break;
+       case _group_by:
+           sReturn += sColumn;
+           break;
       }
    }
 

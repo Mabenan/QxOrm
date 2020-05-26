@@ -94,7 +94,10 @@ qx_bool QxTools::readSocketData(QByteArray dataSerialized,QDataStream &in, QxTra
    {
       QxSimpleCrypt crypto(QxConnect::getSingleton()->getEncryptKey());
       QByteArray decrypted = crypto.decryptToByteArray(dataSerialized);
-      if ((crypto.lastError() != QxSimpleCrypt::ErrorNoError) || decrypted.isEmpty()) { return qx_bool(QX_ERROR_UNKNOWN, "an error occured during decryption of data"); }
+      if ((crypto.lastError() != QxSimpleCrypt::ErrorNoError) || decrypted.isEmpty()) {
+          return qx_bool(QX_ERROR_UNKNOWN,
+                         QStringLiteral("an error occured during decryption of data"));
+      }
       dataSerialized = decrypted;
    }
 
@@ -134,7 +137,9 @@ qx_bool QxTools::readSocketData(QByteArray dataSerialized,QDataStream &in, QxTra
 #ifndef _QX_NO_JSON
       case QxConnect::serialization_json:                   bDeserializeOk = qx::serialization::json::from_byte_array(transaction, dataSerialized); break;
 #endif // _QX_NO_JSON
-      default:                                              return qx_bool(QX_ERROR_UNKNOWN, "unknown serialization type to read data from socket");
+      default:
+          return qx_bool(QX_ERROR_UNKNOWN,
+                                       QStringLiteral("unknown serialization type to read data from socket"));
    }
 
    return bDeserializeOk;
@@ -177,11 +182,15 @@ qx_bool QxTools::writeSocket(QTcpSocket & socket, QxTransaction & transaction, q
 #ifndef _QX_NO_JSON
       case QxConnect::serialization_json:                   dataSerialized = qx::serialization::json::to_byte_array(transaction, (& owner)); break;
 #endif // _QX_NO_JSON
-      default:                                              return qx_bool(QX_ERROR_UNKNOWN, "unknown serialization type to write data to socket");
+      default:
+          return qx_bool(
+              QX_ERROR_UNKNOWN,
+                                          QStringLiteral("unknown serialization type to write data to socket"));
    }
 
-   if (dataSerialized.isEmpty())
-   { return qx_bool(QX_ERROR_UNKNOWN, "an error occured during serialization of data"); }
+   if (dataSerialized.isEmpty()) {
+       return qx_bool(QX_ERROR_UNKNOWN, QStringLiteral("an error occured during serialization of data"));
+   }
 
    quint16 uiCompressData = 0;
    if (QxConnect::getSingleton()->getCompressData() && (dataSerialized.size() > QX_SERVICE_MIN_SIZE_TO_COMPRESS_DATA))
@@ -194,7 +203,8 @@ qx_bool QxTools::writeSocket(QTcpSocket & socket, QxTransaction & transaction, q
       crypto.setCompressionMode(QxSimpleCrypt::CompressionNever);
       crypto.setIntegrityProtectionMode(QxSimpleCrypt::ProtectionChecksum);
       QByteArray encrypted = crypto.encryptToByteArray(dataSerialized);
-      if ((crypto.lastError() != QxSimpleCrypt::ErrorNoError) || encrypted.isEmpty()) { return qx_bool(QX_ERROR_UNKNOWN, "an error occured during encryption of data"); }
+      if ((crypto.lastError() != QxSimpleCrypt::ErrorNoError) || encrypted.isEmpty()) { return qx_bool(QX_ERROR_UNKNOWN, QStringLiteral("an error occured during encryption of data"));
+      }
       dataSerialized = encrypted;
       uiEncryptData = 1;
    }

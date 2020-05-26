@@ -153,7 +153,8 @@ struct QxDao_Save_WithRelation
    static inline QSqlError save(const QString & relation, T & t, QSqlDatabase * pDatabase)
    {
       QStringList lst;
-      if (! relation.isEmpty()) { lst = relation.split("|"); }
+      if (!relation.isEmpty()) { lst = relation.split(QStringLiteral("|"));
+      }
       return QxDao_Save_WithRelation<T>::save(lst, t, pDatabase);
    }
 

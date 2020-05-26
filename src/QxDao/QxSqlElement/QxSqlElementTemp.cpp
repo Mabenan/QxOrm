@@ -45,13 +45,18 @@ QxSqlElementTemp::~QxSqlElementTemp() { ; }
 
 IxSqlElement::type_class QxSqlElementTemp::getTypeClass() const { return IxSqlElement::_sql_element_temp; }
 
-QString QxSqlElementTemp::toString() const { return ""; }
+QString QxSqlElementTemp::toString() const
+{
+    return QLatin1String("");
+}
 
 void QxSqlElementTemp::resolve(QSqlQuery & query) const { Q_UNUSED(query); }
 
 void QxSqlElementTemp::postProcess(QString & sql) const { Q_UNUSED(sql); }
 
-QString QxSqlElementTemp::getExtraSettings() const { return ""; }
+QString QxSqlElementTemp::getExtraSettings() const
+{ return QLatin1String("");
+}
 
 void QxSqlElementTemp::setExtraSettings(const QString & s) { Q_UNUSED(s); }
 

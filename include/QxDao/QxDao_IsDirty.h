@@ -38,90 +38,101 @@
 
 #include <QtCore/qstringlist.h>
 
-#include <QxDao/QxSqlQueryBuilder.h>
 #include <QxDao/IxSqlRelation.h>
+#include <QxDao/QxSqlQueryBuilder.h>
 
-#include <QxTraits/is_qx_registered.h>
-#include <QxTraits/is_container.h>
-#include <QxTraits/is_smart_ptr.h>
 #include <QxTraits/generic_container.h>
+#include <QxTraits/is_container.h>
+#include <QxTraits/is_qx_registered.h>
+#include <QxTraits/is_smart_ptr.h>
 
 namespace qx {
 namespace dao {
 namespace detail {
 
 template <class T>
-inline void is_dirty(const T & obj1, const T & obj2, QStringList & lstDiff);
+inline void is_dirty(const T &obj1, const T &obj2, QStringList &lstDiff);
 
-template <class T>
-struct QxDao_IsDirty_Generic
-{
+template <class T> struct QxDao_IsDirty_Generic {
 
-   static void compare(const T & obj1, const T & obj2, QStringList & lstDiff)
-   {
-      static_assert(qx::trait::is_qx_registered<T>::value, "qx::trait::is_qx_registered<T>::value");
+  static void compare(const T &obj1, const T &obj2, QStringList &lstDiff) {
+    static_assert(qx::trait::is_qx_registered<T>::value,
+                  "qx::trait::is_qx_registered<T>::value");
 
-      qx::QxSqlQueryBuilder_Count<T> builder; builder.init();
-      qx::IxDataMember * pId = builder.getDataId();
-      if (pId && (! pId->isEqual((& obj1), (& obj2)))) { lstDiff.append(pId->getKey()); }
+    qx::QxSqlQueryBuilder_Count<T> builder;
+    builder.init();
+    qx::IxDataMember *pId = builder.getDataId();
+    if (pId && (!pId->isEqual((&obj1), (&obj2)))) {
+      lstDiff.append(pId->getKey());
+    }
 
-      long l = 0;
-      qx::IxDataMember * p = NULL;
-      while ((p = builder.nextData(l)))
-      { if (p && (! p->isEqual((& obj1), (& obj2)))) { lstDiff.append(p->getKey()); } }
-   }
-
-};
-
-template <class T>
-struct QxDao_IsDirty_Container
-{
-
-   static void compare(const T & obj1, const T & obj2, QStringList & lstDiff)
-   {
-      if (qx::trait::generic_container<T>::size(obj1) <= 0) { return; }
-      if (qx::trait::generic_container<T>::size(obj1) != qx::trait::generic_container<T>::size(obj2)) { lstDiff.append("*"); return; }
-
-      long lCurrIndex = 0;
-      typename T::const_iterator it2 = obj2.begin();
-
-      for (typename T::const_iterator it1 = obj1.begin(); it1 != obj1.end(); ++it1)
-      {
-         QStringList lstDiffItem;
-         qx::dao::detail::is_dirty((* it1), (* it2), lstDiffItem);
-         if (lstDiffItem.count() > 0) { lstDiff.append(QString::number(lCurrIndex) + "|" + lstDiffItem.join("|")); }
-         ++lCurrIndex; ++it2;
+    long l = 0;
+    qx::IxDataMember *p = NULL;
+    while ((p = builder.nextData(l))) {
+      if (p && (!p->isEqual((&obj1), (&obj2)))) {
+        lstDiff.append(p->getKey());
       }
-   }
+    }
+  }
+};
 
+template <class T> struct QxDao_IsDirty_Container {
+
+  static void compare(const T &obj1, const T &obj2, QStringList &lstDiff) {
+    if (qx::trait::generic_container<T>::size(obj1) <= 0) {
+      return;
+    }
+    if (qx::trait::generic_container<T>::size(obj1) !=
+        qx::trait::generic_container<T>::size(obj2)) {
+      lstDiff.append(QStringLiteral("*"));
+      return;
+    }
+
+    long lCurrIndex = 0;
+    typename T::const_iterator it2 = obj2.begin();
+
+    for (typename T::const_iterator it1 = obj1.begin(); it1 != obj1.end();
+         ++it1) {
+      QStringList lstDiffItem;
+      qx::dao::detail::is_dirty((*it1), (*it2), lstDiffItem);
+      if (lstDiffItem.count() > 0) {
+        lstDiff.append(QString::number(lCurrIndex) + "|" +
+                       lstDiffItem.join(QStringLiteral("|")));
+      }
+      ++lCurrIndex;
+      ++it2;
+    }
+  }
+};
+
+template <class T> struct QxDao_IsDirty_Ptr {
+
+  static void compare(const T &obj1, const T &obj2, QStringList &lstDiff) {
+    qx::dao::detail::is_dirty((*obj1), (*obj2), lstDiff);
+  }
+};
+
+template <class T> struct QxDao_IsDirty {
+
+  static void compare(const T &obj1, const T &obj2, QStringList &lstDiff) {
+    typedef typename std::conditional<
+        std::is_pointer<T>::value, qx::dao::detail::QxDao_IsDirty_Ptr<T>,
+        qx::dao::detail::QxDao_IsDirty_Generic<T>>::type type_dao_1;
+    typedef typename std::conditional<qx::trait::is_smart_ptr<T>::value,
+                                      qx::dao::detail::QxDao_IsDirty_Ptr<T>,
+                                      type_dao_1>::type type_dao_2;
+    typedef
+        typename std::conditional<qx::trait::is_container<T>::value,
+                                  qx::dao::detail::QxDao_IsDirty_Container<T>,
+                                  type_dao_2>::type type_dao_3;
+    type_dao_3::compare(obj1, obj2, lstDiff);
+  }
 };
 
 template <class T>
-struct QxDao_IsDirty_Ptr
-{
-
-   static void compare(const T & obj1, const T & obj2, QStringList & lstDiff)
-   { qx::dao::detail::is_dirty((* obj1), (* obj2), lstDiff); }
-
-};
-
-template <class T>
-struct QxDao_IsDirty
-{
-
-   static void compare(const T & obj1, const T & obj2, QStringList & lstDiff)
-   {
-      typedef typename std::conditional< std::is_pointer<T>::value, qx::dao::detail::QxDao_IsDirty_Ptr<T>, qx::dao::detail::QxDao_IsDirty_Generic<T> >::type type_dao_1;
-      typedef typename std::conditional< qx::trait::is_smart_ptr<T>::value, qx::dao::detail::QxDao_IsDirty_Ptr<T>, type_dao_1 >::type type_dao_2;
-      typedef typename std::conditional< qx::trait::is_container<T>::value, qx::dao::detail::QxDao_IsDirty_Container<T>, type_dao_2 >::type type_dao_3;
-      type_dao_3::compare(obj1, obj2, lstDiff);
-   }
-
-};
-
-template <class T>
-inline void is_dirty(const T & obj1, const T & obj2, QStringList & lstDiff)
-{ return qx::dao::detail::QxDao_IsDirty<T>::compare(obj1, obj2, lstDiff); }
+inline void is_dirty(const T &obj1, const T &obj2, QStringList &lstDiff) {
+  return qx::dao::detail::QxDao_IsDirty<T>::compare(obj1, obj2, lstDiff);
+}
 
 } // namespace detail
 } // namespace dao

@@ -42,59 +42,102 @@ namespace cvt {
 namespace detail {
 
 template <> struct QxConvert_ToVariant< qx::trait::no_type > {
-static inline QVariant toVariant(const qx::trait::no_type & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(t); Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(); } };
+    static inline QVariant toVariant(qx::trait::no_type t,
+                                     const QString &format,
+                                     int index,
+                                     qx::cvt::context::ctx_type ctx)
+    {
+        Q_UNUSED(t);
+        Q_UNUSED(format);
+        Q_UNUSED(index);
+     Q_UNUSED(ctx);
+     return QVariant(); } };
 
 template <> struct QxConvert_ToVariant< bool > {
 static inline QVariant toVariant(const bool & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); } };
 
 template <> struct QxConvert_ToVariant< short > {
-static inline QVariant toVariant(const short & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<int>(t)); } };
+    static inline QVariant toVariant(const short &t, QString &format,
+                                     int index,
+                                     qx::cvt::context::ctx_type ctx)
+    {
+        Q_UNUSED(format);
+        Q_UNUSED(index);
+        Q_UNUSED(ctx);
+        return QVariant(t);
+    }
+};
 
 template <> struct QxConvert_ToVariant< int > {
 static inline QVariant toVariant(const int & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); } };
 
 template <> struct QxConvert_ToVariant< long > {
-static inline QVariant toVariant(const long & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
+    static inline QVariant toVariant(const long &t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<qlonglong>(t)); } };
 
 template <> struct QxConvert_ToVariant< long long > {
-static inline QVariant toVariant(const long long & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<qlonglong>(t)); } };
+    static inline QVariant toVariant(long long t,
+                                     const QString &format,
+                                     int index,
+                                     qx::cvt::context::ctx_type ctx)
+    {
+        Q_UNUSED(format);
+        Q_UNUSED(index);
+        Q_UNUSED(ctx);
+        return QVariant(static_cast<long long>(t));
+    }
+};
 
 template <> struct QxConvert_ToVariant< float > {
 static inline QVariant toVariant(const float & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<double>(t)); } };
 
 template <> struct QxConvert_ToVariant< double > {
-static inline QVariant toVariant(const double & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
+    static inline QVariant toVariant(const double & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); } };
 
 template <> struct QxConvert_ToVariant< unsigned short > {
-static inline QVariant toVariant(const unsigned short & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<unsigned int>(t)); } };
+    static inline QVariant toVariant(unsigned short t,
+                                     const QString &format,
+                                     int index,
+                                     qx::cvt::context::ctx_type ctx)
+    {
+        Q_UNUSED(format);
+        Q_UNUSED(index);
+        Q_UNUSED(ctx);
+        return QVariant(static_cast<unsigned int>(t));
+    }
+};
 
 template <> struct QxConvert_ToVariant< unsigned int > {
 static inline QVariant toVariant(const unsigned int & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); } };
 
 template <> struct QxConvert_ToVariant< unsigned long > {
-static inline QVariant toVariant(const unsigned long & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
+    static inline QVariant toVariant(const unsigned long & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<qulonglong>(t)); } };
 
 template <> struct QxConvert_ToVariant< unsigned long long > {
-static inline QVariant toVariant(const unsigned long long & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
-{ Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(static_cast<qulonglong>(t)); } };
+    static inline QVariant toVariant(unsigned long long t,
+                                     const QString &format,
+                                     int index,
+                                     qx::cvt::context::ctx_type ctx)
+    {
+        Q_UNUSED(format);
+        Q_UNUSED(index);
+        Q_UNUSED(ctx);
+        return QVariant(static_cast<qulonglong>(t));
+    }
+};
 
 template <> struct QxConvert_ToVariant< QDate > {
 static inline QVariant toVariant(const QDate & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); } };
 
 template <> struct QxConvert_ToVariant< QTime > {
-static inline QVariant toVariant(const QTime & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
+    static inline QVariant toVarint(const QTime & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); } };
 
 template <> struct QxConvert_ToVariant< QDateTime > {
@@ -121,7 +164,7 @@ struct QxConvert_ToVariant< QVariant >
 };
 
 template <> struct QxConvert_ToVariant< QUuid > {
-static inline QVariant toVariant(const QUuid & t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
+static inline QVariant toVariant(QUuid t, const QString & format, int index, qx::cvt::context::ctx_type ctx)
 { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t.toString()); } };
 
 template <> struct QxConvert_ToVariant< qx::QxDateNeutral > {

@@ -214,7 +214,7 @@ private:
 
    template <int dummy>
    struct cvtQVariant<true, dummy>
-   { static inline QVariant toVariant(const T & t, const QString & format, int index, qx::cvt::context::ctx_type ctx) { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); }; };
+   { static inline QVariant toVariant(T & t, const QString & format, int index, qx::cvt::context::ctx_type ctx) { Q_UNUSED(format); Q_UNUSED(index); Q_UNUSED(ctx); return QVariant(t); }; };
 
 };
 

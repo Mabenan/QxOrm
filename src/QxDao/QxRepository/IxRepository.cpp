@@ -78,9 +78,18 @@ QxSession * IxRepository::session() const
 qx::IxCollection_ptr IxRepository::_fetchAll(const QString & repositoryKey, const QStringList & columns /* = QStringList() */, const QStringList & relation /* = QStringList() */)
 {
    IxRepository * pRepository = QxRepositoryX::get(repositoryKey);
-   if (! pRepository) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxRepository::_fetchAll() : 'invalid repository key, unable to get repository pointer'", "", QSqlError::UnknownError)); }
+   if (!pRepository) {
+       throw qx::dao::sql_error(QSqlError(
+           "[QxOrm] qx::IxRepository::_fetchAll() : 'invalid repository "
+           "key, unable to get repository pointer'",  QLatin1String(""),  QSqlError::UnknownError));
+   }
    qx::IxCollection_ptr lst = pRepository->_newCollection();
-   if (! lst) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxRepository::_fetchAll() : 'unable to create a new collection from repository'", "", QSqlError::UnknownError)); }
+   if (!lst) {
+       throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxRepository::_fetchAll() :QStringLiteral( "
+                                          "')unable to create a new collection from repository'",
+                                          QLatin1String(""),
+                                          QSqlError::UnknownError));
+   }
    QSqlError daoError = pRepository->_fetchAll(lst.get(), columns, relation);
    if (daoError.isValid()) { throw qx::dao::sql_error(daoError); }
    return lst;
@@ -89,9 +98,20 @@ qx::IxCollection_ptr IxRepository::_fetchAll(const QString & repositoryKey, cons
 qx::IxCollection_ptr IxRepository::_fetchByQuery(const QString & repositoryKey, const qx::QxSqlQuery & query, const QStringList & columns /* = QStringList() */, const QStringList & relation /* = QStringList() */)
 {
    IxRepository * pRepository = QxRepositoryX::get(repositoryKey);
-   if (! pRepository) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxRepository::_fetchByQuery() : 'invalid repository key, unable to get repository pointer'", "", QSqlError::UnknownError)); }
+   if (!pRepository) {
+       throw qx::dao::sql_error(QSqlError
+           ("[QxOrm] qx::IxRepository::_fetchByQuery() : 'invalid "
+                "repository key, unable to get repository pointer'", QLatin1String(""),
+               QSqlError::UnknownError));
+   }
    qx::IxCollection_ptr lst = pRepository->_newCollection();
-   if (! lst) { throw qx::dao::sql_error(QSqlError("[QxOrm] qx::IxRepository::_fetchByQuery() : 'unable to create a new collection from repository'", "", QSqlError::UnknownError)); }
+   if (!lst) {
+       throw qx::dao::sql_error(QSqlError(
+                                    "[QxOrm] qx::IxRepository::_fetchByQuery() : "
+                                    "'unable to create " "a new collection from repository'",
+                                QLatin1String(""),
+           QSqlError::UnknownError));
+   }
    QSqlError daoError = pRepository->_fetchByQuery(query, lst.get(), columns, relation);
    if (daoError.isValid()) { throw qx::dao::sql_error(daoError); }
    return lst;

@@ -40,30 +40,31 @@
 
 QDataStream & operator<< (QDataStream & stream, const std::string & t)
 {
-   QString tmp = qx::cvt::detail::QxConvert_ToString<std::string>::toString(t, "", 0, qx::cvt::context::e_no_context);
-   stream << tmp;
-   return stream;
+    QString tmp = qx::cvt::detail::QxConvert_ToString<std::string>::toString(
+        t, QLatin1String(""), 0, qx::cvt::context::e_no_context);
+    stream << tmp;
+    return stream;
 }
 
 QDataStream & operator>> (QDataStream & stream, std::string & t)
 {
    QString tmp;
    stream >> tmp;
-   qx::cvt::detail::QxConvert_FromString<std::string>::fromString(tmp, t, "", 0, qx::cvt::context::e_no_context);
+   qx::cvt::detail::QxConvert_FromString<std::string>::fromString(tmp, t, QLatin1String(""), 0, qx::cvt::context::e_no_context);
    return stream;
 }
 
 QDataStream & operator<< (QDataStream & stream, const std::wstring & t)
 {
-   QString tmp = qx::cvt::detail::QxConvert_ToString<std::wstring>::toString(t, "", 0, qx::cvt::context::e_no_context);
-   stream << tmp;
-   return stream;
+    QString tmp = qx::cvt::detail::QxConvert_ToString<std::wstring>::toString(t, QLatin1String(""), 0, qx::cvt::context::e_no_context);
+    stream << tmp;
+    return stream;
 }
 
 QDataStream & operator>> (QDataStream & stream, std::wstring & t)
 {
    QString tmp;
    stream >> tmp;
-   qx::cvt::detail::QxConvert_FromString<std::wstring>::fromString(tmp, t, "", 0, qx::cvt::context::e_no_context);
+   qx::cvt::detail::QxConvert_FromString<std::wstring>::fromString(tmp, t, QLatin1String(""), 0, qx::cvt::context::e_no_context);
    return stream;
 }

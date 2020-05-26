@@ -99,9 +99,11 @@ QString QxSqlEmbedQuery::getExtraSettings() const
 void QxSqlEmbedQuery::setExtraSettings(const QString & s)
 {
 #ifndef _QX_NO_JSON
-   int pos = s.indexOf("|");
-   if (pos == -1) { m_pImpl->m_type = static_cast<QxSqlEmbedQuery::type>(s.toInt()); return; }
-   m_pImpl->m_type = static_cast<QxSqlEmbedQuery::type>(s.left(pos).toInt());
+    int pos = s.indexOf(QLatin1String("|"));
+    if (pos == -1) {
+        m_pImpl->m_type = static_cast<QxSqlEmbedQuery::type>(s.toInt());
+        return; }
+   m_pImpl->m_type = static_cast<QxSqlEmbedQuery::type>(s.leftRef(pos).toInt());
    QString json = s.right(s.size() - (pos + 1));
    qx::serialization::json::from_string(m_pImpl->m_query, json);
 #else // _QX_NO_JSON

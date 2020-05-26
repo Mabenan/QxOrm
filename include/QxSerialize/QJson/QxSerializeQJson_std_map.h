@@ -68,8 +68,10 @@ struct QxConvert_ToJson< std::map<Key, Value> >
       for (type_itr itr = t.begin(); itr != t.end(); ++itr)
       {
          QJsonObject obj;
-         val = qx::cvt::to_json(itr->first, format); obj.insert("key", val);
-         val = qx::cvt::to_json(itr->second, format); obj.insert("value", val);
+         val = qx::cvt::to_json(itr->first, format);
+         obj.insert(QStringLiteral("key"), val);
+         val = qx::cvt::to_json(itr->second, format);
+         obj.insert(QStringLiteral("value"), val);
          arr.append(obj);
       }
 
@@ -90,8 +92,8 @@ struct QxConvert_FromJson< std::map<Key, Value> >
       {
          val = arr.at(i); if (! val.isObject()) { continue; }
          obj = val.toObject(); Key key; Value value;
-         qx::cvt::from_json(obj.value("key"), key, format);
-         qx::cvt::from_json(obj.value("value"), value, format);
+         qx::cvt::from_json(obj.value(QStringLiteral("key")), key, format);
+         qx::cvt::from_json(obj.value(QStringLiteral("value")), value, format);
          t.insert(std::make_pair(key, value));
       }
 
