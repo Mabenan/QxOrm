@@ -54,14 +54,35 @@ template <class T>
 class get_primary_key
 { public: typedef long type; };
 
+template <class T>
+class set_primary_key
+{
+};
+template <class T>
+class get_primary_key_value
+{
+};
+
 } // namespace trait
 } // namespace qx
 
-#define QX_REGISTER_PRIMARY_KEY(daoClass, primaryKey) \
+#define QX_REGISTER_PRIMARY_KEY(daoClass, primaryKey, primaryKeyValue) \
 namespace qx { namespace trait { \
 template <> \
 class get_primary_key< daoClass > \
 { public: typedef primaryKey type; }; \
-} } // namespace qx::trait
+template <> \
+class set_primary_key< daoClass > \
+{ public:\
+static void setPrimaryKey(std::shared_ptr<daoClass> instance, primaryKey value){ instance->primaryKeyValue = value;}\
+    };\
+template <> \
+class get_primary_key_value< daoClass > \
+{ public:\
+static primaryKey getPrimaryKeyValue(std::shared_ptr<daoClass> instance){ return instance->primaryKeyValue;}\
+    };\
+}\
+} // namespace qx::trait
+
 
 #endif // _QX_GET_PRIMARY_KEY_H_
