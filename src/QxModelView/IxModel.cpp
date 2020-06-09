@@ -468,7 +468,8 @@ QVariant IxModel::data(const QModelIndex &index,
     if (!pDataMember || !pItem) {
       return QVariant();
     }
-    return pDataMember->toVariant(pItem);
+    QVariant value = pDataMember->toVariant(pItem);
+    return value;
   } else if (role >= (Qt::UserRole + 1)) {
     QModelIndex idx =
         this->index(index.row(), (role - Qt::UserRole - 1), QModelIndex());
