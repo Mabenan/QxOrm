@@ -455,18 +455,18 @@ QPair<int, QString> IxModel::getChildPosition(IxModel *pChild) const {
 QVariant IxModel::data(const QModelIndex &index,
                        int role /* = Qt::DisplayRole */) const {
   if (!index.isValid()) {
-    return QVariant();
+    return QVariant("");
   }
   if ((role == Qt::DisplayRole) || (role == Qt::EditRole)) {
     if ((index.column() < 0) || (index.column() >= m_lstDataMember.count())) {
-      return QVariant();
+      return QVariant("");
     } else if ((index.row() < 0) || (index.row() >= rowCount())) {
-      return QVariant();
+      return QVariant("");
     }
     IxDataMember *pDataMember = m_lstDataMember.at(index.column());
     void *pItem = getRowItemAsVoidPtr(index.row());
     if (!pDataMember || !pItem) {
-      return QVariant();
+      return QVariant("");
     }
     QVariant value = pDataMember->toVariant(pItem);
     return value;
@@ -475,7 +475,7 @@ QVariant IxModel::data(const QModelIndex &index,
         this->index(index.row(), (role - Qt::UserRole - 1), QModelIndex());
     return data(idx, Qt::DisplayRole);
   }
-  return QVariant();
+  return QVariant("");
 }
 
 bool IxModel::setData(const QModelIndex &index, const QVariant &value,
